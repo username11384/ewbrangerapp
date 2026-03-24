@@ -3,6 +3,16 @@ import SwiftUI
 struct VariantDetailView: View {
     let info: LantanaVariantContent.VariantInfo
 
+    /// Returns dark text for light-coloured variants (white, near-white) so the
+    /// header remains readable in light mode.
+    private var headerTextColor: Color {
+        let uiColor = UIColor(info.variant.color)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: nil)
+        let luminance = 0.299 * r + 0.587 * g + 0.114 * b
+        return luminance > 0.65 ? Color(.label) : .white
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -15,10 +25,10 @@ struct VariantDetailView: View {
                         VStack {
                             Text(info.commonName)
                                 .font(.title.bold())
-                                .foregroundColor(.white)
+                                .foregroundColor(headerTextColor)
                             Text(info.scientificNote)
                                 .font(.subheadline.italic())
-                                .foregroundColor(.white.opacity(0.8))
+                                .foregroundColor(headerTextColor.opacity(0.7))
                         }
                     )
 
