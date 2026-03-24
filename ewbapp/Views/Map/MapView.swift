@@ -29,10 +29,10 @@ struct MapView: UIViewRepresentable {
     var zones: [InfestationZone]
     var showZones: Bool
     var tileOverlay: LocalTileOverlay?
-    var onSelectSighting: (SightingLog) -> Void
-    var onSelectPatrol: ((PatrolRecord) -> Void)? = nil
-    var onSelectZone: ((InfestationZone) -> Void)? = nil
-    // Draw mode
+    // Callbacks carry the screen-space anchor point so the caller can position a popover
+    var onSelectSighting: (SightingLog, CGPoint) -> Void
+    var onSelectPatrol: ((PatrolRecord, CGPoint) -> Void)? = nil
+    var onSelectZone: ((InfestationZone, CGPoint) -> Void)? = nil
     var drawVertices: [CLLocationCoordinate2D] = []
     var onMapTapped: ((CLLocationCoordinate2D) -> Void)? = nil
 
@@ -64,11 +64,9 @@ struct MapView: UIViewRepresentable {
         context.coordinator.zones = zones
         mapView.mapType = mapType
 
-        // Tile overlay
         mapView.overlays.filter { $0 is MKTileOverlay }.forEach { mapView.removeOverlay($0) }
         if let overlay = tileOverlay { mapView.insertOverlay(overlay, at: 0) }
 
-        // Zone overlays
         mapView.overlays.filter { $0 is ZoneCircleOverlay || $0 is ZonePolygonOverlay }.forEach { mapView.removeOverlay($0) }
         if showZones {
             for zone in zones {
@@ -96,7 +94,6 @@ struct MapView: UIViewRepresentable {
             }
         }
 
-        // Draw mode preview
         mapView.overlays.filter { $0 is DrawPreviewPolyline }.forEach { mapView.removeOverlay($0) }
         mapView.removeAnnotations(mapView.annotations.compactMap { $0 as? VertexAnnotation })
         if drawVertices.count >= 2 {
@@ -108,27 +105,25 @@ struct MapView: UIViewRepresentable {
             mapView.addAnnotation(VertexAnnotation(index: i, coordinate: vertex))
         }
 
-        // Sighting annotations
         let existing = Set(mapView.annotations.compactMap { $0 as? SightingAnnotation }.map { $0.sighting.id })
         let incoming = Set(annotations.map { $0.sighting.id })
         mapView.removeAnnotations(mapView.annotations.compactMap { $0 as? SightingAnnotation }.filter { !incoming.contains($0.sighting.id) })
         mapView.addAnnotations(annotations.filter { !existing.contains($0.sighting.id) })
 
-        // Patrol annotations
         mapView.removeAnnotations(mapView.annotations.compactMap { $0 as? PatrolAnnotation })
         mapView.addAnnotations(patrolAnnotations)
     }
 
     class Coordinator: NSObject, MKMapViewDelegate, UIGestureRecognizerDelegate {
-        let onSelectSighting: (SightingLog) -> Void
-        var onSelectPatrol: ((PatrolRecord) -> Void)?
-        var onSelectZone: ((InfestationZone) -> Void)?
+        let onSelectSighting: (SightingLog, CGPoint) -> Void
+        var onSelectPatrol: ((PatrolRecord, CGPoint) -> Void)?
+        var onSelectZone: ((InfestationZone, CGPoint) -> Void)?
         var onMapTapped: ((CLLocationCoordinate2D) -> Void)?
         var zones: [InfestationZone] = []
 
-        init(onSelectSighting: @escaping (SightingLog) -> Void,
-             onSelectPatrol: ((PatrolRecord) -> Void)?,
-             onSelectZone: ((InfestationZone) -> Void)?,
+        init(onSelectSighting: @escaping (SightingLog, CGPoint) -> Void,
+             onSelectPatrol: ((PatrolRecord, CGPoint) -> Void)?,
+             onSelectZone: ((InfestationZone, CGPoint) -> Void)?,
              onMapTapped: ((CLLocationCoordinate2D) -> Void)?) {
             self.onSelectSighting = onSelectSighting
             self.onSelectPatrol = onSelectPatrol
@@ -155,7 +150,7 @@ struct MapView: UIViewRepresentable {
                     let renderer = MKPolygonRenderer(polygon: polygon)
                     let viewPoint = renderer.point(for: mapPoint)
                     if renderer.path?.contains(viewPoint) == true {
-                        onSelectZone?(zone)
+                        onSelectZone?(zone, point)
                         return
                     }
                 }
@@ -163,9 +158,8 @@ struct MapView: UIViewRepresentable {
                    let id = circle.zoneID,
                    let zone = zones.first(where: { $0.id == id }) {
                     let center = CLLocation(latitude: circle.coordinate.latitude, longitude: circle.coordinate.longitude)
-                    let tapped = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
-                    if tapped.distance(from: center) <= circle.radius {
-                        onSelectZone?(zone)
+                    if CLLocation(latitude: coord.latitude, longitude: coord.longitude).distance(from: center) <= circle.radius {
+                        onSelectZone?(zone, point)
                         return
                     }
                 }
@@ -180,7 +174,7 @@ struct MapView: UIViewRepresentable {
                     ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "sighting")
                 view.annotation = annotation
                 view.markerTintColor = UIColor(LantanaVariant(rawValue: sa.sighting.variant ?? "")?.color ?? LantanaVariant.unknown.color)
-                view.canShowCallout = true
+                view.canShowCallout = false
                 return view
             }
             if let pa = annotation as? PatrolAnnotation {
@@ -189,7 +183,7 @@ struct MapView: UIViewRepresentable {
                 view.annotation = pa
                 view.markerTintColor = pa.patrol.endTime == nil ? .systemBlue : .systemPurple
                 view.glyphImage = UIImage(systemName: "figure.walk")
-                view.canShowCallout = true
+                view.canShowCallout = false
                 return view
             }
             if let va = annotation as? VertexAnnotation {
@@ -203,13 +197,16 @@ struct MapView: UIViewRepresentable {
         }
 
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+            mapView.deselectAnnotation(view.annotation, animated: false)
+            guard let coord = view.annotation?.coordinate else { return }
+            // Anchor point = the coordinate's screen position (tip of the pin)
+            let tipPoint = mapView.convert(coord, toPointTo: mapView)
+
             if let sa = view.annotation as? SightingAnnotation {
-                mapView.deselectAnnotation(sa, animated: false)
-                onSelectSighting(sa.sighting)
+                onSelectSighting(sa.sighting, tipPoint)
             }
             if let pa = view.annotation as? PatrolAnnotation {
-                mapView.deselectAnnotation(pa, animated: false)
-                onSelectPatrol?(pa.patrol)
+                onSelectPatrol?(pa.patrol, tipPoint)
             }
         }
 
