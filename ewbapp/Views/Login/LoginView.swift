@@ -13,47 +13,66 @@ struct LoginView: View {
 
     var body: some View {
         GeometryReader { geo in
-            ZStack(alignment: .bottom) {
-                // ── Hero background ──────────────────────────────────────
-                LinearGradient(
-                    colors: [Color(red: 0.08, green: 0.24, blue: 0.14),
-                             Color(red: 0.13, green: 0.38, blue: 0.22)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+            ScrollViewReader { proxy in
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // ── Hero ─────────────────────────────────────────
+                        ZStack(alignment: .bottom) {
+                            // Background photo or gradient fallback
+                            if let img = UIImage(named: "demo_lantana_2") {
+                                Image(uiImage: img)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: geo.size.width,
+                                           height: viewModel.selectedRanger == nil ? 300 : 180)
+                                    .clipped()
+                                    .overlay(
+                                        LinearGradient(
+                                            colors: [.black.opacity(0.55), .black.opacity(0.15)],
+                                            startPoint: .top, endPoint: .bottom
+                                        )
+                                    )
+                                    .overlay(
+                                        LinearGradient(
+                                            colors: [.clear, Color(.systemBackground)],
+                                            startPoint: .center, endPoint: .bottom
+                                        )
+                                    )
+                            } else {
+                                LinearGradient(
+                                    colors: [Color(red: 0.08, green: 0.24, blue: 0.14),
+                                             Color(red: 0.13, green: 0.38, blue: 0.22)],
+                                    startPoint: .top, endPoint: .bottom
+                                )
+                                .frame(height: viewModel.selectedRanger == nil ? 300 : 180)
+                            }
 
-                // ── Hero content ─────────────────────────────────────────
-                VStack(spacing: 6) {
-                    Image(systemName: "leaf.fill")
-                        .font(.system(size: 52, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.9))
-                    Text("Lama Lama Rangers")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                    Text("Lantana Monitoring & Control")
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.65))
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, geo.size.height * 0.46)
+                            // Logo + title
+                            VStack(spacing: 6) {
+                                Image(systemName: "leaf.fill")
+                                    .font(.system(size: 40, weight: .medium))
+                                    .foregroundStyle(.white.opacity(0.95))
+                                    .shadow(color: .black.opacity(0.4), radius: 4)
+                                Text("Lama Lama Rangers")
+                                    .font(.system(size: 26, weight: .bold, design: .rounded))
+                                    .foregroundStyle(.white)
+                                    .shadow(color: .black.opacity(0.5), radius: 4)
+                                Text("Lantana Monitoring & Control")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.white.opacity(0.75))
+                                    .shadow(color: .black.opacity(0.4), radius: 2)
+                            }
+                            .padding(.bottom, 28)
+                        }
+                        .animation(.spring(response: 0.4, dampingFraction: 0.8),
+                                   value: viewModel.selectedRanger == nil)
 
-                // ── Bottom card ──────────────────────────────────────────
-                VStack(spacing: 0) {
-                    // Drag handle
-                    Capsule()
-                        .fill(Color(.systemGray4))
-                        .frame(width: 36, height: 4)
-                        .padding(.top, 10)
-                        .padding(.bottom, 20)
-
-                    ScrollView(showsIndicators: false) {
+                        // ── Card ──────────────────────────────────────────
                         VStack(spacing: 28) {
                             // Ranger selection
                             VStack(alignment: .leading, spacing: 14) {
                                 Text("Who are you?")
                                     .font(.system(size: 17, weight: .semibold))
-                                    .padding(.horizontal, 4)
 
                                 HStack(spacing: 12) {
                                     ForEach(viewModel.rangers, id: \.id) { ranger in
@@ -61,21 +80,24 @@ struct LoginView: View {
                                             ranger: ranger,
                                             isSelected: viewModel.selectedRanger?.id == ranger.id
                                         ) {
-                                            viewModel.selectRanger(ranger)
+                                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                                viewModel.selectRanger(ranger)
+                                            }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                                withAnimation { proxy.scrollTo("pin", anchor: .bottom) }
+                                            }
                                         }
                                     }
                                 }
                             }
-                            .padding(.horizontal, 24)
 
-                            // PIN section — only visible once ranger selected
+                            // PIN — appears and page scrolls to show it
                             if viewModel.selectedRanger != nil {
                                 VStack(spacing: 20) {
-                                    VStack(spacing: 6) {
+                                    VStack(spacing: 10) {
                                         Text("Enter PIN")
                                             .font(.system(size: 15, weight: .medium))
                                             .foregroundStyle(.secondary)
-                                        // PIN dots
                                         HStack(spacing: 18) {
                                             ForEach(0..<4, id: \.self) { i in
                                                 Circle()
@@ -83,17 +105,18 @@ struct LoginView: View {
                                                           ? Color(red: 0.13, green: 0.45, blue: 0.25)
                                                           : Color(.systemGray4))
                                                     .frame(width: 14, height: 14)
-                                                    .animation(.spring(response: 0.2), value: viewModel.enteredPIN.count)
+                                                    .animation(.spring(response: 0.2),
+                                                               value: viewModel.enteredPIN.count)
                                             }
                                         }
                                     }
 
-                                    // Keypad
                                     PINKeypad(
                                         onDigit: { viewModel.appendPINDigit($0) },
                                         onDelete: { viewModel.deletePINDigit() }
                                     )
                                 }
+                                .id("pin")
                                 .transition(.move(edge: .bottom).combined(with: .opacity))
                             }
 
@@ -102,35 +125,32 @@ struct LoginView: View {
                                     .font(.callout)
                                     .foregroundStyle(.red)
                                     .multilineTextAlignment(.center)
-                                    .padding(.horizontal)
                             }
-
-                            Spacer(minLength: 8)
                         }
-                        .padding(.bottom, geo.safeAreaInsets.bottom + 16)
+                        .padding(.horizontal, 24)
+                        .padding(.top, 28)
+                        .padding(.bottom, geo.safeAreaInsets.bottom + 24)
+                        .frame(minHeight: geo.size.height
+                               - (viewModel.selectedRanger == nil ? 300 : 180)
+                               + 1, alignment: .top)
+                        .background(Color(.systemBackground))
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: geo.size.height * 0.60)
-                .background(
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .fill(Color(.systemBackground))
-                        .shadow(color: .black.opacity(0.15), radius: 20, y: -4)
-                )
+                .ignoresSafeArea(edges: .top)
+                .overlay(alignment: .bottom) {
+                    Text("31265 Communications for IT Professionals  ·  EWB Challenge 2026")
+                        .font(.system(size: 10))
+                        .foregroundStyle(Color(.tertiaryLabel))
+                        .padding(.bottom, geo.safeAreaInsets.bottom + 4)
+                        .allowsHitTesting(false)
+                }
             }
         }
-        .ignoresSafeArea(edges: .bottom)
-        .safeAreaInset(edge: .bottom) {
-            // Attribution footer — sits below the card in safe area
-            Text("31265 Communications for IT Professionals  ·  EWB Challenge 2026")
-                .font(.system(size: 10))
-                .foregroundStyle(.white.opacity(0.45))
-                .multilineTextAlignment(.center)
-                .padding(.bottom, 6)
-        }
-        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.selectedRanger?.id)
         .onAppear {
-            viewModel.seedDemoRangersIfNeeded(authManager: appEnv.authManager, persistence: appEnv.persistence)
+            viewModel.seedDemoRangersIfNeeded(
+                authManager: appEnv.authManager,
+                persistence: appEnv.persistence
+            )
         }
     }
 }
@@ -156,7 +176,6 @@ struct RangerAvatarCard: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 10) {
-                // Avatar circle
                 ZStack {
                     Circle()
                         .fill(isSelected
@@ -168,11 +187,10 @@ struct RangerAvatarCard: View {
                         .foregroundStyle(isSelected ? .white : .primary)
                 }
                 .overlay(
-                    Circle()
-                        .strokeBorder(
-                            isSelected ? Color(red: 0.18, green: 0.55, blue: 0.32) : Color.clear,
-                            lineWidth: 2.5
-                        )
+                    Circle().strokeBorder(
+                        isSelected ? Color(red: 0.18, green: 0.55, blue: 0.32) : Color.clear,
+                        lineWidth: 2.5
+                    )
                 )
 
                 VStack(spacing: 2) {
@@ -195,7 +213,9 @@ struct RangerAvatarCard: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .strokeBorder(
-                        isSelected ? Color(red: 0.18, green: 0.55, blue: 0.32).opacity(0.5) : Color.clear,
+                        isSelected
+                            ? Color(red: 0.18, green: 0.55, blue: 0.32).opacity(0.5)
+                            : Color.clear,
                         lineWidth: 1.5
                     )
             )
@@ -224,8 +244,7 @@ private struct PINKeypad: View {
                             Button { onDelete() } label: {
                                 Image(systemName: "delete.left")
                                     .font(.system(size: 20, weight: .medium))
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 64)
+                                    .frame(maxWidth: .infinity).frame(height: 64)
                                     .background(Color(.systemGray5))
                                     .cornerRadius(14)
                             }
@@ -234,8 +253,7 @@ private struct PINKeypad: View {
                             Button { onDigit(key) } label: {
                                 Text(key)
                                     .font(.system(size: 24, weight: .medium, design: .rounded))
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 64)
+                                    .frame(maxWidth: .infinity).frame(height: 64)
                                     .background(Color(.systemGray6))
                                     .cornerRadius(14)
                             }
@@ -245,11 +263,10 @@ private struct PINKeypad: View {
                 }
             }
         }
-        .padding(.horizontal, 24)
     }
 }
 
-// Keep old RangerChip available in case it's used elsewhere
+// Kept for any other call sites
 struct RangerChip: View {
     let ranger: RangerProfile
     let isSelected: Bool
@@ -259,8 +276,7 @@ struct RangerChip: View {
         Button(action: action) {
             Text(ranger.displayName ?? "Ranger")
                 .font(.callout.bold())
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                .padding(.horizontal, 16).padding(.vertical, 10)
                 .background(isSelected ? Color.green : Color(.systemGray5))
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(20)
