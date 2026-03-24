@@ -22,6 +22,13 @@ final class SightingListViewModel: ObservableObject {
         sightings = (try? repository.fetchAllSightings()) ?? []
     }
 
+    func delete(_ sighting: SightingLog) {
+        Task {
+            try? await repository.deleteSighting(sighting)
+            load()
+        }
+    }
+
     var filtered: [SightingLog] {
         var result = sightings
         if !searchText.isEmpty {

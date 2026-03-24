@@ -26,8 +26,6 @@ struct MainTabView: View {
 }
 
 struct MoreView: View {
-    @State private var showAddZone = false
-
     var body: some View {
         NavigationStack {
             List {
@@ -38,11 +36,8 @@ struct MoreView: View {
                     NavigationLink(destination: ControlProtocolView()) {
                         Label("Control Protocol", systemImage: "checklist")
                     }
-                    Button {
-                        showAddZone = true
-                    } label: {
-                        Label("Add Zone", systemImage: "square.dashed")
-                            .foregroundColor(.primary)
+                    NavigationLink(destination: ZoneListView()) {
+                        Label("Zones", systemImage: "square.dashed")
                     }
                 }
                 Section("Reports") {
@@ -64,9 +59,6 @@ struct MoreView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("More")
-            .sheet(isPresented: $showAddZone) {
-                AddZoneView()
-            }
         }
     }
 }

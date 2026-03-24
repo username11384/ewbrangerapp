@@ -11,7 +11,7 @@ final class MapViewModel: ObservableObject {
     @Published var mapType: MKMapType = .satellite
     @Published var showSightings = true
     @Published var showZones = true
-    @Published var showPatrols = false
+    @Published var showPatrols = true
     @Published var timelineDate: Date = Date()
     @Published var isPlayingTimeline = false
 

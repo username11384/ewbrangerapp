@@ -28,6 +28,30 @@ final class ZoneRepository: ZoneRepositoryProtocol {
         }
     }
 
+    func updateZone(_ zone: InfestationZone, name: String?, dominantVariant: LantanaVariant, status: String) async throws {
+        let context = persistence.backgroundContext
+        let objectID = zone.objectID
+        try await context.perform {
+            guard let obj = context.object(with: objectID) as? InfestationZone else { return }
+            obj.name = name
+            obj.dominantVariant = dominantVariant.rawValue
+            obj.status = status
+            obj.updatedAt = Date()
+            obj.syncStatus = SyncStatus.pendingUpdate.rawValue
+            try context.save()
+        }
+    }
+
+    func deleteZone(_ zone: InfestationZone) async throws {
+        let context = persistence.backgroundContext
+        let objectID = zone.objectID
+        try await context.perform {
+            let obj = context.object(with: objectID)
+            context.delete(obj)
+            try context.save()
+        }
+    }
+
     func addSnapshot(to zone: InfestationZone, coordinates: [[Double]], area: Double, rangerID: UUID) async throws {
         let context = persistence.backgroundContext
         let zoneID = zone.objectID

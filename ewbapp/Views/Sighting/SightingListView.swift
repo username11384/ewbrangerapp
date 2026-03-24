@@ -23,6 +23,9 @@ struct SightingListView: View {
                             selectedSighting = sighting
                         }
                 }
+                .onDelete { offsets in
+                    offsets.map { viewModel.filtered[$0] }.forEach { viewModel.delete($0) }
+                }
             }
             .listStyle(.plain)
             .searchable(text: $viewModel.searchText, prompt: "Search by variant or notes")
