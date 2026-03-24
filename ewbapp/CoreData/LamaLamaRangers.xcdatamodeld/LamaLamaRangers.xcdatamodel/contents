@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22F66" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="NO" userDefinedModelVersionIdentifier="">
+    <entity name="InfestationZone" representedClassName="InfestationZone" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dominantVariant" attributeType="String" defaultValueString="unknown"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="status" attributeType="String" defaultValueString="active"/>
+        <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="sightings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SightingLog" inverseName="infestationZone" inverseEntity="SightingLog"/>
+        <relationship name="snapshots" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="InfestationZoneSnapshot" inverseName="zone" inverseEntity="InfestationZoneSnapshot"/>
+    </entity>
+    <entity name="InfestationZoneSnapshot" representedClassName="InfestationZoneSnapshot" syncable="YES">
+        <attribute name="area" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="createdByRangerID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="polygonCoordinates" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="NSArray"/>
+        <attribute name="snapshotDate" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="zone" maxCount="1" deletionRule="Nullify" destinationEntity="InfestationZone" inverseName="snapshots" inverseEntity="InfestationZone"/>
+    </entity>
+    <entity name="PatrolRecord" representedClassName="PatrolRecord" syncable="YES">
+        <attribute name="areaName" attributeType="String" defaultValueString=""/>
+        <attribute name="checklistItems" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="NSData"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="endTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="patrolDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="startTime" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="ranger" maxCount="1" deletionRule="Nullify" destinationEntity="RangerProfile" inverseName="patrolRecords" inverseEntity="RangerProfile"/>
+    </entity>
+    <entity name="PesticideStock" representedClassName="PesticideStock" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="currentQuantity" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="minThreshold" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="productName" attributeType="String" defaultValueString=""/>
+        <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="unit" attributeType="String" defaultValueString="litres"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="usageRecords" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PesticideUsageRecord" inverseName="stock" inverseEntity="PesticideUsageRecord"/>
+    </entity>
+    <entity name="PesticideUsageRecord" representedClassName="PesticideUsageRecord" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="usedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="usedQuantity" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="ranger" maxCount="1" deletionRule="Nullify" destinationEntity="RangerProfile" inverseName="pesticideUsageRecords" inverseEntity="RangerProfile"/>
+        <relationship name="stock" maxCount="1" deletionRule="Nullify" destinationEntity="PesticideStock" inverseName="usageRecords" inverseEntity="PesticideStock"/>
+        <relationship name="treatment" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TreatmentRecord" inverseName="pesticideUsageRecords" inverseEntity="TreatmentRecord"/>
+    </entity>
+    <entity name="RangerProfile" representedClassName="RangerProfile" syncable="YES">
+        <attribute name="avatarFilename" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="displayName" attributeType="String" defaultValueString=""/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isCurrentDevice" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="role" attributeType="String" defaultValueString="ranger"/>
+        <attribute name="supabaseUID" attributeType="String" defaultValueString=""/>
+        <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="3" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="patrolRecords" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PatrolRecord" inverseName="ranger" inverseEntity="PatrolRecord"/>
+        <relationship name="pesticideUsageRecords" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PesticideUsageRecord" inverseName="ranger" inverseEntity="PesticideUsageRecord"/>
+        <relationship name="sightings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SightingLog" inverseName="ranger" inverseEntity="SightingLog"/>
+        <relationship name="treatmentRecords" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TreatmentRecord" inverseName="ranger" inverseEntity="TreatmentRecord"/>
+    </entity>
+    <entity name="SightingLog" representedClassName="SightingLog" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="deviceID" attributeType="String" defaultValueString=""/>
+        <attribute name="horizontalAccuracy" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="infestationSize" attributeType="String" defaultValueString="small"/>
+        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="photoFilenames" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="NSArray"/>
+        <attribute name="serverID" optional="YES" attributeType="String"/>
+        <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="variant" attributeType="String" defaultValueString="unknown"/>
+        <relationship name="infestationZone" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InfestationZone" inverseName="sightings" inverseEntity="InfestationZone"/>
+        <relationship name="ranger" maxCount="1" deletionRule="Nullify" destinationEntity="RangerProfile" inverseName="sightings" inverseEntity="RangerProfile"/>
+        <relationship name="treatmentRecords" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TreatmentRecord" inverseName="sighting" inverseEntity="TreatmentRecord"/>
+    </entity>
+    <entity name="SyncQueue" representedClassName="SyncQueue" syncable="YES">
+        <attribute name="attemptCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="entityID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="entityName" attributeType="String" defaultValueString=""/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastAttemptAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastErrorMessage" optional="YES" attributeType="String"/>
+        <attribute name="operationType" attributeType="String" defaultValueString="create"/>
+        <attribute name="payload" optional="YES" attributeType="Binary"/>
+    </entity>
+    <entity name="TreatmentRecord" representedClassName="TreatmentRecord" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="followUpDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="herbicideProduct" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="method" attributeType="String" defaultValueString="foliarSpray"/>
+        <attribute name="outcomeNotes" optional="YES" attributeType="String"/>
+        <attribute name="photoFilenames" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="NSArray"/>
+        <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="treatmentDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="pesticideUsageRecords" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PesticideUsageRecord" inverseName="treatment" inverseEntity="PesticideUsageRecord"/>
+        <relationship name="ranger" maxCount="1" deletionRule="Nullify" destinationEntity="RangerProfile" inverseName="treatmentRecords" inverseEntity="RangerProfile"/>
+        <relationship name="sighting" maxCount="1" deletionRule="Nullify" destinationEntity="SightingLog" inverseName="treatmentRecords" inverseEntity="SightingLog"/>
+    </entity>
+</model>

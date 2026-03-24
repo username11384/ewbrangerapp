@@ -1,17 +1,19 @@
-//
-//  ewbappApp.swift
-//  ewbapp
-//
-//  Created by Immanuel Lam on 24/3/2026.
-//
-
 import SwiftUI
 
 @main
-struct ewbappApp: App {
+struct LamaLamaRangersApp: App {
+    @StateObject private var appEnv = AppEnvironment.shared
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(appEnv)
+                .environmentObject(appEnv.authManager)
+                .onAppear {
+                    Task {
+                        await appEnv.syncEngine.startMonitoring()
+                    }
+                }
         }
     }
 }
