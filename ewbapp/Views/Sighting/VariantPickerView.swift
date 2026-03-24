@@ -43,6 +43,7 @@ struct VariantCard: View {
                 Text(variant.displayName)
                     .font(.caption.bold())
                     .multilineTextAlignment(.center)
+                    .frame(height: 30, alignment: .top)
             }
             .frame(width: 80)
             .padding(8)
