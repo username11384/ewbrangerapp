@@ -66,10 +66,20 @@ struct SightingRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(variant.displayName)
                     .font(.headline)
-                if let date = sighting.createdAt {
-                    Text(date, style: .relative)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                HStack(spacing: 6) {
+                    if let date = sighting.createdAt {
+                        Text(date, style: .relative)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    if let name = sighting.ranger?.displayName {
+                        Text("·")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(name)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             Spacer()

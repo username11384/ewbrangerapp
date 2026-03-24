@@ -73,6 +73,14 @@ struct DashboardView: View {
                             .foregroundStyle(by: .value("Variant", entry.variant))
                         }
                         .frame(height: 180)
+                        .chartForegroundStyleScale([
+                            LantanaVariant.pink.displayName:         LantanaVariant.pink.color,
+                            LantanaVariant.red.displayName:          LantanaVariant.red.color,
+                            LantanaVariant.pinkEdgedRed.displayName: LantanaVariant.pinkEdgedRed.color,
+                            LantanaVariant.orange.displayName:       LantanaVariant.orange.color,
+                            LantanaVariant.white.displayName:        Color(.systemGray3),
+                            LantanaVariant.unknown.displayName:      Color(.systemGray),
+                        ])
                         .chartXAxis {
                             AxisMarks(values: .stride(by: .month)) {
                                 AxisValueLabel(format: .dateTime.month(.abbreviated))

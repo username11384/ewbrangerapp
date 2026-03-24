@@ -79,7 +79,8 @@ final class DashboardViewModel: ObservableObject {
             let monthSightings = (try? context.fetchAll(SightingLog.self, predicate: predicate)) ?? []
             let byVariant = Dictionary(grouping: monthSightings, by: { $0.variant ?? "unknown" })
             for (variant, sightings) in byVariant {
-                data.append((date: monthStart, count: sightings.count, variant: variant))
+                let label = LantanaVariant(rawValue: variant)?.displayName ?? variant.capitalized
+                data.append((date: monthStart, count: sightings.count, variant: label))
             }
         }
         monthlySightingData = data
