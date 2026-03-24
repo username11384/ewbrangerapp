@@ -31,6 +31,9 @@ final class MapViewModel: ObservableObject {
         sightings = (try? sightingRepository.fetchAllSightings()) ?? []
         zones = (try? zoneRepository.fetchAllZones()) ?? []
         patrols = (try? patrolRepository.fetchAllPatrols()) ?? []
+        if !isPlayingTimeline {
+            timelineDate = Date()
+        }
     }
 
     var filteredPatrols: [PatrolAnnotation] {

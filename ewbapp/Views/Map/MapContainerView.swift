@@ -158,7 +158,19 @@ struct MapContainerView: View {
                         Spacer()
                     }
 
-                    // Bottom bar: layer toggles + clock + FAB all on one row
+                    // Left side: layer toggle icon stack
+                    HStack {
+                        LayerToggleView(
+                            showSightings: $viewModel.showSightings,
+                            showZones: $viewModel.showZones,
+                            showPatrols: $viewModel.showPatrols
+                        )
+                        .padding(.leading)
+                        .padding(.bottom, 80)
+                        Spacer()
+                    }
+
+                    // Bottom bar: clock + FAB
                     VStack(spacing: 8) {
                         Spacer()
                         if showTimeline {
@@ -171,19 +183,14 @@ struct MapContainerView: View {
                             .padding(.horizontal)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
-                        HStack(alignment: .center, spacing: 8) {
-                            LayerToggleView(
-                                showSightings: $viewModel.showSightings,
-                                showZones: $viewModel.showZones,
-                                showPatrols: $viewModel.showPatrols
-                            )
+                        HStack(alignment: .center) {
                             Button {
                                 withAnimation { showTimeline.toggle() }
                             } label: {
                                 Image(systemName: showTimeline ? "clock.fill" : "clock")
-                                    .padding(8)
+                                    .frame(width: 40, height: 40)
                                     .background(.ultraThinMaterial)
-                                    .cornerRadius(8)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             Spacer()
                             Menu {

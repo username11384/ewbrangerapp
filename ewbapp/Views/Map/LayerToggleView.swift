@@ -6,19 +6,19 @@ struct LayerToggleView: View {
     @Binding var showPatrols: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
-            LayerToggleChip(title: "Pins", icon: "mappin.circle.fill", isOn: $showSightings, color: .red)
-            LayerToggleChip(title: "Zones", icon: "square.dashed", isOn: $showZones, color: .orange)
-            LayerToggleChip(title: "Patrols", icon: "figure.walk", isOn: $showPatrols, color: .blue)
+        VStack(spacing: 0) {
+            LayerIconButton(icon: "mappin.circle.fill", isOn: $showSightings, color: .red)
+            Divider().frame(width: 28)
+            LayerIconButton(icon: "square.dashed", isOn: $showZones, color: .orange)
+            Divider().frame(width: 28)
+            LayerIconButton(icon: "figure.walk", isOn: $showPatrols, color: .blue)
         }
-        .padding(8)
         .background(.ultraThinMaterial)
-        .cornerRadius(12)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
-struct LayerToggleChip: View {
-    let title: String
+private struct LayerIconButton: View {
     let icon: String
     @Binding var isOn: Bool
     let color: Color
@@ -27,17 +27,10 @@ struct LayerToggleChip: View {
         Button {
             isOn.toggle()
         } label: {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.caption)
-                Text(title)
-                    .font(.caption.bold())
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(isOn ? color : Color(.systemGray5))
-            .foregroundColor(isOn ? .white : .primary)
-            .cornerRadius(8)
+            Image(systemName: icon)
+                .font(.system(size: 18))
+                .foregroundColor(isOn ? color : Color(.systemGray3))
+                .frame(width: 40, height: 40)
         }
         .buttonStyle(.plain)
     }
