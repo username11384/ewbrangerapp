@@ -32,7 +32,7 @@ enum TreatmentMethod: String, CaseIterable, Codable {
         switch self {
         case .cutStump: return "scissors"
         case .splatGun: return "dot.squareshape.fill"
-        case .foliarSpray: return "spray.and.wipe.fill"
+        case .foliarSpray: return "humidity.fill"
         case .basalBark: return "tree.fill"
         }
     }

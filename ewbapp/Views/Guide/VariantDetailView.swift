@@ -44,9 +44,10 @@ struct VariantDetailView: View {
                         .font(.headline)
                     ForEach(info.controlMethods, id: \.self) { method in
                         VStack(alignment: .leading, spacing: 4) {
-                            HStack {
+                            HStack(spacing: 8) {
                                 Image(systemName: method.systemIconName)
                                     .foregroundColor(.green)
+                                    .frame(width: 20, height: 20)
                                 Text(method.displayName)
                                     .font(.subheadline.bold())
                             }
@@ -55,6 +56,7 @@ struct VariantDetailView: View {
                                 .foregroundColor(.secondary)
                         }
                         .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
                     }
