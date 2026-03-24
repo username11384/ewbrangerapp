@@ -62,7 +62,7 @@ struct TreatmentEntryView: View {
         isSaving = true
         let repo = TreatmentRepository(persistence: appEnv.persistence)
         Task {
-            _ = try? await repo.addTreatment(
+            let treatment = try? await repo.addTreatment(
                 to: sighting,
                 method: selectedMethod,
                 herbicideProduct: herbicideProduct.isEmpty ? nil : herbicideProduct,
@@ -70,6 +70,11 @@ struct TreatmentEntryView: View {
                 followUpDate: hasFollowUp ? followUpDate : nil,
                 rangerID: rangerID
             )
+            // Auto-create follow-up task if a follow-up date was set
+            if let treatment {
+                let taskRepo = TaskRepository(persistence: appEnv.persistence)
+                try? await taskRepo.createFollowUpTask(for: treatment, rangerID: rangerID)
+            }
             await MainActor.run {
                 onSave()
                 dismiss()

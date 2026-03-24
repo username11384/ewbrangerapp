@@ -93,6 +93,7 @@ public class RangerProfile: NSManagedObject {
     @NSManaged public var treatmentRecords: NSSet?
     @NSManaged public var patrolRecords: NSSet?
     @NSManaged public var pesticideUsageRecords: NSSet?
+    @NSManaged public var tasks: NSSet?
 }
 
 // MARK: - SightingLog
@@ -149,7 +150,28 @@ public class TreatmentRecord: NSManagedObject {
     @NSManaged public var sighting: SightingLog?
     @NSManaged public var ranger: RangerProfile?
     @NSManaged public var pesticideUsageRecords: NSSet?
+    @NSManaged public var followUpTask: RangerTask?
 }
+
+// MARK: - RangerTask
+
+@objc(RangerTask)
+public class RangerTask: NSManagedObject {
+    @NSManaged public var id: UUID?
+    @NSManaged public var createdAt: Date?
+    @NSManaged public var updatedAt: Date?
+    @NSManaged public var title: String?
+    @NSManaged public var notes: String?
+    @NSManaged public var priority: String?
+    @NSManaged public var dueDate: Date?
+    @NSManaged public var isComplete: Bool
+    @NSManaged public var completedAt: Date?
+    @NSManaged public var syncStatus: Int16
+    @NSManaged public var assignedRanger: RangerProfile?
+    @NSManaged public var sourceTreatment: TreatmentRecord?
+}
+
+extension RangerTask: Identifiable {}
 
 // MARK: - NSFetchRequest convenience
 
@@ -176,6 +198,11 @@ extension PesticideStock {
 extension PesticideUsageRecord {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<PesticideUsageRecord> {
         return NSFetchRequest<PesticideUsageRecord>(entityName: "PesticideUsageRecord")
+    }
+}
+extension RangerTask {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<RangerTask> {
+        return NSFetchRequest<RangerTask>(entityName: "RangerTask")
     }
 }
 extension RangerProfile {

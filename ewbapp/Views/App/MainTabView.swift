@@ -17,6 +17,10 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Patrol", systemImage: "figure.walk")
                 }
+            TaskListView()
+                .tabItem {
+                    Label("Tasks", systemImage: "checklist")
+                }
             MoreView()
                 .tabItem {
                     Label("More", systemImage: "ellipsis.circle.fill")
