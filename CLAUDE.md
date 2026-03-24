@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-iOS app for Yintjingga Aboriginal Corporation (YAC). Lama Lama Rangers track Lantana camara infestations around Port Stewart, Cape York, QLD. Fully offline-capable **proof of concept** — demonstrates architecture, doesn't need production polish.
+iOS app for Yintjingga Aboriginal Corporation (YAC). Lama Lama Rangers track Lantana camara infestations around Port Stewart, Cape York, QLD. This is **V2** — a fully functional offline app with local-only persistence, Bluetooth mesh sync (MultipeerConnectivity), and no cloud backend. V3 (Supabase cloud sync, real API calls, paid services) has no planned timeline.
 
 ## Build command
 
@@ -71,9 +71,9 @@ Single shared PIN stored as a hash in Keychain (`KeychainService`). First login 
 
 ## Sync
 
-- **Cloud sync:** fully stubbed. `SyncEngine.triggerSync()` is a no-op print statement. `SyncQueue` entries accumulate but are never drained. Do not add real API calls.
-- **Mesh sync:** `MeshSyncEngine` (Swift `actor`) uses `MultipeerConnectivity`, service type `"yac-lantana"`. Flow: connect → exchange manifest (`[ManifestEntry]`) → request diff IDs → `sendRequestedRecords` serialises SightingLog/TreatmentRecord/RangerTask as JSON → `receiveRecords` applies LWW by `updatedAt`. Photos are excluded from mesh sync.
-- `SyncEngine` monitors connectivity via `NWPathMonitor` and calls `triggerSync()` on reconnect (no-op for PoC).
+- **Cloud sync (V3 — not implemented):** `SyncEngine.triggerSync()` is a no-op. `SyncQueue` entries accumulate but are never uploaded. Do not add real API calls or Supabase integration — that is V3 scope with no ETA.
+- **Mesh sync (V2 — implemented):** `MeshSyncEngine` (Swift `actor`) uses `MultipeerConnectivity`, service type `"yac-lantana"`. Flow: connect → exchange manifest (`[ManifestEntry]`) → request diff IDs → `sendRequestedRecords` serialises SightingLog/TreatmentRecord/RangerTask as JSON → `receiveRecords` applies LWW by `updatedAt`. Photos are excluded from mesh sync.
+- `SyncEngine` monitors connectivity via `NWPathMonitor` and calls `triggerSync()` on reconnect (no-op until V3).
 
 ## Map
 
@@ -86,9 +86,9 @@ Single shared PIN stored as a hash in Keychain (`KeychainService`). First login 
 - Patrol area coordinates are hardcoded in `Resources/PortStewartZones.areaCoordinates` (10 named areas).
 - GPS in simulator: 8-second timeout falls back to Port Stewart coords `(-14.7019, 143.7075)`.
 
-## No paid APIs
+## V3 scope (not in this codebase)
 
-Do not add real Supabase, MapKit paid tiers, or any network-dependent feature. All `Services/API/` files are stubs.
+Do not add: Supabase cloud sync, real API calls, MapKit paid tiers, push notifications, or any network-dependent feature. All `Services/API/` files are stubs and must remain so until V3 is scoped. V3 has no planned timeline.
 
 ## Tab structure
 
