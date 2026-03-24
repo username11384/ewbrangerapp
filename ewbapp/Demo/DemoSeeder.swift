@@ -1,5 +1,6 @@
 import Foundation
 import CoreData
+import UIKit
 
 /// Seeds rich fake data for the demo branch. Idempotent — guarded by a UserDefaults flag.
 struct DemoSeeder {
@@ -7,6 +8,7 @@ struct DemoSeeder {
     static func seed(in persistence: PersistenceController) {
         guard !UserDefaults.standard.bool(forKey: "demoDataSeeded") else { return }
 
+        let variantPhotos = seedPhotos()
         let ctx = persistence.backgroundContext
         ctx.performAndWait {
             let rangers = (try? ctx.fetchAll(RangerProfile.self)) ?? []
@@ -107,6 +109,7 @@ struct DemoSeeder {
                 s.ranger = spec.ranger
                 s.deviceID = "demo-device"
                 s.syncStatus = SyncStatus.synced.rawValue
+                s.photoFilenames = variantPhotos[spec.variant] as NSArray?
                 if let idx = spec.zoneIdx { s.infestationZone = zones[idx] }
                 sightings.append(s)
             }
@@ -258,6 +261,42 @@ struct DemoSeeder {
         // Fake a recent cloud sync so the dashboard & settings show "synced"
         UserDefaults.standard.set(Date().addingTimeInterval(-3_600), forKey: "lastSyncTimestamp")
         UserDefaults.standard.set(true, forKey: "demoDataSeeded")
+    }
+
+    // MARK: - Photo helpers
+
+    /// Copies each bundled demo_lantana_N asset to Documents/Photos/ once.
+    /// Returns a dict mapping variant string → [filename] to attach to sightings.
+    @discardableResult
+    static func seedPhotos() -> [String: [String]] {
+        let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("Photos")
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+
+        // asset name → variant keys that should use it
+        let assetMap: [(asset: String, variants: [String])] = [
+            ("demo_lantana_1", ["pink"]),
+            ("demo_lantana_2", ["red"]),
+            ("demo_lantana_3", ["pinkEdgedRed"]),
+            ("demo_lantana_4", ["orange"]),
+            ("demo_lantana_5", ["white"]),
+            ("demo_lantana_6", ["unknown"]),
+        ]
+
+        var variantPhotos: [String: [String]] = [:]
+        for entry in assetMap {
+            guard let image = UIImage(named: entry.asset),
+                  let data  = image.jpegData(compressionQuality: 0.85) else { continue }
+            let filename = "\(entry.asset).jpg"
+            let url = dir.appendingPathComponent(filename)
+            if !FileManager.default.fileExists(atPath: url.path) {
+                try? data.write(to: url)
+            }
+            for variant in entry.variants {
+                variantPhotos[variant] = [filename]
+            }
+        }
+        return variantPhotos
     }
 
     // MARK: - Helper
