@@ -71,6 +71,16 @@ final class PatrolRepository: PatrolRepositoryProtocol {
         )
     }
 
+    func deletePatrol(_ patrol: PatrolRecord) async throws {
+        let context = persistence.backgroundContext
+        let objectID = patrol.objectID
+        try await context.perform {
+            let obj = context.object(with: objectID)
+            context.delete(obj)
+            try context.save()
+        }
+    }
+
     func fetchActivePatrol(rangerID: UUID) throws -> PatrolRecord? {
         let predicate = NSPredicate(format: "endTime == nil AND ranger.id == %@", rangerID as CVarArg)
         return try persistence.mainContext.fetchFirst(

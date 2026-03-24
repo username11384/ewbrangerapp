@@ -1,7 +1,6 @@
 import SwiftUI
 import MapKit
 
-// Subclass so we can carry zone status through the overlay pipeline
 final class ZoneCircleOverlay: MKCircle {
     var zoneStatus: String = "active"
     var zoneID: UUID?
@@ -9,6 +8,7 @@ final class ZoneCircleOverlay: MKCircle {
 
 final class ZonePolygonOverlay: MKPolygon {
     var zoneStatus: String = "active"
+    var zoneID: UUID?
 }
 
 final class DrawPreviewPolyline: MKPolyline {}
@@ -30,12 +30,19 @@ struct MapView: UIViewRepresentable {
     var showZones: Bool
     var tileOverlay: LocalTileOverlay?
     var onSelectSighting: (SightingLog) -> Void
+    var onSelectPatrol: ((PatrolRecord) -> Void)? = nil
+    var onSelectZone: ((InfestationZone) -> Void)? = nil
     // Draw mode
     var drawVertices: [CLLocationCoordinate2D] = []
     var onMapTapped: ((CLLocationCoordinate2D) -> Void)? = nil
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onSelectSighting: onSelectSighting, onMapTapped: onMapTapped)
+        Coordinator(
+            onSelectSighting: onSelectSighting,
+            onSelectPatrol: onSelectPatrol,
+            onSelectZone: onSelectZone,
+            onMapTapped: onMapTapped
+        )
     }
 
     func makeUIView(context: Context) -> MKMapView {
@@ -52,38 +59,34 @@ struct MapView: UIViewRepresentable {
 
     func updateUIView(_ mapView: MKMapView, context: Context) {
         context.coordinator.onMapTapped = onMapTapped
+        context.coordinator.onSelectPatrol = onSelectPatrol
+        context.coordinator.onSelectZone = onSelectZone
+        context.coordinator.zones = zones
         mapView.mapType = mapType
 
         // Tile overlay
         mapView.overlays.filter { $0 is MKTileOverlay }.forEach { mapView.removeOverlay($0) }
-        if let overlay = tileOverlay {
-            mapView.insertOverlay(overlay, at: 0)
-        }
+        if let overlay = tileOverlay { mapView.insertOverlay(overlay, at: 0) }
 
-        // Zone overlays (circles for zones without polygons, polygons for those with snapshots)
+        // Zone overlays
         mapView.overlays.filter { $0 is ZoneCircleOverlay || $0 is ZonePolygonOverlay }.forEach { mapView.removeOverlay($0) }
         if showZones {
             for zone in zones {
                 let status = zone.status ?? "active"
-                // If zone has a snapshot with polygon coordinates, draw that
                 if let snapshots = zone.snapshots?.array as? [InfestationZoneSnapshot],
                    let latest = snapshots.sorted(by: { ($0.snapshotDate ?? .distantPast) > ($1.snapshotDate ?? .distantPast) }).first,
                    let coords = latest.polygonCoordinates as? [[Double]], coords.count >= 3 {
                     var mkCoords = coords.map { CLLocationCoordinate2D(latitude: $0[0], longitude: $0[1]) }
                     let polygon = ZonePolygonOverlay(coordinates: &mkCoords, count: mkCoords.count)
                     polygon.zoneStatus = status
+                    polygon.zoneID = zone.id
                     mapView.addOverlay(polygon, level: .aboveRoads)
                 } else if let sightingsSet = zone.sightings as? Set<SightingLog>, !sightingsSet.isEmpty {
-                    // Fall back to centroid circle from linked sightings
                     let coords = sightingsSet.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
                     let centroidLat = coords.map(\.latitude).reduce(0, +) / Double(coords.count)
                     let centroidLon = coords.map(\.longitude).reduce(0, +) / Double(coords.count)
                     let centroid = CLLocationCoordinate2D(latitude: centroidLat, longitude: centroidLon)
-                    let distances = coords.map { coord -> Double in
-                        let a = CLLocation(latitude: centroidLat, longitude: centroidLon)
-                        let b = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
-                        return a.distance(from: b)
-                    }
+                    let distances = coords.map { CLLocation(latitude: centroidLat, longitude: centroidLon).distance(from: CLLocation(latitude: $0.latitude, longitude: $0.longitude)) }
                     let radius = max((distances.max() ?? 0) + 50, 100)
                     let circle = ZoneCircleOverlay(center: centroid, radius: radius)
                     circle.zoneStatus = status
@@ -118,47 +121,81 @@ struct MapView: UIViewRepresentable {
 
     class Coordinator: NSObject, MKMapViewDelegate, UIGestureRecognizerDelegate {
         let onSelectSighting: (SightingLog) -> Void
+        var onSelectPatrol: ((PatrolRecord) -> Void)?
+        var onSelectZone: ((InfestationZone) -> Void)?
         var onMapTapped: ((CLLocationCoordinate2D) -> Void)?
+        var zones: [InfestationZone] = []
 
-        init(onSelectSighting: @escaping (SightingLog) -> Void, onMapTapped: ((CLLocationCoordinate2D) -> Void)?) {
+        init(onSelectSighting: @escaping (SightingLog) -> Void,
+             onSelectPatrol: ((PatrolRecord) -> Void)?,
+             onSelectZone: ((InfestationZone) -> Void)?,
+             onMapTapped: ((CLLocationCoordinate2D) -> Void)?) {
             self.onSelectSighting = onSelectSighting
+            self.onSelectPatrol = onSelectPatrol
+            self.onSelectZone = onSelectZone
             self.onMapTapped = onMapTapped
         }
 
         @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
-            guard let mapView = recognizer.view as? MKMapView,
-                  let handler = onMapTapped else { return }
+            guard let mapView = recognizer.view as? MKMapView else { return }
             let point = recognizer.location(in: mapView)
             let coord = mapView.convert(point, toCoordinateFrom: mapView)
-            handler(coord)
+
+            if let handler = onMapTapped {
+                handler(coord)
+                return
+            }
+
+            // Zone overlay hit-test
+            let mapPoint = MKMapPoint(coord)
+            for overlay in mapView.overlays {
+                if let polygon = overlay as? ZonePolygonOverlay,
+                   let id = polygon.zoneID,
+                   let zone = zones.first(where: { $0.id == id }) {
+                    let renderer = MKPolygonRenderer(polygon: polygon)
+                    let viewPoint = renderer.point(for: mapPoint)
+                    if renderer.path?.contains(viewPoint) == true {
+                        onSelectZone?(zone)
+                        return
+                    }
+                }
+                if let circle = overlay as? ZoneCircleOverlay,
+                   let id = circle.zoneID,
+                   let zone = zones.first(where: { $0.id == id }) {
+                    let center = CLLocation(latitude: circle.coordinate.latitude, longitude: circle.coordinate.longitude)
+                    let tapped = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
+                    if tapped.distance(from: center) <= circle.radius {
+                        onSelectZone?(zone)
+                        return
+                    }
+                }
+            }
         }
 
-        // Allow tap gesture alongside map's built-in gestures
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool { true }
 
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            if let sightingAnnotation = annotation as? SightingAnnotation {
+            if let sa = annotation as? SightingAnnotation {
                 let view = mapView.dequeueReusableAnnotationView(withIdentifier: "sighting") as? MKMarkerAnnotationView
                     ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "sighting")
                 view.annotation = annotation
-                let variant = LantanaVariant(rawValue: sightingAnnotation.sighting.variant ?? "") ?? .unknown
-                view.markerTintColor = UIColor(variant.color)
+                view.markerTintColor = UIColor(LantanaVariant(rawValue: sa.sighting.variant ?? "")?.color ?? LantanaVariant.unknown.color)
                 view.canShowCallout = true
                 return view
             }
-            if let patrolAnnotation = annotation as? PatrolAnnotation {
+            if let pa = annotation as? PatrolAnnotation {
                 let view = mapView.dequeueReusableAnnotationView(withIdentifier: "patrol") as? MKMarkerAnnotationView
                     ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "patrol")
-                view.annotation = patrolAnnotation
-                view.markerTintColor = patrolAnnotation.patrol.endTime == nil ? .systemBlue : .systemPurple
+                view.annotation = pa
+                view.markerTintColor = pa.patrol.endTime == nil ? .systemBlue : .systemPurple
                 view.glyphImage = UIImage(systemName: "figure.walk")
                 view.canShowCallout = true
                 return view
             }
-            if let vertex = annotation as? VertexAnnotation {
-                let view = MKMarkerAnnotationView(annotation: vertex, reuseIdentifier: "vertex")
+            if let va = annotation as? VertexAnnotation {
+                let view = MKMarkerAnnotationView(annotation: va, reuseIdentifier: "vertex")
                 view.markerTintColor = .systemYellow
-                view.glyphText = vertex.title
+                view.glyphText = va.title
                 view.canShowCallout = false
                 return view
             }
@@ -166,30 +203,27 @@ struct MapView: UIViewRepresentable {
         }
 
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-            guard let sa = view.annotation as? SightingAnnotation else { return }
-            onSelectSighting(sa.sighting)
+            if let sa = view.annotation as? SightingAnnotation {
+                mapView.deselectAnnotation(sa, animated: false)
+                onSelectSighting(sa.sighting)
+            }
+            if let pa = view.annotation as? PatrolAnnotation {
+                mapView.deselectAnnotation(pa, animated: false)
+                onSelectPatrol?(pa.patrol)
+            }
         }
 
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            if let tile = overlay as? MKTileOverlay {
-                return MKTileOverlayRenderer(tileOverlay: tile)
+            if let tile = overlay as? MKTileOverlay { return MKTileOverlayRenderer(tileOverlay: tile) }
+            if let c = overlay as? ZoneCircleOverlay {
+                let r = MKCircleRenderer(circle: c); applyZoneStyle(to: r, status: c.zoneStatus); return r
             }
-            if let zoneCircle = overlay as? ZoneCircleOverlay {
-                let renderer = MKCircleRenderer(circle: zoneCircle)
-                applyZoneStyle(to: renderer, status: zoneCircle.zoneStatus)
-                return renderer
+            if let p = overlay as? ZonePolygonOverlay {
+                let r = MKPolygonRenderer(polygon: p); applyZoneStyle(to: r, status: p.zoneStatus); return r
             }
-            if let zonePolygon = overlay as? ZonePolygonOverlay {
-                let renderer = MKPolygonRenderer(polygon: zonePolygon)
-                applyZoneStyle(to: renderer, status: zonePolygon.zoneStatus)
-                return renderer
-            }
-            if let polyline = overlay as? DrawPreviewPolyline {
-                let renderer = MKPolylineRenderer(polyline: polyline)
-                renderer.strokeColor = UIColor.systemYellow
-                renderer.lineWidth = 2
-                renderer.lineDashPattern = [6, 4]
-                return renderer
+            if let l = overlay as? DrawPreviewPolyline {
+                let r = MKPolylineRenderer(polyline: l)
+                r.strokeColor = .systemYellow; r.lineWidth = 2; r.lineDashPattern = [6, 4]; return r
             }
             return MKOverlayRenderer(overlay: overlay)
         }
