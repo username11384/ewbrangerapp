@@ -35,6 +35,8 @@ struct DashboardView: View {
                         StatCard(title: "Total\nSightings", value: "\(viewModel.totalSightings)", color: .red)
                         StatCard(title: "This\nMonth", value: "\(viewModel.sightingsThisMonth)", color: .orange)
                         StatCard(title: "Treatments\nThis Month", value: "\(viewModel.treatmentsThisMonth)", color: .blue)
+                        StatCard(title: "Zones\nCleared", value: String(format: "%.0f%%", viewModel.clearedZonePercent), color: .green)
+                        StatCard(title: "Open\nFollow-ups", value: "\(viewModel.openFollowUpTasks)", color: viewModel.openFollowUpTasks > 0 ? .orange : .secondary)
                     }
 
                     // Zone status doughnut
@@ -80,6 +82,35 @@ struct DashboardView: View {
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
+
+                    // Per-ranger breakdown
+                    if !viewModel.rangerSightingCounts.isEmpty {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Sightings by Ranger")
+                                .font(.headline)
+                            ForEach(viewModel.rangerSightingCounts, id: \.name) { entry in
+                                HStack {
+                                    Text(entry.name)
+                                        .font(.subheadline)
+                                    Spacer()
+                                    Text("\(entry.count)")
+                                        .font(.subheadline.bold())
+                                        .foregroundColor(.secondary)
+                                    GeometryReader { geo in
+                                        let maxCount = viewModel.rangerSightingCounts.first?.count ?? 1
+                                        let width = geo.size.width * CGFloat(entry.count) / CGFloat(maxCount)
+                                        RoundedRectangle(cornerRadius: 3)
+                                            .fill(Color.red.opacity(0.7))
+                                            .frame(width: max(width, 4), height: 8)
+                                    }
+                                    .frame(width: 80, height: 8)
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                    }
 
                     // Last sync
                     if let lastSync = viewModel.lastSyncDate {

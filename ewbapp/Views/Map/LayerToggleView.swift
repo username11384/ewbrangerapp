@@ -7,7 +7,7 @@ struct LayerToggleView: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            LayerToggleChip(title: "Sightings", icon: "mappin.circle.fill", isOn: $showSightings, color: .red)
+            LayerToggleChip(title: "Pins", icon: "mappin.circle.fill", isOn: $showSightings, color: .red)
             LayerToggleChip(title: "Zones", icon: "square.dashed", isOn: $showZones, color: .orange)
             LayerToggleChip(title: "Patrols", icon: "figure.walk", isOn: $showPatrols, color: .blue)
         }

@@ -31,6 +31,14 @@ final class AuthManager: ObservableObject {
         KeychainService.save(hashPIN(pin), for: .pin)
     }
 
+    /// Returns true if old PIN matches stored PIN, then updates to new PIN.
+    func changePIN(oldPIN: String, newPIN: String) -> Bool {
+        let stored = KeychainService.load(.pin)
+        guard stored == hashPIN(oldPIN) else { return false }
+        KeychainService.save(hashPIN(newPIN), for: .pin)
+        return true
+    }
+
     // MARK: - Supabase Auth (stubbed for PoC — offline PIN only)
 
     func loginOnline(email: String, password: String) async throws {

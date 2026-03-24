@@ -75,34 +75,29 @@ actor MeshSyncEngine: NSObject {
         let context = persistence.backgroundContext
         var entries: [ManifestEntry] = []
         await context.perform {
-            // SightingLog
             if let sightings = try? context.fetchAll(SightingLog.self) {
                 for s in sightings {
-                    entries.append(ManifestEntry(
-                        entityName: "SightingLog",
-                        id: s.id?.uuidString ?? "",
-                        updatedAt: s.updatedAt ?? Date.distantPast
-                    ))
+                    entries.append(ManifestEntry(entityName: "SightingLog", id: s.id?.uuidString ?? "", updatedAt: s.updatedAt ?? .distantPast))
                 }
             }
-            // PatrolRecord
             if let patrols = try? context.fetchAll(PatrolRecord.self) {
                 for p in patrols {
-                    entries.append(ManifestEntry(
-                        entityName: "PatrolRecord",
-                        id: p.id?.uuidString ?? "",
-                        updatedAt: p.updatedAt ?? Date.distantPast
-                    ))
+                    entries.append(ManifestEntry(entityName: "PatrolRecord", id: p.id?.uuidString ?? "", updatedAt: p.updatedAt ?? .distantPast))
                 }
             }
-            // PesticideUsageRecord
             if let usages = try? context.fetchAll(PesticideUsageRecord.self) {
                 for u in usages {
-                    entries.append(ManifestEntry(
-                        entityName: "PesticideUsageRecord",
-                        id: u.id?.uuidString ?? "",
-                        updatedAt: u.updatedAt ?? Date.distantPast
-                    ))
+                    entries.append(ManifestEntry(entityName: "PesticideUsageRecord", id: u.id?.uuidString ?? "", updatedAt: u.updatedAt ?? .distantPast))
+                }
+            }
+            if let treatments = try? context.fetchAll(TreatmentRecord.self) {
+                for t in treatments {
+                    entries.append(ManifestEntry(entityName: "TreatmentRecord", id: t.id?.uuidString ?? "", updatedAt: t.updatedAt ?? .distantPast))
+                }
+            }
+            if let tasks = try? context.fetchAll(RangerTask.self) {
+                for t in tasks {
+                    entries.append(ManifestEntry(entityName: "RangerTask", id: t.id?.uuidString ?? "", updatedAt: t.updatedAt ?? .distantPast))
                 }
             }
         }
@@ -169,6 +164,10 @@ extension MeshSyncEngine: MCSessionDelegate {
                 let needed = diffManifest(theirs: theirEntries, mine: myEntries)
                 await sendRecordRequests(needed, to: peer)
             }
+        case "request":
+            if let ids = json["ids"] as? [String] {
+                await sendRequestedRecords(ids: ids, to: peer)
+            }
         case "records":
             if let recordsData = try? JSONSerialization.data(withJSONObject: json["records"] ?? []) {
                 await receiveRecords(recordsData, from: peer)
@@ -197,37 +196,126 @@ extension MeshSyncEngine: MCSessionDelegate {
         }
     }
 
+    func sendRequestedRecords(ids: [String], to peer: MCPeerID) async {
+        let context = persistence.backgroundContext
+        var records: [[String: Any]] = []
+        await context.perform {
+            let uuids = ids.compactMap { UUID(uuidString: $0) }
+            for uuid in uuids {
+                let pred = NSPredicate(format: "id == %@", uuid as CVarArg)
+                if let s = try? context.fetchFirst(SightingLog.self, predicate: pred) {
+                    records.append(["type": "SightingLog", "id": s.id?.uuidString ?? "",
+                                    "latitude": s.latitude, "longitude": s.longitude,
+                                    "variant": s.variant ?? "unknown", "infestationSize": s.infestationSize ?? "small",
+                                    "notes": s.notes ?? "", "createdAt": s.createdAt?.iso8601String ?? "",
+                                    "updatedAt": s.updatedAt?.iso8601String ?? ""])
+                } else if let t = try? context.fetchFirst(TreatmentRecord.self, predicate: pred) {
+                    records.append(["type": "TreatmentRecord", "id": t.id?.uuidString ?? "",
+                                    "method": t.method ?? "", "herbicideProduct": t.herbicideProduct ?? "",
+                                    "outcomeNotes": t.outcomeNotes ?? "",
+                                    "treatmentDate": t.treatmentDate?.iso8601String ?? "",
+                                    "updatedAt": t.updatedAt?.iso8601String ?? "",
+                                    "sightingID": t.sighting?.id?.uuidString ?? ""])
+                } else if let task = try? context.fetchFirst(RangerTask.self, predicate: pred) {
+                    records.append(["type": "RangerTask", "id": task.id?.uuidString ?? "",
+                                    "title": task.title ?? "", "notes": task.notes ?? "",
+                                    "priority": task.priority ?? "medium",
+                                    "isComplete": task.isComplete,
+                                    "dueDate": task.dueDate?.iso8601String ?? "",
+                                    "updatedAt": task.updatedAt?.iso8601String ?? ""])
+                }
+            }
+        }
+        guard !records.isEmpty else { return }
+        let msg: [String: Any] = ["type": "records", "records": records]
+        if let data = try? JSONSerialization.data(withJSONObject: msg) {
+            try? session?.send(data, toPeers: [peer], with: .reliable)
+        }
+    }
+
     func receiveRecords(_ data: Data, from peer: MCPeerID) async {
-        // In PoC: parse array of SightingLogDTO and write to CoreData
-        if let dtos = try? JSONDecoder().decode([SightingLogDTO].self, from: data) {
-            let context = persistence.backgroundContext
-            await context.perform {
-                for dto in dtos {
-                    let predicate = NSPredicate(format: "id == %@", dto.id as CVarArg)
-                    if let existing = try? context.fetchFirst(SightingLog.self, predicate: predicate) {
-                        let incoming = DateFormatter.iso8601Full.date(from: dto.updatedAt) ?? Date.distantPast
-                        let local = existing.updatedAt ?? Date.distantPast
-                        if incoming > local {
-                            existing.variant = dto.variant
-                            existing.infestationSize = dto.infestationSize
-                            existing.notes = dto.notes
+        guard let records = (try? JSONSerialization.jsonObject(with: data)) as? [[String: Any]] else { return }
+        let context = persistence.backgroundContext
+        await context.perform {
+            for record in records {
+                guard let type = record["type"] as? String,
+                      let idStr = record["id"] as? String,
+                      let id = UUID(uuidString: idStr) else { continue }
+                let pred = NSPredicate(format: "id == %@", id as CVarArg)
+                let incoming = DateFormatter.iso8601Full.date(from: record["updatedAt"] as? String ?? "") ?? Date.distantPast
+
+                switch type {
+                case "SightingLog":
+                    if let existing = try? context.fetchFirst(SightingLog.self, predicate: pred) {
+                        if incoming > (existing.updatedAt ?? .distantPast) {
+                            existing.variant = record["variant"] as? String
+                            existing.infestationSize = record["infestationSize"] as? String
+                            existing.notes = record["notes"] as? String
                             existing.updatedAt = incoming
                         }
                     } else {
                         let log = SightingLog(context: context)
-                        log.id = UUID(uuidString: dto.id)
-                        log.latitude = dto.latitude
-                        log.longitude = dto.longitude
-                        log.variant = dto.variant
-                        log.infestationSize = dto.infestationSize
-                        log.notes = dto.notes
-                        log.createdAt = DateFormatter.iso8601Full.date(from: dto.createdAt)
-                        log.updatedAt = DateFormatter.iso8601Full.date(from: dto.updatedAt)
+                        log.id = id
+                        log.latitude = record["latitude"] as? Double ?? 0
+                        log.longitude = record["longitude"] as? Double ?? 0
+                        log.variant = record["variant"] as? String
+                        log.infestationSize = record["infestationSize"] as? String
+                        log.notes = record["notes"] as? String
+                        log.createdAt = DateFormatter.iso8601Full.date(from: record["createdAt"] as? String ?? "")
+                        log.updatedAt = incoming
                         log.syncStatus = SyncStatus.pendingCreate.rawValue
                     }
+                case "TreatmentRecord":
+                    if let existing = try? context.fetchFirst(TreatmentRecord.self, predicate: pred) {
+                        if incoming > (existing.updatedAt ?? .distantPast) {
+                            existing.method = record["method"] as? String
+                            existing.herbicideProduct = record["herbicideProduct"] as? String
+                            existing.outcomeNotes = record["outcomeNotes"] as? String
+                            existing.updatedAt = incoming
+                        }
+                    } else {
+                        let t = TreatmentRecord(context: context)
+                        t.id = id
+                        t.method = record["method"] as? String
+                        t.herbicideProduct = record["herbicideProduct"] as? String
+                        t.outcomeNotes = record["outcomeNotes"] as? String
+                        t.treatmentDate = DateFormatter.iso8601Full.date(from: record["treatmentDate"] as? String ?? "")
+                        t.updatedAt = incoming
+                        t.syncStatus = SyncStatus.pendingCreate.rawValue
+                        // Link sighting if present
+                        if let sID = UUID(uuidString: record["sightingID"] as? String ?? ""),
+                           let sighting = try? context.fetchFirst(SightingLog.self, predicate: NSPredicate(format: "id == %@", sID as CVarArg)) {
+                            t.sighting = sighting
+                        }
+                    }
+                case "RangerTask":
+                    if let existing = try? context.fetchFirst(RangerTask.self, predicate: pred) {
+                        if incoming > (existing.updatedAt ?? .distantPast) {
+                            existing.title = record["title"] as? String
+                            existing.notes = record["notes"] as? String
+                            existing.priority = record["priority"] as? String
+                            existing.isComplete = record["isComplete"] as? Bool ?? false
+                            existing.updatedAt = incoming
+                        }
+                    } else {
+                        let task = RangerTask(context: context)
+                        task.id = id
+                        task.title = record["title"] as? String
+                        task.notes = record["notes"] as? String
+                        task.priority = record["priority"] as? String
+                        task.isComplete = record["isComplete"] as? Bool ?? false
+                        if let dueDateStr = record["dueDate"] as? String, !dueDateStr.isEmpty {
+                            task.dueDate = DateFormatter.iso8601Full.date(from: dueDateStr)
+                        }
+                        task.createdAt = Date()
+                        task.updatedAt = incoming
+                        task.syncStatus = SyncStatus.pendingCreate.rawValue
+                    }
+                default:
+                    break
                 }
-                try? context.save()
             }
+            try? context.save()
         }
     }
 }

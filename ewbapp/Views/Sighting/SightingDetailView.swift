@@ -4,6 +4,7 @@ struct SightingDetailView: View {
     @EnvironmentObject var appEnv: AppEnvironment
     @StateObject private var viewModel: SightingDetailViewModel
     @State private var showTreatmentEntry = false
+    @State private var showZonePicker = false
 
     init(sighting: SightingLog) {
         _viewModel = StateObject(wrappedValue: SightingDetailViewModel(
@@ -66,6 +67,23 @@ struct SightingDetailView: View {
                     }
                 }
                 Divider()
+                // Zone assignment
+                Group {
+                    HStack {
+                        Label("Zone", systemImage: "square.dashed")
+                            .font(.headline)
+                        Spacer()
+                        Button {
+                            viewModel.loadZones()
+                            showZonePicker = true
+                        } label: {
+                            Text(viewModel.assignedZone?.name ?? "Unassigned")
+                                .font(.callout)
+                                .foregroundColor(viewModel.assignedZone != nil ? .primary : .secondary)
+                        }
+                    }
+                }
+                Divider()
                 // Treatments
                 Group {
                     Label("Treatments", systemImage: "cross.case.fill")
@@ -97,7 +115,68 @@ struct SightingDetailView: View {
                 viewModel.loadTreatments()
             }
         }
+        .sheet(isPresented: $showZonePicker) {
+            ZonePickerForSightingSheet(
+                zones: viewModel.allZones,
+                current: viewModel.assignedZone
+            ) { zone in
+                viewModel.assignToZone(zone)
+                showZonePicker = false
+            }
+        }
         .onAppear { viewModel.loadTreatments() }
+    }
+}
+
+private struct ZonePickerForSightingSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let zones: [InfestationZone]
+    let current: InfestationZone?
+    let onSelect: (InfestationZone?) -> Void
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Button {
+                    onSelect(nil)
+                } label: {
+                    HStack {
+                        Text("Unassigned")
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        if current == nil {
+                            Image(systemName: "checkmark").foregroundColor(.accentColor)
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+                ForEach(zones, id: \.id) { zone in
+                    Button {
+                        onSelect(zone)
+                    } label: {
+                        HStack(spacing: 10) {
+                            VariantColourDot(
+                                variant: LantanaVariant(rawValue: zone.dominantVariant ?? "") ?? .unknown,
+                                size: 12
+                            )
+                            Text(zone.name ?? "Unnamed Zone")
+                            Spacer()
+                            if zone.id == current?.id {
+                                Image(systemName: "checkmark").foregroundColor(.accentColor)
+                            }
+                        }
+                    }
+                    .foregroundColor(.primary)
+                }
+            }
+            .navigationTitle("Assign to Zone")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+        }
     }
 }
 

@@ -52,6 +52,22 @@ final class ZoneRepository: ZoneRepositoryProtocol {
         }
     }
 
+    func assignSighting(_ sighting: SightingLog, to zone: InfestationZone?) async throws {
+        let context = persistence.backgroundContext
+        let sightingID = sighting.objectID
+        let zoneID = zone?.objectID
+        try await context.perform {
+            guard let sightingObj = context.object(with: sightingID) as? SightingLog else { return }
+            if let zID = zoneID, let zoneObj = context.object(with: zID) as? InfestationZone {
+                sightingObj.infestationZone = zoneObj
+            } else {
+                sightingObj.infestationZone = nil
+            }
+            sightingObj.updatedAt = Date()
+            try context.save()
+        }
+    }
+
     func addSnapshot(to zone: InfestationZone, coordinates: [[Double]], area: Double, rangerID: UUID) async throws {
         let context = persistence.backgroundContext
         let zoneID = zone.objectID

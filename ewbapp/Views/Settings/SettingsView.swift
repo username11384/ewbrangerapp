@@ -4,16 +4,36 @@ struct SettingsView: View {
     @EnvironmentObject var appEnv: AppEnvironment
     @StateObject private var viewModel: SettingsViewModel
 
+    @State private var showEditName = false
+    @State private var showChangePIN = false
+    @State private var editedName = ""
+
     init() {
         _viewModel = StateObject(wrappedValue: SettingsViewModel(
             authManager: AppEnvironment.shared.authManager,
-            syncEngine: AppEnvironment.shared.syncEngine
+            syncEngine: AppEnvironment.shared.syncEngine,
+            persistence: AppEnvironment.shared.persistence
         ))
     }
 
     var body: some View {
         NavigationStack {
             Form {
+                // Profile
+                Section("Ranger Profile") {
+                    HStack {
+                        Text("Name")
+                        Spacer()
+                        Text(viewModel.currentRangerName.isEmpty ? "—" : viewModel.currentRangerName)
+                            .foregroundColor(.secondary)
+                    }
+                    Button("Edit Name") {
+                        editedName = viewModel.currentRangerName
+                        showEditName = true
+                    }
+                    Button("Change PIN") { showChangePIN = true }
+                }
+
                 // Sync
                 Section("Sync") {
                     HStack {
@@ -79,6 +99,60 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .alert("Edit Name", isPresented: $showEditName) {
+                TextField("Display name", text: $editedName)
+                Button("Save") { viewModel.updateDisplayName(editedName) }
+                Button("Cancel", role: .cancel) {}
+            }
+            .sheet(isPresented: $showChangePIN) {
+                ChangePINView(viewModel: viewModel)
+            }
+        }
+    }
+}
+
+struct ChangePINView: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var viewModel: SettingsViewModel
+    @State private var oldPIN = ""
+    @State private var newPIN = ""
+    @State private var confirmPIN = ""
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Current PIN") {
+                    SecureField("Current PIN", text: $oldPIN)
+                        .keyboardType(.numberPad)
+                }
+                Section("New PIN") {
+                    SecureField("New PIN (min 4 digits)", text: $newPIN)
+                        .keyboardType(.numberPad)
+                    SecureField("Confirm New PIN", text: $confirmPIN)
+                        .keyboardType(.numberPad)
+                }
+                if let error = viewModel.pinChangeError {
+                    Section {
+                        Text(error)
+                            .foregroundColor(.red)
+                            .font(.caption)
+                    }
+                }
+            }
+            .navigationTitle("Change PIN")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        viewModel.changePIN(oldPIN: oldPIN, newPIN: newPIN, confirmPIN: confirmPIN)
+                        if viewModel.pinChangeSuccess { dismiss() }
+                    }
+                    .disabled(oldPIN.isEmpty || newPIN.isEmpty || confirmPIN.isEmpty)
+                }
+            }
         }
     }
 }

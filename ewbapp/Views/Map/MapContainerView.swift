@@ -14,6 +14,8 @@ struct MapContainerView: View {
     @State private var drawingZone: InfestationZone?
     @State private var drawVertices: [CLLocationCoordinate2D] = []
     @State private var showZonePicker = false
+    @State private var zoneForDetail: InfestationZone?
+    @State private var showTimeline = false
 
     init() {
         _viewModel = StateObject(wrappedValue: MapViewModel(
@@ -67,6 +69,9 @@ struct MapContainerView: View {
                             subtitle: statusLabel(zone.status),
                             anchor: point,
                             actions: [
+                                MapCardAction(label: "View Details", icon: "info.circle", isDestructive: false) {
+                                    zoneForDetail = zone
+                                },
                                 MapCardAction(label: "Edit Zone", icon: "pencil", isDestructive: false) {
                                     zoneForEdit = zone
                                 },
@@ -116,20 +121,7 @@ struct MapContainerView: View {
                 }
 
                 if !isDrawing {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            LayerToggleView(
-                                showSightings: $viewModel.showSightings,
-                                showZones: $viewModel.showZones,
-                                showPatrols: $viewModel.showPatrols
-                            )
-                            .padding(.leading)
-                            Spacer()
-                        }
-                        .padding(.bottom, 100)
-                    }
-
+                    // Top-left: map type picker
                     VStack {
                         HStack {
                             Menu {
@@ -166,9 +158,33 @@ struct MapContainerView: View {
                         Spacer()
                     }
 
-                    VStack {
+                    // Bottom bar: layer toggles + clock + FAB all on one row
+                    VStack(spacing: 8) {
                         Spacer()
-                        HStack {
+                        if showTimeline {
+                            TimelineScrubberView(
+                                date: $viewModel.timelineDate,
+                                range: viewModel.dateRange,
+                                isPlaying: viewModel.isPlayingTimeline,
+                                onTogglePlay: viewModel.toggleTimeline
+                            )
+                            .padding(.horizontal)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                        }
+                        HStack(alignment: .center, spacing: 8) {
+                            LayerToggleView(
+                                showSightings: $viewModel.showSightings,
+                                showZones: $viewModel.showZones,
+                                showPatrols: $viewModel.showPatrols
+                            )
+                            Button {
+                                withAnimation { showTimeline.toggle() }
+                            } label: {
+                                Image(systemName: showTimeline ? "clock.fill" : "clock")
+                                    .padding(8)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(8)
+                            }
                             Spacer()
                             Menu {
                                 Button { showLogSheet = true } label: {
@@ -188,8 +204,8 @@ struct MapContainerView: View {
                                     .frame(width: 56, height: 56)
                                     .background(Color.green).clipShape(Circle()).shadow(radius: 4)
                             }
-                            .padding()
                         }
+                        .padding(.horizontal)
                         .padding(.bottom, 8)
                     }
                 }
@@ -219,6 +235,9 @@ struct MapContainerView: View {
         }
         .sheet(item: $zoneForEdit, onDismiss: { viewModel.load() }) { zone in
             EditZoneView(zone: zone) { viewModel.load() }
+        }
+        .sheet(item: $zoneForDetail, onDismiss: { viewModel.load() }) { zone in
+            NavigationStack { ZoneDetailView(zone: zone) }
         }
         .sheet(isPresented: $showZonePicker) {
             ZonePickerSheet(zones: viewModel.zones) { zone in

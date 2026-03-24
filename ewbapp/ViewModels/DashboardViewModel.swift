@@ -12,6 +12,9 @@ final class DashboardViewModel: ObservableObject {
     @Published var monthlySightingData: [(date: Date, count: Int, variant: String)] = []
     @Published var pendingSyncCount: Int = 0
     @Published var lastSyncDate: Date?
+    @Published var rangerSightingCounts: [(name: String, count: Int)] = []
+    @Published var clearedZonePercent: Double = 0
+    @Published var openFollowUpTasks: Int = 0
 
     private let persistence: PersistenceController
     private let syncEngine: SyncEngine
@@ -47,6 +50,23 @@ final class DashboardViewModel: ObservableObject {
 
         pendingSyncCount = (try? context.fetchAll(SyncQueue.self))?.count ?? 0
         lastSyncDate = UserDefaults.standard.object(forKey: "lastSyncTimestamp") as? Date
+
+        // Per-ranger sighting counts
+        let allSightings = (try? context.fetchAll(SightingLog.self)) ?? []
+        let byRanger = Dictionary(grouping: allSightings, by: { $0.ranger?.displayName ?? "Unknown" })
+        rangerSightingCounts = byRanger.map { (name: $0.key, count: $0.value.count) }
+            .sorted { $0.count > $1.count }
+
+        // Zone cleared %
+        let allZones = (try? context.fetchAll(InfestationZone.self)) ?? []
+        let cleared = allZones.filter { $0.status == "cleared" }.count
+        clearedZonePercent = allZones.isEmpty ? 0 : Double(cleared) / Double(allZones.count) * 100
+
+        // Open follow-up tasks
+        openFollowUpTasks = (try? context.fetchAll(
+            RangerTask.self,
+            predicate: NSPredicate(format: "isComplete == NO AND sourceTreatment != nil")
+        ))?.count ?? 0
     }
 
     private func buildMonthlySightingData(context: NSManagedObjectContext, now: Date) {

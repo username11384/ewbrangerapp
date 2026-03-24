@@ -1,69 +1,95 @@
-# Lama Lama Rangers — Claude Code Guide
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What this project is
-iOS app for Yintjingga Aboriginal Corporation (YAC). Lama Lama Rangers use it to track Lantana camara infestations around Port Stewart, Cape York, QLD. Fully offline-capable. This is a **proof of concept** — it doesn't need to fully work, just demonstrate the architecture.
 
-## Project setup
+iOS app for Yintjingga Aboriginal Corporation (YAC). Lama Lama Rangers track Lantana camara infestations around Port Stewart, Cape York, QLD. Fully offline-capable **proof of concept** — demonstrates architecture, doesn't need production polish.
+
+## Build command
+
+```bash
+xcodebuild -scheme ewbapp -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -configuration Debug build
+```
+
+No test target exists. There is no linter configured.
+
+## Project identifiers
+
 - **Bundle ID:** `com.immanuel.ewbapp`
-- **Xcode project:** `/Users/immanuellam/Documents/ewbapp/ewbapp/ewbapp.xcodeproj`
-- **Source root:** `/Users/immanuellam/Documents/ewbapp/ewbapp/ewbapp/`
-- **iOS target:** 26.2 (Xcode set this automatically)
+- **Xcode project:** `ewbapp.xcodeproj` (source root: `ewbapp/`)
+- **iOS target:** 26.2
 - **Git remote:** `https://github.com/username11384/ewbrangerapp.git`
-- **Build command:** `xcodebuild -scheme ewbapp -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -configuration Debug build`
 
-## Key Xcode project settings
-- `PBXFileSystemSynchronizedRootGroup` — **never edit `.pbxproj` manually**. All files on disk are auto-included.
-- `SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES` — every file that uses `@Published` / `ObservableObject` / Combine must have `import Combine` explicitly.
-- `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` — project-wide MainActor default.
+## Critical Xcode project constraints
+
+- **`PBXFileSystemSynchronizedRootGroup`** — never edit `.pbxproj` manually. Every `.swift` file on disk is auto-included in the target.
+- **`SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES`** — any file using `@Published`, `ObservableObject`, `Combine` operators, or `Timer` must have `import Combine` explicitly. The compiler will error without it.
+- **`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`** — all types are `@MainActor` by default. Actor-isolated types (`SyncEngine`, `MeshSyncEngine`) must be declared `actor` explicitly or they'll pick up MainActor isolation unintentionally.
 
 ## Architecture
-MVVM + Repository pattern. CoreData for persistence. No Supabase (cloud sync fully stubbed).
+
+MVVM + Repository. The dependency graph flows strictly downward:
 
 ```
-Views (SwiftUI)
-  ViewModels (@MainActor ObservableObject)
-    Repositories (CoreData CRUD)
-      PersistenceController (NSPersistentContainer)
-        mainContext  — UI reads
-        backgroundContext — all writes
+SwiftUI Views
+  └── ViewModels  (@MainActor ObservableObject, @StateObject in views)
+        └── Repositories  (sync CoreData reads, async writes)
+              └── PersistenceController  (NSPersistentContainer)
+                    ├── mainContext    — UI reads only
+                    └── backgroundContext — all writes (shared lazy instance)
 ```
+
+**`AppEnvironment`** (`AppEnvironment.swift`) is the DI root — a `@MainActor ObservableObject` singleton (`AppEnvironment.shared`) holding `persistence`, `syncEngine`, `locationManager`, and `authManager`. It is injected via `.environmentObject()` at the root and accessed via `@EnvironmentObject` in views, or directly as `AppEnvironment.shared` inside `init()` of `@StateObject` ViewModels (because `@EnvironmentObject` is not available during `init`).
 
 ## CoreData
-- Model file: `CoreData/LamaLamaRangers.xcdatamodeld`
-- **No Xcode codegen** — all `NSManagedObject` subclasses are hand-written in `CoreData/ManagedObjects.swift`
-- 9 entities: `SightingLog`, `TreatmentRecord`, `PatrolRecord`, `RangerProfile`, `InfestationZone`, `InfestationZoneSnapshot`, `PesticideStock`, `PesticideUsageRecord`, `SyncQueue`
-- `viewContext.automaticallyMergesChangesFromParent = true` — background saves propagate to main context automatically, but allow ~150ms before calling `load()` after a background save
+
+- Model: `CoreData/LamaLamaRangers.xcdatamodeld`
+- **No Xcode codegen** — all `NSManagedObject` subclasses are hand-written in `CoreData/ManagedObjects.swift`. Add new entities there and in the `.xcdatamodeld` file.
+- Helper methods `context.fetchFirst(_:predicate:)` and `context.fetchAll(_:predicate:sortDescriptors:)` are in `CoreData/CoreDataHelpers.swift`.
+- `backgroundContext` uses `NSMergeByPropertyObjectTrumpMergePolicy`; `mainContext` uses `NSMergeByPropertyStoreTrumpMergePolicy`.
+- After any background save, wait ~150 ms before calling `load()` on a ViewModel — `automaticallyMergesChangesFromParent` fires asynchronously.
+
+**Entities and key relationships:**
+
+| Entity | Key relationships |
+|---|---|
+| `SightingLog` | `→ RangerProfile`, `→ InfestationZone` (optional), `↔ TreatmentRecord` (to-many) |
+| `TreatmentRecord` | `→ SightingLog`, `→ RangerProfile`, `→ RangerTask` (followUpTask, optional) |
+| `RangerTask` | `→ RangerProfile`, `→ TreatmentRecord` (sourceTreatment, optional) |
+| `InfestationZone` | `↔ InfestationZoneSnapshot` (ordered, to-many), `↔ SightingLog` (to-many) |
+| `InfestationZoneSnapshot` | `polygonCoordinates` stored as `NSArray` of `[[Double]]` (lat/lon pairs) |
+| `PatrolRecord` | `→ RangerProfile`, `checklistItems` stored as `NSData` (JSON-encoded `[PatrolChecklistItem]`) |
+| `PesticideStock` | `↔ PesticideUsageRecord` (to-many) |
+| `SyncQueue` | Created atomically with entity saves via `SyncQueueManager.enqueue(...)` |
+
+`InfestationZone.snapshots` is `NSOrderedSet?` — access as `zone.snapshots?.array as? [InfestationZoneSnapshot]`, not `as? [...]` directly.
 
 ## Auth
-- PIN-based, fully offline. Single shared PIN hash stored in Keychain.
-- First login with any PIN sets it for all rangers.
-- Default demo PIN: `1234`
-- Demo rangers seeded on first launch: Alice Johnson (Senior Ranger), Bob Smith (Ranger), Carol White (Ranger)
-- `AuthManager` is `@MainActor` — call `setPIN` on main queue
 
-## No paid APIs
-Supabase is stubbed. `SyncEngine.triggerSync()` is a no-op. Do not add real API calls.
+Single shared PIN stored as a hash in Keychain (`KeychainService`). First login with any PIN sets it for all rangers. Demo PIN: `1234`. Rangers seeded on first launch: Alice Johnson (Senior Ranger), Bob Smith (Ranger), Carol White (Ranger). `AuthManager.changePIN(oldPIN:newPIN:)` validates the old hash before updating.
+
+## Sync
+
+- **Cloud sync:** fully stubbed. `SyncEngine.triggerSync()` is a no-op print statement. `SyncQueue` entries accumulate but are never drained. Do not add real API calls.
+- **Mesh sync:** `MeshSyncEngine` (Swift `actor`) uses `MultipeerConnectivity`, service type `"yac-lantana"`. Flow: connect → exchange manifest (`[ManifestEntry]`) → request diff IDs → `sendRequestedRecords` serialises SightingLog/TreatmentRecord/RangerTask as JSON → `receiveRecords` applies LWW by `updatedAt`. Photos are excluded from mesh sync.
+- `SyncEngine` monitors connectivity via `NWPathMonitor` and calls `triggerSync()` on reconnect (no-op for PoC).
 
 ## Map
-- `MapView` is `UIViewRepresentable` wrapping `MKMapView`
-- Offline tiles: `LocalTileOverlay` / `OfflineTileManager` — no actual tile files bundled, falls back gracefully
-- Default centre: Port Stewart (-14.7, 143.7), 50km radius
-- Patrol areas have hardcoded coordinates in `PortStewartZones.areaCoordinates`
-- Zone overlays: `ZonePolygonOverlay` (MKPolygon subclass) when snapshot exists, `ZoneCircleOverlay` (MKCircle subclass) as fallback from sighting centroid
-- Draw mode: tap vertices on map → save as `InfestationZoneSnapshot`
-- Floating action card (`MapActionCard`) appears near tapped pin/overlay — not a bottom sheet
 
-## GPS in simulator
-8-second timeout fallback to Port Stewart coords (`-14.7019, 143.7075`) so the app doesn't hang waiting for GPS.
+- `MapView` is `UIViewRepresentable` wrapping `MKMapView`. Callbacks pass a `CGPoint` screen-space anchor alongside the tapped object so `MapActionCard` can position itself near the pin.
+- Zone overlays: `ZonePolygonOverlay: MKPolygon` when a snapshot exists; `ZoneCircleOverlay: MKCircle` fallback derived from sighting centroid.
+- Draw mode in `MapContainerView`: user taps vertices → `drawVertices: [CLLocationCoordinate2D]` → `ZoneRepository.addSnapshot(...)`.
+- Polygon hit-testing uses `renderer.point(for: mapPoint)` then `renderer.path.contains(...)` — not map coordinate comparison.
+- `MapActionCard` is a floating bubble anchored to the pin's screen coordinate, not a bottom sheet.
+- Offline tiles: `LocalTileOverlay` / `OfflineTileManager` — no actual tile files bundled, falls back gracefully to blank tiles.
+- Patrol area coordinates are hardcoded in `Resources/PortStewartZones.areaCoordinates` (10 named areas).
+- GPS in simulator: 8-second timeout falls back to Port Stewart coords `(-14.7019, 143.7075)`.
 
-## Sync (PoC)
-- Cloud sync: fully stubbed, no-op
-- Mesh sync: `MeshSyncEngine` uses `MultipeerConnectivity` for Bluetooth peer-to-peer. Service type: `"yac-lantana"`. Metadata only (no photos).
+## No paid APIs
 
-## What's deferred to V2
-- Polygon drawing UI was implemented as PoC (tap vertices on map)
-- Timeline scrubber view exists but not wired into MapContainerView
-- Multiple photos per sighting (model supports 3, UI shows 1)
-- Patrol calendar grid view
-- WiFi-only photo upload
-- Real Supabase cloud sync
+Do not add real Supabase, MapKit paid tiers, or any network-dependent feature. All `Services/API/` files are stubs.
+
+## Tab structure
+
+`MainTabView` has 5 tabs: Map, Sightings, Patrol, Tasks, More. `MoreView` (in `MainTabView.swift`) is the navigation hub for Guide, Protocol, Zones, Dashboard, Supplies, End of Day Sync, Settings.

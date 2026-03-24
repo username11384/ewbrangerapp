@@ -11,7 +11,7 @@ struct MainTabView: View {
                 }
             SightingListView()
                 .tabItem {
-                    Label("Sightings", systemImage: "list.bullet")
+                    Label("Log", systemImage: "list.bullet")
                 }
             PatrolView()
                 .tabItem {

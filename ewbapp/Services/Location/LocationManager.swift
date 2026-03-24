@@ -51,7 +51,10 @@ final class LocationManager: NSObject, ObservableObject {
     /// Captures a single high-accuracy location, then stops.
     /// Falls back to Port Stewart default after 8 seconds (handles simulator + poor signal).
     func captureLocation() async -> CLLocation? {
-        await withCheckedContinuation { continuation in
+        if locationManager.authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        }
+        return await withCheckedContinuation { continuation in
             isSingleCapture = true
             var resumed = false
             singleCaptureCompletion = { location in
