@@ -7,6 +7,7 @@ import Combine
 final class MapViewModel: ObservableObject {
     @Published var sightings: [SightingLog] = []
     @Published var zones: [InfestationZone] = []
+    @Published var patrols: [PatrolRecord] = []
     @Published var mapType: MKMapType = .satellite
     @Published var showSightings = true
     @Published var showZones = true
@@ -16,17 +17,29 @@ final class MapViewModel: ObservableObject {
 
     private let sightingRepository: SightingRepository
     private let zoneRepository: ZoneRepository
+    private let patrolRepository: PatrolRepository
     private var timelineTimer: Timer?
 
     init(persistence: PersistenceController) {
         self.sightingRepository = SightingRepository(persistence: persistence)
         self.zoneRepository = ZoneRepository(persistence: persistence)
+        self.patrolRepository = PatrolRepository(persistence: persistence)
         load()
     }
 
     func load() {
         sightings = (try? sightingRepository.fetchAllSightings()) ?? []
         zones = (try? zoneRepository.fetchAllZones()) ?? []
+        patrols = (try? patrolRepository.fetchAllPatrols()) ?? []
+    }
+
+    var filteredPatrols: [PatrolAnnotation] {
+        guard showPatrols else { return [] }
+        return patrols.compactMap { patrol in
+            guard let area = patrol.areaName,
+                  let coord = PortStewartZones.areaCoordinates[area] else { return nil }
+            return PatrolAnnotation(patrol: patrol, coordinate: coord)
+        }
     }
 
     var filteredSightings: [SightingLog] {
