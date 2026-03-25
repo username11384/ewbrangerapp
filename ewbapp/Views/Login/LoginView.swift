@@ -19,7 +19,7 @@ struct LoginView: View {
                         // ── Hero ─────────────────────────────────────────
                         ZStack(alignment: .bottom) {
                             // Background photo or gradient fallback
-                            if let img = UIImage(named: "demo_lantana_2") {
+                            if let img = UIImage(named: "login_hero") {
                                 Image(uiImage: img)
                                     .resizable()
                                     .scaledToFill()
