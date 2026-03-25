@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreLocation
 
 struct SettingsView: View {
     @EnvironmentObject var appEnv: AppEnvironment
@@ -8,6 +9,7 @@ struct SettingsView: View {
     @State private var showChangePIN = false
     @State private var editedName = ""
     @State private var showResetConfirm = false
+    @ObservedObject private var devSettings = DeveloperSettings.shared
 
     init() {
         _viewModel = StateObject(wrappedValue: SettingsViewModel(
@@ -108,6 +110,36 @@ struct SettingsView: View {
                     Button("Logout", role: .destructive) {
                         viewModel.logout()
                     }
+                }
+
+                // Developer
+                Section {
+                    Toggle(isOn: $devSettings.spoofLocationEnabled) {
+                        Label("Spoof Location", systemImage: "location.slash.fill")
+                    }
+                    if devSettings.spoofLocationEnabled {
+                        Picker("Preset", selection: $devSettings.spoofedPresetName) {
+                            Section("Infestation Zones") {
+                                ForEach(LocationPreset.all.prefix(6)) {
+                                    Text($0.name).tag($0.name)
+                                }
+                            }
+                            Section("Patrol Areas") {
+                                ForEach(LocationPreset.all.dropFirst(6)) {
+                                    Text($0.name).tag($0.name)
+                                }
+                            }
+                        }
+                        if let coord = devSettings.spoofedCoordinate {
+                            Text(String(format: "%.4f, %.4f", coord.latitude, coord.longitude))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                } header: {
+                    Text("Developer")
+                } footer: {
+                    Text("GPS spoof takes effect on next location capture or app foreground.")
                 }
 
                 Section {

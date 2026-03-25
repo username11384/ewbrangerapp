@@ -41,6 +41,15 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     func startUpdating() {
+        if let spoofed = DeveloperSettings.shared.spoofedCoordinate {
+            let loc = CLLocation(
+                coordinate: spoofed,
+                altitude: 5, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date()
+            )
+            currentLocation = loc
+            accuracyLevel   = .good
+            return
+        }
         locationManager.startUpdatingLocation()
     }
 
@@ -50,7 +59,17 @@ final class LocationManager: NSObject, ObservableObject {
 
     /// Captures a single high-accuracy location, then stops.
     /// Falls back to Port Stewart default after 5 seconds (handles simulator + poor signal).
+    /// On demo branch: returns spoofed coordinate immediately if developer override is active.
     func captureLocation() async -> CLLocation? {
+        if let spoofed = DeveloperSettings.shared.spoofedCoordinate {
+            let loc = CLLocation(
+                coordinate: spoofed,
+                altitude: 5, horizontalAccuracy: 5, verticalAccuracy: 5, timestamp: Date()
+            )
+            currentLocation = loc
+            accuracyLevel   = .good
+            return loc
+        }
         if locationManager.authorizationStatus == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
         }
