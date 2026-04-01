@@ -28,7 +28,7 @@ final class DashboardViewModel: ObservableObject {
     func load() {
         let context = persistence.mainContext
         let now = Date()
-        let startOfMonth = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: now))!
+        let startOfMonth = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: now)) ?? now
 
         totalSightings = (try? context.fetchAll(SightingLog.self))?.count ?? 0
 
@@ -73,7 +73,8 @@ final class DashboardViewModel: ObservableObject {
         var data: [(date: Date, count: Int, variant: String)] = []
         let calendar = Calendar.current
         for monthOffset in (0..<6).reversed() {
-            guard let monthStart = calendar.date(byAdding: .month, value: -monthOffset, to: calendar.date(from: calendar.dateComponents([.year, .month], from: now))!) else { continue }
+            guard let thisMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)),
+                  let monthStart = calendar.date(byAdding: .month, value: -monthOffset, to: thisMonth) else { continue }
             guard let monthEnd = calendar.date(byAdding: .month, value: 1, to: monthStart) else { continue }
             let predicate = NSPredicate(format: "createdAt >= %@ AND createdAt < %@", monthStart as CVarArg, monthEnd as CVarArg)
             let monthSightings = (try? context.fetchAll(SightingLog.self, predicate: predicate)) ?? []

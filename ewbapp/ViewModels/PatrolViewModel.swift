@@ -7,7 +7,7 @@ final class PatrolViewModel: ObservableObject {
     @Published var patrols: [PatrolRecord] = []
     @Published var activePatrol: PatrolRecord?
     @Published var activeChecklistItems: [PatrolChecklistItem] = []
-    @Published var selectedAreaName: String = PortStewartZones.patrolAreas[0]
+    @Published var selectedAreaName: String = PortStewartZones.patrolAreas.first ?? "Unknown"
 
     private let repository: PatrolRepository
     private let rangerID: UUID
