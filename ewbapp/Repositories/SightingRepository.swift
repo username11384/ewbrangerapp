@@ -45,10 +45,11 @@ final class SightingRepository: SightingRepositoryProtocol {
 
             // Enqueue sync — same save transaction
             let dto = self.sightingToDTO(sighting)
-            if let payload = try? JSONEncoder().encode(dto) {
+            if let sightingID = sighting.id,
+               let payload = try? JSONEncoder().encode(dto) {
                 self.syncQueueManager.enqueue(
                     entityName: "SightingLog",
-                    entityID: sighting.id!,
+                    entityID: sightingID,
                     operationType: "create",
                     payload: payload,
                     context: context

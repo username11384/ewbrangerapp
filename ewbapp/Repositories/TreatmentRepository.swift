@@ -42,27 +42,33 @@ final class TreatmentRepository {
             }
 
             // Enqueue sync
-            let dto = TreatmentRecordDTO(
-                id: treatment.id!.uuidString,
-                createdAt: treatment.createdAt!.iso8601String,
-                updatedAt: treatment.updatedAt!.iso8601String,
-                treatmentDate: treatment.treatmentDate!.iso8601String,
-                method: treatment.method!,
-                herbicideProduct: treatment.herbicideProduct,
-                outcomeNotes: treatment.outcomeNotes,
-                followUpDate: treatment.followUpDate?.iso8601String,
-                photoFilenames: [],
-                sightingID: sightingObj?.id?.uuidString ?? "",
-                rangerID: rangerID.uuidString
-            )
-            if let payload = try? JSONEncoder().encode(dto) {
-                self.syncQueueManager.enqueue(
-                    entityName: "TreatmentRecord",
-                    entityID: treatment.id!,
-                    operationType: "create",
-                    payload: payload,
-                    context: context
+            if let treatmentID = treatment.id,
+               let createdAt = treatment.createdAt,
+               let updatedAt = treatment.updatedAt,
+               let treatmentDate = treatment.treatmentDate,
+               let method = treatment.method {
+                let dto = TreatmentRecordDTO(
+                    id: treatmentID.uuidString,
+                    createdAt: createdAt.iso8601String,
+                    updatedAt: updatedAt.iso8601String,
+                    treatmentDate: treatmentDate.iso8601String,
+                    method: method,
+                    herbicideProduct: treatment.herbicideProduct,
+                    outcomeNotes: treatment.outcomeNotes,
+                    followUpDate: treatment.followUpDate?.iso8601String,
+                    photoFilenames: [],
+                    sightingID: sightingObj?.id?.uuidString ?? "",
+                    rangerID: rangerID.uuidString
                 )
+                if let payload = try? JSONEncoder().encode(dto) {
+                    self.syncQueueManager.enqueue(
+                        entityName: "TreatmentRecord",
+                        entityID: treatmentID,
+                        operationType: "create",
+                        payload: payload,
+                        context: context
+                    )
+                }
             }
 
             try context.save()
