@@ -15,7 +15,8 @@ struct ConflictResolver {
         localUpdatedAt: Date,
         localPhotoFilenames: [String]?
     ) -> Bool {
-        guard incomingUpdatedAt > localUpdatedAt else { return false }
+        // On equal timestamps, incoming wins (deterministic tiebreaker)
+        guard incomingUpdatedAt >= localUpdatedAt else { return false }
         // Server wins — apply incoming data
         incomingApply(local)
         // Merge photo filenames: union of both arrays

@@ -72,7 +72,7 @@ final class LoginViewModel: ObservableObject {
                 ranger.isCurrentDevice = false
                 ranger.syncStatus = SyncStatus.synced.rawValue
             }
-            try? context.save()
+            do { try context.save() } catch { print("[LoginViewModel] seed save failed: \(error)") }
             DispatchQueue.main.async {
                 // Set the shared PIN once on the main actor
                 authManager.setPIN("1234", for: UUID())

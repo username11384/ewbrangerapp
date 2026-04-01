@@ -36,7 +36,7 @@ final class PesticideViewModel: ObservableObject {
             stock.currentQuantity = initialQuantity
             stock.minThreshold = minThreshold
             stock.syncStatus = SyncStatus.pendingCreate.rawValue
-            try? context.save()
+            do { try context.save() } catch { print("[PesticideViewModel] addStock save failed: \(error)") }
         }
         load()
     }
@@ -66,7 +66,7 @@ final class PesticideViewModel: ObservableObject {
             stockObj.updatedAt = Date()
             stockObj.syncStatus = SyncStatus.pendingUpdate.rawValue
 
-            try? context.save()
+            do { try context.save() } catch { print("[PesticideViewModel] logUsage save failed: \(error)") }
         }
         load()
     }

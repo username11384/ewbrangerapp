@@ -62,4 +62,19 @@ final class ConflictResolverTests: XCTestCase {
         XCTAssertTrue(photos.contains("server_photo.jpg"))
         XCTAssertTrue(photos.contains("local_photo.jpg"))
     }
+
+    func testIncomingWinsOnEqualTimestamp() {
+        let sameDate = Date()
+
+        var applyCalled = false
+        let result = ConflictResolver.resolve(
+            local: SightingLog(context: context),
+            incomingUpdatedAt: sameDate,
+            incomingApply: { _ in applyCalled = true },
+            localUpdatedAt: sameDate,
+            localPhotoFilenames: nil
+        )
+        XCTAssertTrue(result, "Incoming should win on equal timestamps (deterministic tiebreaker)")
+        XCTAssertTrue(applyCalled)
+    }
 }
