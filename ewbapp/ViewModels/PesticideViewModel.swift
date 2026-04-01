@@ -61,9 +61,8 @@ final class PesticideViewModel: ObservableObject {
                 usage.ranger = ranger
             }
 
-            // Recompute currentQuantity from all usage records
-            let allUsage = stockObj.usageRecords?.allObjects as? [PesticideUsageRecord] ?? []
-            stockObj.currentQuantity = allUsage.reduce(0) { $0 + $1.usedQuantity } + quantity
+            // Decrement currentQuantity by usage amount
+            stockObj.currentQuantity -= quantity
             stockObj.updatedAt = Date()
             stockObj.syncStatus = SyncStatus.pendingUpdate.rawValue
 
