@@ -18,7 +18,11 @@ final class MapViewModel: ObservableObject {
     private let sightingRepository: SightingRepository
     private let zoneRepository: ZoneRepository
     private let patrolRepository: PatrolRepository
-    private var timelineTimer: Timer?
+    nonisolated(unsafe) private var timelineTimer: Timer?
+
+    deinit {
+        timelineTimer?.invalidate()
+    }
 
     init(persistence: PersistenceController) {
         self.sightingRepository = SightingRepository(persistence: persistence)
