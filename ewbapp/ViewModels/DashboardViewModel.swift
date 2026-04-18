@@ -16,6 +16,18 @@ final class DashboardViewModel: ObservableObject {
     @Published var clearedZonePercent: Double = 0
     @Published var openFollowUpTasks: Int = 0
 
+    struct RecentSighting: Identifiable {
+        let id: UUID
+        let variantRaw: String
+        let zoneName: String?
+        let rangerName: String?
+        let createdAt: Date?
+        let infestationSize: String?
+        let syncStatus: Int16
+    }
+
+    @Published var recentSightings: [RecentSighting] = []
+
     private let persistence: PersistenceController
     private let syncEngine: SyncEngine
 
@@ -67,6 +79,21 @@ final class DashboardViewModel: ObservableObject {
             RangerTask.self,
             predicate: NSPredicate(format: "isComplete == NO AND sourceTreatment != nil")
         ))?.count ?? 0
+
+        // Recent sightings (last 3, newest first)
+        let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
+        let allRecent = (try? context.fetchAll(SightingLog.self, sortDescriptors: [sortDescriptor])) ?? []
+        recentSightings = Array(allRecent.prefix(3)).map { s in
+            RecentSighting(
+                id: s.id ?? UUID(),
+                variantRaw: s.variant ?? "unknown",
+                zoneName: s.infestationZone?.name,
+                rangerName: s.ranger?.displayName,
+                createdAt: s.createdAt,
+                infestationSize: s.infestationSize,
+                syncStatus: s.syncStatus
+            )
+        }
     }
 
     private func buildMonthlySightingData(context: NSManagedObjectContext, now: Date) {
