@@ -1,4 +1,5 @@
 import Combine
+import CoreData
 import Foundation
 import UIKit
 
@@ -79,5 +80,11 @@ final class AuthManager: ObservableObject {
 
     var currentJWT: String? {
         KeychainService.load(.jwt)
+    }
+
+    var currentRanger: RangerProfile? {
+        guard let id = currentRangerID else { return nil }
+        let pred = NSPredicate(format: "id == %@", id as CVarArg)
+        return try? PersistenceController.shared.mainContext.fetchFirst(RangerProfile.self, predicate: pred)
     }
 }
