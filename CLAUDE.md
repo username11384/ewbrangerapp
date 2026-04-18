@@ -92,4 +92,31 @@ Do not add: Supabase cloud sync, real API calls, MapKit paid tiers, push notific
 
 ## Tab structure
 
-`MainTabView` has 5 tabs: Map, Sightings, Patrol, Tasks, More. `MoreView` (in `MainTabView.swift`) is the navigation hub for Guide, Protocol, Zones, Dashboard, Supplies, End of Day Sync, Settings.
+`MainTabView` has 5 tabs: **Map, Sightings, Patrol, Guide, More**. Tab tint is `Color.ochre`. `MoreView` (in `MainTabView.swift`) is a custom ScrollView — ranger profile card, 2×2 shortcut grid (Mesh sync, Tasks, Pesticide stock, Sighting history), help list, sign-off button. Tasks and Dashboard are no longer top-level tabs — they are reachable via MoreView shortcuts.
+
+## Design system (`Views/DesignSystem.swift`)
+
+All UI uses the earthy field-ops palette defined in `DesignSystem.swift`. Do not hardcode hex colors in views.
+
+**Key color tokens:**
+- Surfaces: `Color.paper` (#F4EFE4), `Color.paperDeep` (#EAE1D0), `Color.card` (#FFFBF2)
+- Dividers: `Color.lineBase.opacity(0.12)` (hairline), `.opacity(0.22)` (strong)
+- Primary: `Color.euc` (#2E4634), `Color.eucSoft` (#DCE3D8)
+- Accent/CTA: `Color.ochre` (#C26A2A), `Color.ochreDeep` (#9B4F1C)
+- Text: `Color.ink` / `Color.ink2` / `Color.ink3` / `Color.inkMute`
+- Status: `Color.statusActive` / `Color.statusTreat` / `Color.statusCleared` (+ `*Soft` variants)
+- `Color(hex: "RRGGBB")` initialiser is available globally
+
+**Reusable primitives in DesignSystem.swift:**
+- `.dsCard(padding:)` view modifier — applies `Color.card` background, 18pt corner radius, hairline border, subtle shadow
+- `SyncBadge(status: SyncStatusKind)` — coloured capsule for synced / pending / conflict
+
+**Typography:** SF Pro system font. Use `.font(.system(size:weight:))` with design-spec sizes (28pt titles, 15pt card titles, 13–14pt body, 11–12pt captions). Monospaced fields (GPS coords, patrol timer) use `.monospacedDigit()` or `.fontDesign(.monospaced)`.
+
+**Ranger avatar pattern:** Initials computed from first letter of each word in `displayName`. Tone color is `abs(displayName.hashValue) % 5` into `[.ochreDeep, .euc, .ochre, .bark, .statusCleared]`.
+
+## CoreData property names (common pitfalls)
+
+- `SightingLog.infestationZone` — not `.zone`
+- `RangerProfile.displayName` — not `.name`
+- `PatrolRecord.areaName`, `.startTime`, `.endTime`
