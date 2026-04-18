@@ -1,10 +1,19 @@
 import SwiftUI
 
+enum TaskFilter: String, CaseIterable {
+    case all, mine, done
+}
+
 struct TaskListView: View {
     @EnvironmentObject var appEnv: AppEnvironment
     @StateObject private var viewModel: TaskListViewModel
     @State private var showAddTask = false
     @State private var editingTask: RangerTask?
+    @State private var filter: TaskFilter = .all
+
+    private var currentRangerID: UUID {
+        AppEnvironment.shared.authManager.currentRangerID ?? UUID()
+    }
 
     init() {
         _viewModel = StateObject(wrappedValue: TaskListViewModel(
@@ -13,86 +22,116 @@ struct TaskListView: View {
         ))
     }
 
+    private var filteredTasks: [RangerTask] {
+        switch filter {
+        case .all:
+            return viewModel.displayed.filter { !$0.isComplete }
+        case .mine:
+            return viewModel.displayed.filter { !$0.isComplete && $0.assignedRanger?.id == currentRangerID }
+        case .done:
+            return viewModel.tasks.filter { $0.isComplete }
+        }
+    }
+
+    private var allCount: Int { viewModel.tasks.filter { !$0.isComplete }.count }
+
     var body: some View {
-        NavigationStack {
-            Group {
-                if viewModel.displayed.isEmpty {
-                    emptyState
-                } else {
-                    taskList
+        ZStack(alignment: .top) {
+            Color.paper.ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                topBar
+                filterChips
+                taskScroll
+            }
+        }
+        .sheet(isPresented: $showAddTask, onDismiss: { viewModel.load() }) {
+            AddTaskView()
+        }
+        .sheet(item: $editingTask, onDismiss: { viewModel.load() }) { task in
+            EditTaskView(task: task)
+        }
+        .onAppear {
+            viewModel.showCompleted = true
+            viewModel.load()
+        }
+    }
+
+    private var topBar: some View {
+        ZStack {
+            Text("Tasks")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundColor(Color.ink)
+                .frame(maxWidth: .infinity)
+            HStack {
+                Spacer()
+                Button {
+                    showAddTask = true
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(Color.euc)
                 }
             }
-            .navigationTitle("Tasks")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button { showAddTask = true } label: { Image(systemName: "plus") }
-                }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Menu {
-                        Toggle("Show Completed", isOn: $viewModel.showCompleted)
-                        Divider()
-                        Button("All Priorities") { viewModel.filterPriority = nil }
-                        ForEach(TaskPriority.allCases, id: \.self) { p in
+            .padding(.horizontal, 20)
+        }
+        .padding(.top, 16)
+        .padding(.bottom, 12)
+    }
+
+    private var filterChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                filterChip(label: "All · \(allCount)", value: .all)
+                filterChip(label: "Mine", value: .mine)
+                filterChip(label: "Done", value: .done)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+        }
+    }
+
+    private func filterChip(label: String, value: TaskFilter) -> some View {
+        let active = filter == value
+        return Button {
+            filter = value
+        } label: {
+            Text(label)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(active ? .white : Color.ink3)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(active ? Color.euc : Color.card)
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(Color.lineBase.opacity(0.12), lineWidth: 1))
+        }
+    }
+
+    private var taskScroll: some View {
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                ForEach(filteredTasks) { task in
+                    TaskCard(task: task, onToggle: { viewModel.toggle(task) })
+                        .contentShape(Rectangle())
+                        .onTapGesture { editingTask = task }
+                        .swipeActions(edge: .trailing) {
                             Button {
-                                viewModel.filterPriority = viewModel.filterPriority == p ? nil : p
+                                viewModel.toggle(task)
                             } label: {
-                                Label(p.displayName, systemImage: viewModel.filterPriority == p ? "checkmark" : p.icon)
+                                Label("Done", systemImage: "checkmark")
                             }
+                            .tint(Color.statusCleared)
                         }
-                    } label: {
-                        Image(systemName: viewModel.filterPriority != nil ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-                    }
                 }
             }
-            .sheet(isPresented: $showAddTask, onDismiss: { viewModel.load() }) {
-                AddTaskView()
-            }
-            .sheet(item: $editingTask, onDismiss: { viewModel.load() }) { task in
-                EditTaskView(task: task)
-            }
-            .onAppear { viewModel.load() }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .padding(.bottom, 32)
         }
-    }
-
-    private var taskList: some View {
-        List {
-            if viewModel.overdueCount > 0 && !viewModel.showCompleted {
-                Section {
-                    Label("\(viewModel.overdueCount) overdue task\(viewModel.overdueCount == 1 ? "" : "s")", systemImage: "exclamationmark.triangle.fill")
-                        .foregroundColor(.red)
-                        .font(.subheadline.bold())
-                }
-            }
-
-            ForEach(viewModel.displayed) { task in
-                TaskRow(task: task, onToggle: { viewModel.toggle(task) })
-                    .contentShape(Rectangle())
-                    .onTapGesture { editingTask = task }
-            }
-            .onDelete { offsets in
-                offsets.map { viewModel.displayed[$0] }.forEach { viewModel.delete($0) }
-            }
-        }
-        .listStyle(.insetGrouped)
-    }
-
-    private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "checkmark.circle")
-                .font(.system(size: 48))
-                .foregroundColor(.secondary)
-            Text(viewModel.showCompleted ? "No tasks" : "All clear")
-                .font(.title3.bold())
-            Text(viewModel.showCompleted ? "Create a task with the + button." : "No pending tasks. Tap + to add one.")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding()
     }
 }
 
-struct TaskRow: View {
+private struct TaskCard: View {
     let task: RangerTask
     let onToggle: () -> Void
 
@@ -106,49 +145,97 @@ struct TaskRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            Button(action: onToggle) {
-                Image(systemName: task.isComplete ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundColor(task.isComplete ? .green : .secondary)
-            }
-            .buttonStyle(.plain)
-
-            VStack(alignment: .leading, spacing: 3) {
+        HStack(alignment: .top, spacing: 12) {
+            checkboxButton
+            VStack(alignment: .leading, spacing: 6) {
                 Text(task.title ?? "Untitled")
-                    .font(.subheadline.bold())
-                    .strikethrough(task.isComplete)
-                    .foregroundColor(task.isComplete ? .secondary : .primary)
+                    .font(.system(size: 14.5, weight: .semibold))
+                    .foregroundColor(task.isComplete ? Color.ink3 : Color.ink)
+                    .strikethrough(task.isComplete, color: Color.ink3)
+                    .fixedSize(horizontal: false, vertical: true)
+                metaRow
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .background(task.isComplete ? Color.paperDeep : Color.card)
+        .cornerRadius(16)
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.lineBase.opacity(0.12), lineWidth: 1))
+    }
 
-                HStack(spacing: 8) {
-                    Label(priority.displayName, systemImage: priority.icon)
-                        .font(.caption)
-                        .foregroundColor(priority.color)
-
-                    if let due = task.dueDate {
-                        Label(dueDateLabel(due), systemImage: "calendar")
-                            .font(.caption)
-                            .foregroundColor(isOverdue ? .red : .secondary)
-                    }
-
-                    if let name = task.assignedRanger?.displayName {
-                        Label(name, systemImage: "person.circle")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    if task.sourceTreatment != nil {
-                        Label("Auto", systemImage: "wand.and.stars")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+    private var checkboxButton: some View {
+        Button(action: onToggle) {
+            ZStack {
+                if task.isComplete {
+                    Circle()
+                        .fill(Color.statusCleared)
+                        .frame(width: 26, height: 26)
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.white)
+                } else {
+                    Circle()
+                        .fill(Color.clear)
+                        .frame(width: 26, height: 26)
+                        .overlay(Circle().stroke(Color.lineBase.opacity(0.22), lineWidth: 1.5))
                 }
             }
-
-            Spacer()
         }
-        .padding(.vertical, 4)
-        .opacity(task.isComplete ? 0.6 : 1)
+        .buttonStyle(.plain)
+    }
+
+    private var metaRow: some View {
+        HStack(spacing: 6) {
+            priorityChip
+            if let due = task.dueDate {
+                dueDateChip(due)
+            }
+            if let ranger = task.assignedRanger, let name = ranger.displayName {
+                rangerChip(name)
+            }
+        }
+    }
+
+    private var priorityChip: some View {
+        let (bg, fg): (Color, Color) = {
+            switch priority {
+            case .high:   return (Color.statusActiveSoft, Color.statusActive)
+            case .medium: return (Color.statusTreatSoft, Color.statusTreat)
+            case .low:    return (Color.eucSoft, Color.euc)
+            }
+        }()
+        return Text(priority.displayName.uppercased())
+            .font(.system(size: 10.5, weight: .bold))
+            .foregroundColor(fg)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(bg)
+            .clipShape(Capsule())
+    }
+
+    private func dueDateChip(_ date: Date) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: "calendar")
+                .font(.system(size: 9.5, weight: .semibold))
+            Text(dueDateLabel(date))
+                .font(.system(size: 10.5, weight: .semibold))
+        }
+        .foregroundColor(isOverdue ? Color.statusActive : Color.ink3)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 3)
+        .background(isOverdue ? Color.statusActiveSoft : Color.paperDeep)
+        .clipShape(Capsule())
+    }
+
+    private func rangerChip(_ name: String) -> some View {
+        let initials = name.split(separator: " ").prefix(2).compactMap { $0.first }.map { String($0) }.joined()
+        return Text(initials.isEmpty ? name.prefix(2).uppercased() : initials.uppercased())
+            .font(.system(size: 10.5, weight: .semibold))
+            .foregroundColor(Color.ink3)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(Color.paperDeep)
+            .clipShape(Capsule())
     }
 
     private func dueDateLabel(_ date: Date) -> String {

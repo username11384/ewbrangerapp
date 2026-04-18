@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git config *)",
+      "Bash(xcodebuild -scheme ewbapp -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -configuration Debug build)"
+    ]
+  }
+}
