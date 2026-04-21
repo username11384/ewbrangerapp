@@ -10,6 +10,7 @@ struct DemoSeeder {
 
         let variantPhotos = seedPhotos()
         let ctx = persistence.backgroundContext
+        var seedCompleted = false
         ctx.performAndWait {
             let rangers = (try? ctx.fetchAll(RangerProfile.self)) ?? []
             guard rangers.count >= 3 else { return }
@@ -264,7 +265,10 @@ struct DemoSeeder {
             }
 
             try? ctx.save()
+            seedCompleted = true
         }
+
+        guard seedCompleted else { return }
 
         // Force main context to pick up background changes immediately
         DispatchQueue.main.async {

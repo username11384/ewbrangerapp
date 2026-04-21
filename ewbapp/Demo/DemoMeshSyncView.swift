@@ -92,6 +92,7 @@ struct DemoMeshSyncView: View {
                 .padding(.bottom)
             }
             .padding(.top)
+            .background(Color.dsBackground.ignoresSafeArea())
             .navigationTitle("End of Day Sync")
     }
 

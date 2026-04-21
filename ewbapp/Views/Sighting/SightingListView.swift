@@ -67,7 +67,11 @@ struct SightingListView: View {
             .navigationDestination(item: $selectedSighting) { sighting in
                 SightingDetailView(sighting: sighting)
             }
-            .onAppear { viewModel.load() }
+            .onAppear {
+                viewModel.load()
+                // Re-fetch after CoreData background merge propagates (~150 ms per CLAUDE.md)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { viewModel.load() }
+            }
         }
     }
 }
