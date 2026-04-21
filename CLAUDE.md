@@ -129,3 +129,7 @@ These are demo/showcase views not wired to real V3 services:
 ## Before/After photo comparison
 
 `TreatmentEntryView` has an "After Photos" section that appends fake filenames. When saved, prepends `"📷 After: N photo(s). "` to outcomeNotes. `SightingDetailView` detects this prefix and shows a `BeforeAfterCard` below the `TreatmentRow` — species icon (before) vs green checkmark (after) in a two-column comparison card.
+
+## Git commits
+
+Do not add a `Co-Authored-By` trailer to any commit message.
