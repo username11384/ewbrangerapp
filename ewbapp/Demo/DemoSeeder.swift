@@ -6,7 +6,7 @@ import UIKit
 struct DemoSeeder {
 
     static func seed(in persistence: PersistenceController) {
-        guard !UserDefaults.standard.bool(forKey: "demoDataSeeded_v2") else { return }
+        guard !UserDefaults.standard.bool(forKey: "demoDataSeeded_v3") else { return }
 
         let variantPhotos = seedPhotos()
         let ctx = persistence.backgroundContext
@@ -22,12 +22,12 @@ struct DemoSeeder {
             // ZONES
             // --------------------------------------------------------
             let zoneSpecs: [(name: String, status: String, variant: String, lat: Double, lon: Double)] = [
-                ("North Creek Gully",    "active",         "pink",         -14.685, 143.712),
-                ("Boundary Road East",   "underTreatment", "red",          -14.718, 143.698),
-                ("Homestead Track",      "cleared",        "pinkEdgedRed", -14.703, 143.722),
-                ("Rocky Point Scrub",    "active",         "orange",       -14.695, 143.683),
-                ("Mangrove Flat",        "underTreatment", "white",        -14.725, 143.715),
-                ("Station Dam",          "cleared",        "pink",         -14.710, 143.730),
+                ("North Creek Gully",    "active",         "lantana",          -14.685, 143.712),
+                ("Boundary Road East",   "underTreatment", "rubberVine",       -14.718, 143.698),
+                ("Homestead Track",      "cleared",        "pricklyAcacia",    -14.703, 143.722),
+                ("Rocky Point Scrub",    "active",         "giantRatsTailGrass", -14.695, 143.683),
+                ("Mangrove Flat",        "underTreatment", "pondApple",        -14.725, 143.715),
+                ("Station Dam",          "cleared",        "sicklepod",        -14.710, 143.730),
             ]
 
             var zones: [InfestationZone] = []
@@ -66,40 +66,40 @@ struct DemoSeeder {
             typealias SD = (ranger: RangerProfile, variant: String, size: String,
                             lat: Double, lon: Double, daysAgo: Int, zoneIdx: Int?)
             let sightingSpecs: [SD] = [
-                // Zone 0 — North Creek Gully   centroid (-14.685, 143.712)
-                (alice, "pink",         "large",  -14.685,  143.712,  168, 0),
-                (carol, "pink",         "large",  -14.684,  143.713,  134, 0),
-                (bob,   "pink",         "large",  -14.686,  143.713,   99, 0),
-                (alice, "pink",         "small",  -14.684,  143.711,   64, 0),
-                (alice, "orange",       "medium", -14.686,  143.711,   22, 0),
-                (alice, "red",          "medium", -14.685,  143.7135,   2, 0),
-                // Zone 1 — Boundary Road East  centroid (-14.718, 143.698)
-                (bob,   "red",          "medium", -14.718,  143.698,  162, 1),
-                (alice, "red",          "large",  -14.717,  143.699,  127, 1),
-                (carol, "red",          "medium", -14.719,  143.699,   92, 1),
-                (carol, "red",          "large",  -14.717,  143.697,   50, 1),
-                (carol, "red",          "medium", -14.719,  143.697,   14, 1),
-                // Zone 2 — Homestead Track     centroid (-14.703, 143.722)
-                (carol, "pinkEdgedRed", "small",  -14.703,  143.722,  155, 2),
-                (alice, "pinkEdgedRed", "medium", -14.702,  143.7225, 106, 2),
-                (bob,   "pinkEdgedRed", "medium", -14.704,  143.7225,  57, 2),
-                (bob,   "pink",         "small",  -14.703,  143.721,   18, 2),
-                // Zone 3 — Rocky Point Scrub   centroid (-14.695, 143.683)
-                (alice, "pink",         "medium", -14.695,  143.683,  148, 3),
-                (bob,   "orange",       "medium", -14.694,  143.684,  120, 3),
-                (bob,   "pink",         "medium", -14.696,  143.6825,  78, 3),
-                (alice, "pink",         "medium", -14.6945, 143.682,   43, 3),
-                (alice, "pink",         "large",  -14.6955, 143.684,   10, 3),
-                // Zone 4 — Mangrove Flat       centroid (-14.725, 143.715)
-                (bob,   "white",        "small",  -14.725,  143.715,  141, 4),
-                (alice, "white",        "small",  -14.724,  143.7155,  85, 4),
-                (bob,   "white",        "small",  -14.726,  143.7145,  36, 4),
-                (bob,   "pinkEdgedRed", "medium", -14.7245, 143.714,    7, 4),
-                // Zone 5 — Station Dam         centroid (-14.710, 143.730)
-                (carol, "pink",         "small",  -14.710,  143.730,  113, 5),
-                (carol, "orange",       "large",  -14.709,  143.731,   71, 5),
-                (carol, "pink",         "large",  -14.711,  143.729,   29, 5),
-                (carol, "pink",         "small",  -14.709,  143.729,    4, 5),
+                // Zone 0 — North Creek Gully   (lantana)
+                (alice, "lantana",           "large",  -14.685,  143.712,  168, 0),
+                (carol, "lantana",           "large",  -14.684,  143.713,  134, 0),
+                (bob,   "lantana",           "large",  -14.686,  143.713,   99, 0),
+                (alice, "lantana",           "small",  -14.684,  143.711,   64, 0),
+                (alice, "lantana",           "medium", -14.686,  143.711,   22, 0),
+                (alice, "lantana",           "medium", -14.685,  143.7135,   2, 0),
+                // Zone 1 — Boundary Road East  (rubberVine)
+                (bob,   "rubberVine",        "medium", -14.718,  143.698,  162, 1),
+                (alice, "rubberVine",        "large",  -14.717,  143.699,  127, 1),
+                (carol, "rubberVine",        "medium", -14.719,  143.699,   92, 1),
+                (carol, "rubberVine",        "large",  -14.717,  143.697,   50, 1),
+                (carol, "rubberVine",        "medium", -14.719,  143.697,   14, 1),
+                // Zone 2 — Homestead Track     (pricklyAcacia)
+                (carol, "pricklyAcacia",     "small",  -14.703,  143.722,  155, 2),
+                (alice, "pricklyAcacia",     "medium", -14.702,  143.7225, 106, 2),
+                (bob,   "pricklyAcacia",     "medium", -14.704,  143.7225,  57, 2),
+                (bob,   "pricklyAcacia",     "small",  -14.703,  143.721,   18, 2),
+                // Zone 3 — Rocky Point Scrub   (giantRatsTailGrass)
+                (alice, "giantRatsTailGrass","medium", -14.695,  143.683,  148, 3),
+                (bob,   "giantRatsTailGrass","medium", -14.694,  143.684,  120, 3),
+                (bob,   "giantRatsTailGrass","medium", -14.696,  143.6825,  78, 3),
+                (alice, "giantRatsTailGrass","medium", -14.6945, 143.682,   43, 3),
+                (alice, "giantRatsTailGrass","large",  -14.6955, 143.684,   10, 3),
+                // Zone 4 — Mangrove Flat       (pondApple)
+                (bob,   "pondApple",         "small",  -14.725,  143.715,  141, 4),
+                (alice, "pondApple",         "small",  -14.724,  143.7155,  85, 4),
+                (bob,   "pondApple",         "small",  -14.726,  143.7145,  36, 4),
+                (bob,   "pondApple",         "medium", -14.7245, 143.714,    7, 4),
+                // Zone 5 — Station Dam         (sicklepod)
+                (carol, "sicklepod",         "small",  -14.710,  143.730,  113, 5),
+                (carol, "sicklepod",         "large",  -14.709,  143.731,   71, 5),
+                (carol, "sicklepod",         "large",  -14.711,  143.729,   29, 5),
+                (carol, "sicklepod",         "small",  -14.709,  143.729,    4, 5),
             ]
 
             var sightings: [SightingLog] = []
@@ -125,8 +125,8 @@ struct DemoSeeder {
             // --------------------------------------------------------
             // TREATMENT RECORDS  (first 18 sightings)
             // --------------------------------------------------------
-            let methods  = ["cutStump", "splatGun", "foliarSpray", "basalBark"]
-            let products = ["Garlon 600", "Access", "Glyphosate 360"]
+            let methods  = ["cutStump", "splatGun", "foliarSpray", "basalBark", "mechanical", "stemInjection"]
+            let products = ["Garlon 600", "Access", "Glyphosate 360", "Tordon 75-D", "Starane Advanced"]
             let outcomes = [
                 "Cut stumps painted immediately, good coverage achieved.",
                 "Foliar spray applied across canopy. Regrowth expected in 60 days.",
@@ -182,7 +182,7 @@ struct DemoSeeder {
                 p.updatedAt   = start
                 p.syncStatus  = SyncStatus.synced.rawValue
                 p.ranger      = spec.ranger
-                p.notes       = "Patrol complete. All visible Lantana logged and GPS-tagged."
+                p.notes       = "Patrol complete. All invasive plants logged and GPS-tagged."
 
                 let checklist: [PatrolChecklistItem] = [
                     .init(label: "GPS unit charged",       isComplete: true, completedAt: start),
@@ -242,13 +242,13 @@ struct DemoSeeder {
             // --------------------------------------------------------
             typealias TD = (title: String, ranger: RangerProfile, priority: String, complete: Bool, daysAgo: Int)
             let taskSpecs: [TD] = [
-                ("Regrowth check — North Creek Gully",   alice, "high",   false, 14),
-                ("Follow-up spray — Boundary Road East", bob,   "high",   false,  7),
-                ("Photo documentation — Station Dam",    carol, "medium", true,  21),
-                ("Restock Garlon 600",                   alice, "medium", false,  3),
-                ("Check biocontrol release site",        bob,   "low",    false, 10),
-                ("Update zone polygons after rain",      carol, "medium", true,  18),
-                ("Regrowth check — Mangrove Flat",       alice, "high",   false,  2),
+                ("Lantana regrowth check — North Creek Gully",    alice, "high",   false, 14),
+                ("Rubber vine follow-up spray — Boundary Road",   bob,   "high",   false,  7),
+                ("Photo documentation — Station Dam sicklepod",   carol, "medium", true,  21),
+                ("Restock Garlon 600 and Tordon 75-D",            alice, "medium", false,  3),
+                ("Check lantana biocontrol release site",         bob,   "low",    false, 10),
+                ("Update zone polygons after wet season rain",    carol, "medium", true,  18),
+                ("Pond apple mechanical removal — Mangrove Flat", alice, "high",   false,  2),
             ]
             for spec in taskSpecs {
                 let task = RangerTask(context: ctx)
@@ -268,7 +268,7 @@ struct DemoSeeder {
 
         // Fake a recent cloud sync so the dashboard & settings show "synced"
         UserDefaults.standard.set(Date().addingTimeInterval(-3_600), forKey: "lastSyncTimestamp")
-        UserDefaults.standard.set(true, forKey: "demoDataSeeded_v2")
+        UserDefaults.standard.set(true, forKey: "demoDataSeeded_v3")
     }
 
     // MARK: - Photo helpers
@@ -283,12 +283,12 @@ struct DemoSeeder {
 
         // asset name → variant keys that should use it
         let assetMap: [(asset: String, variants: [String])] = [
-            ("demo_lantana_1", ["pink"]),
-            ("demo_lantana_2", ["red"]),
-            ("demo_lantana_3", ["pinkEdgedRed"]),
-            ("demo_lantana_4", ["orange"]),
-            ("demo_lantana_5", ["white"]),
-            ("demo_lantana_6", ["unknown"]),
+            ("demo_lantana_1", ["lantana"]),
+            ("demo_lantana_2", ["rubberVine"]),
+            ("demo_lantana_3", ["pricklyAcacia"]),
+            ("demo_lantana_4", ["giantRatsTailGrass"]),
+            ("demo_lantana_5", ["pondApple"]),
+            ("demo_lantana_6", ["sicklepod", "unknown"]),
         ]
 
         var variantPhotos: [String: [String]] = [:]

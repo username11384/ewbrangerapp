@@ -36,7 +36,7 @@ struct MapContainerView: View {
                     showZones: viewModel.showZones,
                     tileOverlay: OfflineTileManager.shared.tileOverlay(),
                     onSelectSighting: { sighting, point in
-                        let variant = LantanaVariant(rawValue: sighting.variant ?? "")?.displayName ?? "Sighting"
+                        let variant = InvasiveSpecies.from(legacyVariant: sighting.variant ?? "").displayName
                         let size = InfestationSize(rawValue: sighting.infestationSize ?? "")?.displayName
                         actionCard = MapActionCardData(
                             title: variant, subtitle: size, anchor: point,
@@ -315,7 +315,7 @@ private struct ZonePickerSheet: View {
                     onSelect(zone)
                 } label: {
                     HStack {
-                        VariantColourDot(variant: LantanaVariant(rawValue: zone.dominantVariant ?? "") ?? .unknown, size: 12)
+                        SpeciesIndicator(species: InvasiveSpecies.from(legacyVariant: zone.dominantVariant ?? ""), size: 12)
                         Text(zone.name ?? "Unnamed Zone")
                         Spacer()
                         Text(zone.status?.capitalized ?? "Active")

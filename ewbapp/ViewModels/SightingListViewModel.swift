@@ -7,7 +7,7 @@ import CoreLocation
 final class SightingListViewModel: ObservableObject {
     @Published var sightings: [SightingLog] = []
     @Published var searchText: String = ""
-    @Published var filterVariant: LantanaVariant?
+    @Published var filterSpecies: InvasiveSpecies?
 
     private let repository: SightingRepository
     private let locationManager: LocationManager
@@ -37,8 +37,8 @@ final class SightingListViewModel: ObservableObject {
                 $0.notes?.localizedCaseInsensitiveContains(searchText) == true
             }
         }
-        if let variant = filterVariant {
-            result = result.filter { $0.variant == variant.rawValue }
+        if let species = filterSpecies {
+            result = result.filter { $0.variant == species.rawValue }
         }
         return result
     }

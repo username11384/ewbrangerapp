@@ -12,11 +12,11 @@ enum AppConfig {
     }()
 
     // Storage
-    static let photosBucket = "lantana-photos"
+    static let photosBucket = "invasive-plants-photos"
     static let signedURLExpiry: Int = 3600 // seconds
 
     // MPC mesh sync
-    static let meshServiceType = "yac-lantana"
+    static let meshServiceType = "yac-ranger"
 
     // Local photo directory
     static let photosDirectoryName = "Photos"

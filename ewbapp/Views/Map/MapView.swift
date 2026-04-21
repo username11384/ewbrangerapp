@@ -173,7 +173,7 @@ struct MapView: UIViewRepresentable {
                 let view = mapView.dequeueReusableAnnotationView(withIdentifier: "sighting") as? MKMarkerAnnotationView
                     ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "sighting")
                 view.annotation = annotation
-                view.markerTintColor = UIColor(LantanaVariant(rawValue: sa.sighting.variant ?? "")?.color ?? LantanaVariant.unknown.color)
+                view.markerTintColor = UIColor(InvasiveSpecies.from(legacyVariant: sa.sighting.variant ?? "").color)
                 view.canShowCallout = false
                 return view
             }

@@ -16,15 +16,16 @@ struct PesticideListView: View {
             VStack(spacing: 0) {
                 // Low-stock alert banner
                 if !viewModel.lowStockItems.isEmpty {
-                    HStack {
+                    HStack(spacing: DSSpace.sm) {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.orange)
+                            .foregroundStyle(Color.dsStatusTreat)
                         Text("\(viewModel.lowStockItems.count) product(s) low on stock")
-                            .font(.callout)
+                            .font(DSFont.callout)
+                            .foregroundStyle(Color.dsInk2)
                         Spacer()
                     }
-                    .padding(12)
-                    .background(Color.orange.opacity(0.1))
+                    .padding(DSSpace.md)
+                    .background(Color.dsStatusTreatSoft)
                 }
                 List {
                     ForEach(viewModel.stocks, id: \.id) { stock in
@@ -58,15 +59,16 @@ struct StockRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(stock.productName ?? "Unknown")
-                    .font(.headline)
+                    .font(DSFont.headline)
+                    .foregroundStyle(Color.dsInk)
                 Text("\(String(format: "%.1f", stock.currentQuantity)) \(stock.unit ?? "L")")
-                    .font(.callout)
-                    .foregroundColor(isLow ? .red : .secondary)
+                    .font(DSFont.callout)
+                    .foregroundStyle(isLow ? Color.dsStatusActive : Color.dsInk3)
             }
             Spacer()
             if isLow {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.red)
+                    .foregroundStyle(Color.dsStatusActive)
             }
         }
         .padding(.vertical, 4)

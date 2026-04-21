@@ -15,7 +15,7 @@ final class SightingRepository: SightingRepositoryProtocol {
         latitude: Double,
         longitude: Double,
         horizontalAccuracy: Double,
-        variant: LantanaVariant,
+        species: InvasiveSpecies,
         infestationSize: InfestationSize,
         notes: String?,
         photoFilenames: [String],
@@ -30,7 +30,7 @@ final class SightingRepository: SightingRepositoryProtocol {
             sighting.latitude = latitude
             sighting.longitude = longitude
             sighting.horizontalAccuracy = horizontalAccuracy
-            sighting.variant = variant.rawValue
+            sighting.variant = species.rawValue
             sighting.infestationSize = infestationSize.rawValue
             sighting.notes = notes
             sighting.photoFilenames = photoFilenames as NSArray

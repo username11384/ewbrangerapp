@@ -12,18 +12,23 @@ struct PatrolCalendarView: View {
     private let weekdaySymbols = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: DSSpace.md) {
             // Month navigation header
             HStack {
                 Button { shiftMonth(-1) } label: {
-                    Image(systemName: "chevron.left").padding(8)
+                    Image(systemName: "chevron.left")
+                        .padding(DSSpace.sm)
+                        .foregroundStyle(Color.dsPrimary)
                 }
                 Spacer()
                 Text(displayMonth, format: .dateTime.month(.wide).year())
-                    .font(.headline)
+                    .font(DSFont.headline)
+                    .foregroundStyle(Color.dsInk)
                 Spacer()
                 Button { shiftMonth(1) } label: {
-                    Image(systemName: "chevron.right").padding(8)
+                    Image(systemName: "chevron.right")
+                        .padding(DSSpace.sm)
+                        .foregroundStyle(Color.dsPrimary)
                 }
             }
 
@@ -31,8 +36,8 @@ struct PatrolCalendarView: View {
             LazyVGrid(columns: columns, spacing: 4) {
                 ForEach(weekdaySymbols, id: \.self) { sym in
                     Text(sym)
-                        .font(.caption.bold())
-                        .foregroundColor(.secondary)
+                        .font(DSFont.caption)
+                        .foregroundStyle(Color.dsInk3)
                         .frame(maxWidth: .infinity)
                 }
                 // Leading empty cells
@@ -47,23 +52,24 @@ struct PatrolCalendarView: View {
 
             // Legend
             if !patrolsInMonth.isEmpty {
-                Divider()
-                VStack(alignment: .leading, spacing: 6) {
+                Divider().background(Color.dsDivider)
+                VStack(alignment: .leading, spacing: DSSpace.sm) {
                     Text("Patrols this month")
-                        .font(.caption.bold())
-                        .foregroundColor(.secondary)
+                        .font(DSFont.caption)
+                        .foregroundStyle(Color.dsInk3)
                     ForEach(patrolsInMonth, id: \.id) { patrol in
-                        HStack(spacing: 8) {
+                        HStack(spacing: DSSpace.sm) {
                             Circle()
-                                .fill(patrol.endTime != nil ? Color.green : Color.orange)
+                                .fill(patrol.endTime != nil ? Color.dsStatusCleared : Color.dsStatusTreat)
                                 .frame(width: 8, height: 8)
                             Text(patrol.areaName ?? "Unknown")
-                                .font(.caption)
+                                .font(DSFont.caption)
+                                .foregroundStyle(Color.dsInk)
                             Spacer()
                             if let date = patrol.patrolDate {
                                 Text(date, format: .dateTime.month(.abbreviated).day())
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .font(DSFont.caption)
+                                    .foregroundStyle(Color.dsInk3)
                             }
                         }
                     }
@@ -115,18 +121,18 @@ private struct DayCell: View {
     var body: some View {
         VStack(spacing: 2) {
             Text(Calendar.current.component(.day, from: day).description)
-                .font(.caption)
+                .font(DSFont.caption)
                 .fontWeight(isToday ? .bold : .regular)
-                .foregroundColor(isToday ? .white : .primary)
+                .foregroundStyle(isToday ? Color.white : Color.dsInk)
                 .frame(width: 28, height: 28)
-                .background(isToday ? Color.accentColor : Color.clear)
+                .background(isToday ? Color.dsPrimary : Color.clear)
                 .clipShape(Circle())
 
             if !patrols.isEmpty {
                 HStack(spacing: 2) {
                     ForEach(patrols.prefix(3), id: \.id) { patrol in
                         Circle()
-                            .fill(patrol.endTime != nil ? Color.green : Color.orange)
+                            .fill(patrol.endTime != nil ? Color.dsStatusCleared : Color.dsStatusTreat)
                             .frame(width: 5, height: 5)
                     }
                 }
@@ -136,8 +142,8 @@ private struct DayCell: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 2)
-        .background(patrols.isEmpty ? Color.clear : Color.green.opacity(0.07))
-        .cornerRadius(6)
+        .background(patrols.isEmpty ? Color.clear : Color.dsPrimary.opacity(0.07))
+        .cornerRadius(DSRadius.xs)
     }
 }
 
@@ -160,29 +166,24 @@ struct PatrolListRow: View {
     private var isComplete: Bool { patrol.endTime != nil }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: DSSpace.md) {
             Image(systemName: isComplete ? "checkmark.circle.fill" : "circle.dotted")
-                .foregroundColor(isComplete ? .green : .orange)
+                .foregroundStyle(isComplete ? Color.dsStatusCleared : Color.dsStatusTreat)
                 .font(.title3)
             VStack(alignment: .leading, spacing: 4) {
                 Text(patrol.areaName ?? "Unknown Area")
-                    .font(.headline)
+                    .font(DSFont.headline)
+                    .foregroundStyle(Color.dsInk)
                 if let date = patrol.patrolDate {
                     Text(date, style: .date)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(DSFont.caption)
+                        .foregroundStyle(Color.dsInk3)
                 }
             }
             Spacer()
-            if isComplete {
-                Text("Done")
-                    .font(.caption.bold())
-                    .foregroundColor(.green)
-            } else {
-                Text("Active")
-                    .font(.caption.bold())
-                    .foregroundColor(.orange)
-            }
+            Text(isComplete ? "Done" : "Active")
+                .font(DSFont.badge)
+                .foregroundStyle(isComplete ? Color.dsStatusCleared : Color.dsStatusTreat)
         }
         .padding(.vertical, 4)
     }

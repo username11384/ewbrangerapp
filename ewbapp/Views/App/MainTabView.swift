@@ -9,60 +9,22 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Map", systemImage: "map.fill")
                 }
-            SightingListView()
-                .tabItem {
-                    Label("Log", systemImage: "list.bullet")
-                }
-            PatrolView()
-                .tabItem {
-                    Label("Patrol", systemImage: "figure.walk")
-                }
-            TaskListView()
-                .tabItem {
-                    Label("Tasks", systemImage: "checklist")
-                }
-            MoreView()
-                .tabItem {
-                    Label("More", systemImage: "ellipsis.circle.fill")
-                }
-        }
-    }
-}
 
-struct MoreView: View {
-    var body: some View {
-        NavigationStack {
-            List {
-                Section("Field") {
-                    NavigationLink(destination: VariantGuideView()) {
-                        Label("Variant Guide", systemImage: "book.fill")
-                    }
-                    NavigationLink(destination: ControlProtocolView()) {
-                        Label("Control Protocol", systemImage: "checklist")
-                    }
-                    NavigationLink(destination: ZoneListView()) {
-                        Label("Zones", systemImage: "square.dashed")
-                    }
+            ActivityView()
+                .tabItem {
+                    Label("Activity", systemImage: "list.bullet.clipboard.fill")
                 }
-                Section("Reports") {
-                    NavigationLink(destination: DashboardView()) {
-                        Label("Dashboard", systemImage: "chart.bar.fill")
-                    }
-                    NavigationLink(destination: PesticideListView()) {
-                        Label("Supplies", systemImage: "flask.fill")
-                    }
+
+            SpeciesGuideView()
+                .tabItem {
+                    Label("Guide", systemImage: "leaf.fill")
                 }
-                Section("Device") {
-                    NavigationLink(destination: DemoMeshSyncView()) {
-                        Label("End of Day Sync", systemImage: "antenna.radiowaves.left.and.right")
-                    }
-                    NavigationLink(destination: SettingsView()) {
-                        Label("Settings", systemImage: "gear")
-                    }
+
+            HubView()
+                .tabItem {
+                    Label("Hub", systemImage: "square.grid.2x2.fill")
                 }
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("More")
         }
+        .tint(Color.dsPrimary)
     }
 }

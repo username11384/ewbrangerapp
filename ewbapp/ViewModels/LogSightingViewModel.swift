@@ -7,7 +7,7 @@ import UIKit
 final class LogSightingViewModel: ObservableObject {
     @Published var capturedLocation: CLLocation?
     @Published var accuracyLevel: LocationManager.AccuracyLevel = .unknown
-    @Published var selectedVariant: LantanaVariant?
+    @Published var selectedSpecies: InvasiveSpecies?
     @Published var selectedSize: InfestationSize = .small
     @Published var notes: String = ""
     @Published var photoFilenames: [String] = []
@@ -16,12 +16,12 @@ final class LogSightingViewModel: ObservableObject {
     @Published var didSave = false
 
     var canSave: Bool {
-        capturedLocation != nil && selectedVariant != nil
+        capturedLocation != nil && selectedSpecies != nil
     }
 
     var controlRecommendation: String? {
-        guard let variant = selectedVariant else { return nil }
-        let methods = variant.controlMethods.map { $0.displayName }.joined(separator: " or ")
+        guard let species = selectedSpecies else { return nil }
+        let methods = species.controlMethods.map { $0.displayName }.joined(separator: " or ")
         return "Recommended: \(methods)"
     }
 
@@ -56,7 +56,7 @@ final class LogSightingViewModel: ObservableObject {
     }
 
     func save() async {
-        guard canSave, let location = capturedLocation, let variant = selectedVariant else { return }
+        guard canSave, let location = capturedLocation, let species = selectedSpecies else { return }
         isSaving = true
         saveError = nil
         do {
@@ -64,7 +64,7 @@ final class LogSightingViewModel: ObservableObject {
                 latitude: location.coordinate.latitude,
                 longitude: location.coordinate.longitude,
                 horizontalAccuracy: location.horizontalAccuracy,
-                variant: variant,
+                species: species,
                 infestationSize: selectedSize,
                 notes: notes.isEmpty ? nil : notes,
                 photoFilenames: photoFilenames,

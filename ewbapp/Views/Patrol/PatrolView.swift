@@ -25,9 +25,10 @@ struct PatrolView: View {
                     ScrollView {
                         VStack(spacing: 24) {
                             // Start patrol
-                            VStack(alignment: .leading, spacing: 12) {
+                            VStack(alignment: .leading, spacing: DSSpace.md) {
                                 Text("Start New Patrol")
-                                    .font(.headline)
+                                    .font(DSFont.headline)
+                                    .foregroundStyle(Color.dsInk)
                                 Picker("Area", selection: $viewModel.selectedAreaName) {
                                     ForEach(PortStewartZones.patrolAreas, id: \.self) { area in
                                         Text(area).tag(area)
@@ -39,9 +40,7 @@ struct PatrolView: View {
                                     Task { await viewModel.startPatrol() }
                                 })
                             }
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
+                            .dsCard()
                             .padding(.horizontal)
 
                             // History toggle

@@ -80,7 +80,7 @@ final class DashboardViewModel: ObservableObject {
             let monthSightings = (try? context.fetchAll(SightingLog.self, predicate: predicate)) ?? []
             let byVariant = Dictionary(grouping: monthSightings, by: { $0.variant ?? "unknown" })
             for (variant, sightings) in byVariant {
-                let label = LantanaVariant(rawValue: variant)?.displayName ?? variant.capitalized
+                let label = InvasiveSpecies.from(legacyVariant: variant).displayName
                 data.append((date: monthStart, count: sightings.count, variant: label))
             }
         }

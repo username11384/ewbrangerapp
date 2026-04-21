@@ -6,7 +6,7 @@ protocol SightingRepositoryProtocol {
         latitude: Double,
         longitude: Double,
         horizontalAccuracy: Double,
-        variant: LantanaVariant,
+        species: InvasiveSpecies,
         infestationSize: InfestationSize,
         notes: String?,
         photoFilenames: [String],

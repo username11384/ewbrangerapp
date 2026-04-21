@@ -6,17 +6,18 @@ struct ActivePatrolView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            VStack(spacing: 8) {
+            VStack(spacing: DSSpace.sm) {
                 Text(viewModel.activePatrol?.areaName ?? "Active Patrol")
-                    .font(.title2.bold())
+                    .font(DSFont.title)
+                    .foregroundStyle(Color.dsInk)
                 ProgressView(value: viewModel.completionPercentage)
-                    .tint(.green)
+                    .tint(Color.dsPrimary)
                 Text("\(Int(viewModel.completionPercentage * 100))% complete")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(DSFont.caption)
+                    .foregroundStyle(Color.dsInk3)
             }
-            .padding()
-            .background(Color(.systemGray6))
+            .padding(DSSpace.lg)
+            .background(Color.dsSurface)
 
             // Checklist
             List {
@@ -31,7 +32,7 @@ struct ActivePatrolView: View {
             // Finish button
             LargeButton(title: "Finish Patrol", action: {
                 Task { await viewModel.finishPatrol() }
-            }, color: .blue)
+            }, color: Color.dsPrimary)
             .padding()
         }
     }
@@ -43,19 +44,19 @@ struct ChecklistItemRow: View {
 
     var body: some View {
         Button(action: onToggle) {
-            HStack(spacing: 14) {
+            HStack(spacing: DSSpace.md) {
                 Image(systemName: item.isComplete ? "checkmark.square.fill" : "square")
                     .font(.title2)
-                    .foregroundColor(item.isComplete ? .green : .secondary)
+                    .foregroundStyle(item.isComplete ? Color.dsPrimary : Color.dsInk3)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(item.label)
-                        .font(.body)
+                        .font(DSFont.body)
                         .strikethrough(item.isComplete)
-                        .foregroundColor(item.isComplete ? .secondary : .primary)
+                        .foregroundStyle(item.isComplete ? Color.dsInk3 : Color.dsInk)
                     if let time = item.completedAt {
                         Text(time, style: .time)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(DSFont.caption)
+                            .foregroundStyle(Color.dsInk3)
                     }
                 }
             }

@@ -6,47 +6,58 @@ struct PesticideDetailView: View {
     @State private var showLogUsage = false
     @EnvironmentObject var appEnv: AppEnvironment
 
+    private var isLow: Bool { stock.currentQuantity <= stock.minThreshold }
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: DSSpace.lg) {
                 // Summary card
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: DSSpace.sm) {
                     HStack {
                         Text(String(format: "%.1f %@", stock.currentQuantity, stock.unit ?? "L"))
-                            .font(.title.bold())
-                            .foregroundColor(stock.currentQuantity <= stock.minThreshold ? .red : .primary)
+                            .font(DSFont.title)
+                            .foregroundStyle(isLow ? Color.dsStatusActive : Color.dsInk)
                         Spacer()
                         Text("Min: \(String(format: "%.1f", stock.minThreshold)) \(stock.unit ?? "L")")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(DSFont.caption)
+                            .foregroundStyle(Color.dsInk3)
                     }
-                    if stock.currentQuantity <= stock.minThreshold {
-                        Label("Low Stock — reorder required", systemImage: "exclamationmark.triangle.fill")
-                            .foregroundColor(.red)
-                            .font(.callout)
+                    if isLow {
+                        HStack(spacing: DSSpace.sm) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            Text("Low Stock — reorder required")
+                                .font(DSFont.callout)
+                        }
+                        .foregroundStyle(Color.dsStatusActive)
+                        .padding(DSSpace.sm)
+                        .background(Color.dsStatusActiveSoft)
+                        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
                     }
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
+                .dsCard()
 
                 LargeButton(title: "Log Usage", action: { showLogUsage = true })
 
                 // Usage history
-                Text("Usage History")
-                    .font(.headline)
-                let history = viewModel.usageHistory(for: stock)
-                if history.isEmpty {
-                    Text("No usage recorded yet.")
-                        .foregroundColor(.secondary)
-                } else {
-                    ForEach(history, id: \.id) { record in
-                        UsageRow(record: record)
+                VStack(alignment: .leading, spacing: DSSpace.md) {
+                    Text("Usage History")
+                        .font(DSFont.headline)
+                        .foregroundStyle(Color.dsInk)
+                    let history = viewModel.usageHistory(for: stock)
+                    if history.isEmpty {
+                        Text("No usage recorded yet.")
+                            .font(DSFont.body)
+                            .foregroundStyle(Color.dsInk3)
+                    } else {
+                        ForEach(history, id: \.id) { record in
+                            UsageRow(record: record)
+                        }
                     }
                 }
             }
-            .padding()
+            .padding(DSSpace.lg)
         }
+        .background(Color.dsBackground.ignoresSafeArea())
         .navigationTitle(stock.productName ?? "Product")
         .sheet(isPresented: $showLogUsage, onDismiss: { viewModel.load() }) {
             LogUsageView(stock: stock, viewModel: viewModel, rangerID: appEnv.authManager.currentRangerID ?? {
@@ -64,21 +75,23 @@ struct UsageRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(String(format: "–%.1f %@", record.usedQuantity, record.stock?.unit ?? "L"))
-                    .font(.subheadline.bold())
-                    .foregroundColor(.red)
+                    .font(DSFont.callout)
+                    .foregroundStyle(Color.dsStatusActive)
                 if let notes = record.notes, !notes.isEmpty {
-                    Text(notes).font(.caption).foregroundColor(.secondary)
+                    Text(notes)
+                        .font(DSFont.caption)
+                        .foregroundStyle(Color.dsInk3)
                 }
             }
             Spacer()
             if let date = record.usedAt {
                 Text(date, style: .date)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(DSFont.caption)
+                    .foregroundStyle(Color.dsInk3)
             }
         }
-        .padding(10)
-        .background(Color(.systemGray6))
-        .cornerRadius(8)
+        .padding(DSSpace.sm)
+        .background(Color.dsSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
     }
 }

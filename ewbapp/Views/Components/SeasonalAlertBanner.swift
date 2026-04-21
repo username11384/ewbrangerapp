@@ -4,45 +4,50 @@ struct SeasonalAlertBanner: View {
     let alert: SeasonalAlert
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: DSSpace.md) {
             Image(systemName: iconName)
-                .foregroundColor(iconColor)
-                .font(.title3)
-            VStack(alignment: .leading, spacing: 4) {
+                .foregroundStyle(iconColor)
+                .font(.system(size: 18, weight: .semibold))
+            VStack(alignment: .leading, spacing: DSSpace.xs) {
                 Text(alert.title)
-                    .font(.subheadline.bold())
+                    .font(DSFont.callout)
+                    .foregroundStyle(Color.dsInk)
                 Text(alert.message)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(DSFont.caption)
+                    .foregroundStyle(Color.dsInk2)
             }
             Spacer()
         }
-        .padding(12)
+        .padding(DSSpace.md)
         .background(background)
-        .cornerRadius(10)
+        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
+                .strokeBorder(iconColor.opacity(0.2), lineWidth: 0.75)
+        )
     }
 
     private var iconName: String {
         switch alert.severity {
-        case .info: return "info.circle.fill"
-        case .warning: return "exclamationmark.triangle.fill"
+        case .info:     return "info.circle.fill"
+        case .warning:  return "exclamationmark.triangle.fill"
         case .critical: return "exclamationmark.octagon.fill"
         }
     }
 
     private var iconColor: Color {
         switch alert.severity {
-        case .info: return .blue
-        case .warning: return .orange
-        case .critical: return .red
+        case .info:     return Color(hex: "4A90A4")
+        case .warning:  return Color.dsStatusTreat
+        case .critical: return Color.dsStatusActive
         }
     }
 
     private var background: Color {
         switch alert.severity {
-        case .info: return Color.blue.opacity(0.1)
-        case .warning: return Color.orange.opacity(0.1)
-        case .critical: return Color.red.opacity(0.1)
+        case .info:     return Color(hex: "4A90A4").opacity(0.08)
+        case .warning:  return Color.dsStatusTreatSoft
+        case .critical: return Color.dsStatusActiveSoft
         }
     }
 }

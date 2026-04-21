@@ -4,7 +4,7 @@ import SwiftUI
 class SightingAnnotation: NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
     let sighting: SightingLog
-    var title: String? { LantanaVariant(rawValue: sighting.variant ?? "")?.displayName ?? "Sighting" }
+    var title: String? { InvasiveSpecies.from(legacyVariant: sighting.variant ?? "").displayName }
     var subtitle: String? { InfestationSize(rawValue: sighting.infestationSize ?? "")?.displayName }
 
     init(sighting: SightingLog) {

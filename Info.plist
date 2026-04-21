@@ -22,20 +22,20 @@
 
     <!-- Location -->
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Lama Lama Rangers records the GPS location of each Lantana sighting so it can be mapped and tracked over time.</string>
+    <string>Lama Lama Rangers records the GPS location of each invasive plant sighting so it can be mapped and tracked over time.</string>
 
     <!-- Bluetooth / Local Network (MultipeerConnectivity end-of-day sync) -->
     <key>NSLocalNetworkUsageDescription</key>
     <string>Lama Lama Rangers uses nearby network access to sync sighting data with other rangers at end of day, without needing the internet.</string>
     <key>NSBonjourServices</key>
     <array>
-        <string>_yac-lantana._tcp</string>
-        <string>_yac-lantana._udp</string>
+        <string>_yac-ranger._tcp</string>
+        <string>_yac-ranger._udp</string>
     </array>
 
     <!-- Camera (sighting photos) -->
     <key>NSCameraUsageDescription</key>
-    <string>Lama Lama Rangers uses the camera to photograph Lantana infestations when logging a sighting.</string>
+    <string>Lama Lama Rangers uses the camera to photograph invasive plant infestations when logging a sighting.</string>
 
     <!-- UI -->
     <key>UIApplicationSceneManifest</key>

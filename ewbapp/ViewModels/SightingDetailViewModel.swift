@@ -38,8 +38,8 @@ final class SightingDetailViewModel: ObservableObject {
 
     var assignedZone: InfestationZone? { sighting.infestationZone }
 
-    var variant: LantanaVariant {
-        LantanaVariant(rawValue: sighting.variant ?? "") ?? .unknown
+    var species: InvasiveSpecies {
+        InvasiveSpecies.from(legacyVariant: sighting.variant ?? "")
     }
 
     var size: InfestationSize {

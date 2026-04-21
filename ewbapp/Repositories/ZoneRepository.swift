@@ -12,7 +12,7 @@ final class ZoneRepository: ZoneRepositoryProtocol {
         try persistence.mainContext.fetchAll(InfestationZone.self)
     }
 
-    func createZone(name: String?, dominantVariant: LantanaVariant) async throws -> InfestationZone {
+    func createZone(name: String?, dominantSpecies: InvasiveSpecies) async throws -> InfestationZone {
         let context = persistence.backgroundContext
         return try await context.perform {
             let zone = InfestationZone(context: context)
@@ -21,20 +21,20 @@ final class ZoneRepository: ZoneRepositoryProtocol {
             zone.updatedAt = Date()
             zone.name = name
             zone.status = "active"
-            zone.dominantVariant = dominantVariant.rawValue
+            zone.dominantVariant = dominantSpecies.rawValue
             zone.syncStatus = SyncStatus.pendingCreate.rawValue
             try context.save()
             return zone
         }
     }
 
-    func updateZone(_ zone: InfestationZone, name: String?, dominantVariant: LantanaVariant, status: String) async throws {
+    func updateZone(_ zone: InfestationZone, name: String?, dominantSpecies: InvasiveSpecies, status: String) async throws {
         let context = persistence.backgroundContext
         let objectID = zone.objectID
         try await context.perform {
             guard let obj = context.object(with: objectID) as? InfestationZone else { return }
             obj.name = name
-            obj.dominantVariant = dominantVariant.rawValue
+            obj.dominantVariant = dominantSpecies.rawValue
             obj.status = status
             obj.updatedAt = Date()
             obj.syncStatus = SyncStatus.pendingUpdate.rawValue

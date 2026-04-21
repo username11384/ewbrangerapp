@@ -16,30 +16,45 @@ struct LogSightingView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(alignment: .leading, spacing: DSSpace.xl) {
                     GPSCaptureView(
                         location: viewModel.capturedLocation,
                         accuracyLevel: viewModel.accuracyLevel,
                         onRecapture: { viewModel.recaptureLocation() }
                     )
-                    VariantPickerView(selectedVariant: $viewModel.selectedVariant)
+
+                    SpeciesPickerView(selectedSpecies: $viewModel.selectedSpecies)
+
                     SizePickerView(selectedSize: $viewModel.selectedSize)
+
                     PhotoCaptureView(photoFilenames: $viewModel.photoFilenames)
+
                     if let rec = viewModel.controlRecommendation {
                         ControlRecommendationView(recommendation: rec)
                     }
-                    VStack(alignment: .leading, spacing: 8) {
+
+                    VStack(alignment: .leading, spacing: DSSpace.sm) {
                         Text("Notes (optional)")
-                            .font(.headline)
+                            .font(DSFont.headline)
+                            .foregroundStyle(Color.dsInk)
                         TextEditor(text: $viewModel.notes)
-                            .frame(height: 80)
-                            .padding(8)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(10)
+                            .font(DSFont.body)
+                            .frame(height: 90)
+                            .padding(DSSpace.md)
+                            .background(Color.dsSurface)
+                            .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
+                                    .strokeBorder(Color.dsDivider, lineWidth: 0.75)
+                            )
                     }
+
                     if let error = viewModel.saveError {
-                        Text(error).foregroundColor(.red).font(.callout)
+                        Text(error)
+                            .font(DSFont.callout)
+                            .foregroundStyle(Color.dsStatusActive)
                     }
+
                     LargeButton(
                         title: "Save Sighting",
                         action: {
@@ -49,18 +64,20 @@ struct LogSightingView: View {
                             }
                         },
                         isEnabled: viewModel.canSave,
-                        isLoading: viewModel.isSaving,
-                        color: .green
+                        isLoading: viewModel.isSaving
                     )
-                    .padding(.bottom, 8)
+                    .padding(.bottom, DSSpace.lg)
                 }
-                .padding()
+                .padding(.horizontal, DSSpace.lg)
+                .padding(.top, DSSpace.lg)
             }
-            .navigationTitle("New Sighting")
+            .background(Color.dsBackground.ignoresSafeArea())
+            .navigationTitle("Log Sighting")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .foregroundStyle(Color.dsInk2)
                 }
             }
         }

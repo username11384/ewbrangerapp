@@ -28,7 +28,7 @@ struct TreatmentEntryView: View {
                 }
 
                 Section("Herbicide Product") {
-                    TextField("e.g. Garlon 600, Access (optional)", text: $herbicideProduct)
+                    TextField("e.g. Garlon 600, Access, Tordon 75-D (optional)", text: $herbicideProduct)
                 }
 
                 Section("Outcome Notes") {

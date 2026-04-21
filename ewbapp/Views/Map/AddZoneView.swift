@@ -5,11 +5,9 @@ struct AddZoneView: View {
     @EnvironmentObject var appEnv: AppEnvironment
 
     @State private var zoneName = ""
-    @State private var selectedVariant: LantanaVariant = .unknown
+    @State private var selectedSpecies: InvasiveSpecies = .unknown
     @State private var selectedStatus = "active"
     @State private var isSaving = false
-
-    private let statuses = ["active", "underTreatment", "cleared"]
 
     var body: some View {
         NavigationStack {
@@ -17,13 +15,13 @@ struct AddZoneView: View {
                 Section("Zone Details") {
                     TextField("Zone Name (optional)", text: $zoneName)
 
-                    Picker("Dominant Variant", selection: $selectedVariant) {
-                        ForEach(LantanaVariant.allCases, id: \.self) { v in
+                    Picker("Dominant Species", selection: $selectedSpecies) {
+                        ForEach(InvasiveSpecies.allCases, id: \.self) { s in
                             HStack {
-                                VariantColourDot(variant: v, size: 10)
-                                Text(v.displayName)
+                                SpeciesIndicator(species: s, size: 10)
+                                Text(s.displayName)
                             }
-                            .tag(v)
+                            .tag(s)
                         }
                     }
 
@@ -33,7 +31,6 @@ struct AddZoneView: View {
                         Text("Cleared").tag("cleared")
                     }
                 }
-
             }
             .navigationTitle("Add Zone")
             .navigationBarTitleDisplayMode(.inline)
@@ -54,7 +51,7 @@ struct AddZoneView: View {
         let repo = ZoneRepository(persistence: appEnv.persistence)
         Task {
             let name = zoneName.isEmpty ? nil : zoneName
-            _ = try? await repo.createZone(name: name, dominantVariant: selectedVariant)
+            _ = try? await repo.createZone(name: name, dominantSpecies: selectedSpecies)
             await MainActor.run { dismiss() }
         }
     }

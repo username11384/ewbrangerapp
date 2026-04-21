@@ -4,15 +4,21 @@ struct ControlRecommendationView: View {
     let recommendation: String
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: DSSpace.md) {
             Image(systemName: "checkmark.seal.fill")
-                .foregroundColor(.green)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color.dsPrimary)
             Text(recommendation)
-                .font(.callout)
+                .font(DSFont.callout)
+                .foregroundStyle(Color.dsInk2)
         }
-        .padding(12)
+        .padding(DSSpace.md)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.green.opacity(0.1))
-        .cornerRadius(10)
+        .background(Color.dsPrimarySoft)
+        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
+                .strokeBorder(Color.dsPrimary.opacity(0.2), lineWidth: 0.75)
+        )
     }
 }

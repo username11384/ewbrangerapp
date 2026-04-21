@@ -28,20 +28,19 @@ struct LoginView: View {
                                     .clipped()
                                     .overlay(
                                         LinearGradient(
-                                            colors: [.black.opacity(0.55), .black.opacity(0.15)],
+                                            colors: [Color.dsPrimaryDeep.opacity(0.7), Color.dsPrimaryDeep.opacity(0.2)],
                                             startPoint: .top, endPoint: .bottom
                                         )
                                     )
                                     .overlay(
                                         LinearGradient(
-                                            colors: [.clear, Color(.systemBackground)],
+                                            colors: [.clear, Color.dsBackground],
                                             startPoint: .center, endPoint: .bottom
                                         )
                                     )
                             } else {
                                 LinearGradient(
-                                    colors: [Color(red: 0.08, green: 0.24, blue: 0.14),
-                                             Color(red: 0.13, green: 0.38, blue: 0.22)],
+                                    colors: [Color.dsPrimaryDeep, Color.dsPrimary],
                                     startPoint: .top, endPoint: .bottom
                                 )
                                 .frame(height: viewModel.selectedRanger == nil ? 300 : 180)
@@ -50,17 +49,17 @@ struct LoginView: View {
                             // Logo + title
                             VStack(spacing: 6) {
                                 Image(systemName: "leaf.fill")
-                                    .font(.system(size: 40, weight: .medium))
+                                    .font(.system(size: 38, weight: .medium))
                                     .foregroundStyle(.white.opacity(0.95))
-                                    .shadow(color: .black.opacity(0.4), radius: 4)
+                                    .shadow(color: .black.opacity(0.3), radius: 4)
                                 Text("Lama Lama Rangers")
                                     .font(.system(size: 26, weight: .bold, design: .rounded))
                                     .foregroundStyle(.white)
-                                    .shadow(color: .black.opacity(0.5), radius: 4)
+                                    .shadow(color: .black.opacity(0.4), radius: 4)
                                 Text("Yintjingga Aboriginal Corporation")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.white.opacity(0.75))
-                                    .shadow(color: .black.opacity(0.4), radius: 2)
+                                    .font(.system(size: 14, weight: .regular))
+                                    .foregroundStyle(.white.opacity(0.8))
+                                    .shadow(color: .black.opacity(0.3), radius: 2)
                             }
                             .padding(.bottom, 28)
                         }
@@ -68,13 +67,14 @@ struct LoginView: View {
                                    value: viewModel.selectedRanger == nil)
 
                         // ── Card ──────────────────────────────────────────
-                        VStack(spacing: 28) {
+                        VStack(spacing: DSSpace.xl) {
                             // Ranger selection
-                            VStack(alignment: .leading, spacing: 14) {
+                            VStack(alignment: .leading, spacing: DSSpace.md) {
                                 Text("Who are you?")
-                                    .font(.system(size: 17, weight: .semibold))
+                                    .font(DSFont.headline)
+                                    .foregroundStyle(Color.dsInk)
 
-                                HStack(spacing: 12) {
+                                HStack(spacing: DSSpace.sm) {
                                     ForEach(viewModel.rangers, id: \.id) { ranger in
                                         RangerAvatarCard(
                                             ranger: ranger,
@@ -91,20 +91,28 @@ struct LoginView: View {
                                 }
                             }
 
-                            // PIN — appears and page scrolls to show it
+                            // PIN entry
                             if viewModel.selectedRanger != nil {
-                                VStack(spacing: 20) {
-                                    VStack(spacing: 10) {
+                                VStack(spacing: DSSpace.lg) {
+                                    VStack(spacing: DSSpace.sm) {
                                         Text("Enter PIN")
-                                            .font(.system(size: 15, weight: .medium))
-                                            .foregroundStyle(.secondary)
+                                            .font(DSFont.callout)
+                                            .foregroundStyle(Color.dsInk3)
                                         HStack(spacing: 18) {
                                             ForEach(0..<4, id: \.self) { i in
                                                 Circle()
                                                     .fill(i < viewModel.enteredPIN.count
-                                                          ? Color(red: 0.13, green: 0.45, blue: 0.25)
-                                                          : Color(.systemGray4))
+                                                          ? Color.dsPrimary
+                                                          : Color.dsSurface)
                                                     .frame(width: 14, height: 14)
+                                                    .overlay(
+                                                        Circle().strokeBorder(
+                                                            i < viewModel.enteredPIN.count
+                                                            ? Color.clear
+                                                            : Color.dsDivider,
+                                                            lineWidth: 1.5
+                                                        )
+                                                    )
                                                     .animation(.spring(response: 0.2),
                                                                value: viewModel.enteredPIN.count)
                                             }
@@ -122,30 +130,24 @@ struct LoginView: View {
 
                             if let error = viewModel.loginError {
                                 Text(error)
-                                    .font(.callout)
-                                    .foregroundStyle(.red)
+                                    .font(DSFont.callout)
+                                    .foregroundStyle(Color.dsStatusActive)
                                     .multilineTextAlignment(.center)
                             }
                         }
-                        .padding(.horizontal, 24)
-                        .padding(.top, 28)
-                        .padding(.bottom, geo.safeAreaInsets.bottom + 24)
+                        .padding(.horizontal, DSSpace.xl)
+                        .padding(.top, DSSpace.xl)
+                        .padding(.bottom, geo.safeAreaInsets.bottom + DSSpace.xl)
                         .frame(minHeight: geo.size.height
                                - (viewModel.selectedRanger == nil ? 300 : 180)
                                + 1, alignment: .top)
-                        .background(Color(.systemBackground))
+                        .background(Color.dsBackground)
                     }
                 }
                 .ignoresSafeArea(edges: .top)
-                .overlay(alignment: .bottom) {
-                    Text("31265 Communications for IT Professionals  ·  EWB Challenge 2026")
-                        .font(.system(size: 10))
-                        .foregroundStyle(Color(.tertiaryLabel))
-                        .padding(.bottom, geo.safeAreaInsets.bottom + 4)
-                        .allowsHitTesting(false)
-                }
             }
         }
+        .background(Color.dsBackground.ignoresSafeArea())
         .onAppear {
             viewModel.seedDemoRangersIfNeeded(
                 authManager: appEnv.authManager,
@@ -155,7 +157,7 @@ struct LoginView: View {
     }
 }
 
-// MARK: - Ranger avatar card
+// MARK: - Ranger Avatar Card
 
 struct RangerAvatarCard: View {
     let ranger: RangerProfile
@@ -173,50 +175,52 @@ struct RangerAvatarCard: View {
             .replacingOccurrences(of: "ranger", with: "Ranger")
     }
 
+    private var avatarColor: Color {
+        let name = ranger.displayName ?? ""
+        let palette: [Color] = [.dsAccentDeep, .dsPrimary, Color(hex: "7B5EA8"), Color(hex: "2E7A6B"), Color(hex: "C4A32E")]
+        let idx = abs(name.hashValue) % palette.count
+        return palette[idx]
+    }
+
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 10) {
+            VStack(spacing: DSSpace.sm) {
                 ZStack {
                     Circle()
-                        .fill(isSelected
-                              ? Color(red: 0.10, green: 0.36, blue: 0.20)
-                              : Color(.systemGray5))
+                        .fill(isSelected ? avatarColor : Color.dsSurface)
                         .frame(width: 56, height: 56)
                     Text(initials)
                         .font(.system(size: 20, weight: .semibold, design: .rounded))
-                        .foregroundStyle(isSelected ? .white : .primary)
+                        .foregroundStyle(isSelected ? .white : Color.dsInk2)
                 }
                 .overlay(
                     Circle().strokeBorder(
-                        isSelected ? Color(red: 0.18, green: 0.55, blue: 0.32) : Color.clear,
-                        lineWidth: 2.5
+                        isSelected ? avatarColor : Color.dsDivider,
+                        lineWidth: isSelected ? 2.5 : 1
                     )
                 )
+                .shadow(color: isSelected ? avatarColor.opacity(0.25) : .clear, radius: 4, y: 2)
 
                 VStack(spacing: 2) {
                     Text(ranger.displayName?.components(separatedBy: " ").first ?? "Ranger")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.primary)
+                        .font(DSFont.callout)
+                        .foregroundStyle(isSelected ? avatarColor : Color.dsInk)
                     Text(roleLabel)
                         .font(.system(size: 10))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.dsInk3)
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            .padding(.vertical, DSSpace.md)
             .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(isSelected
-                          ? Color(red: 0.10, green: 0.36, blue: 0.20).opacity(0.08)
-                          : Color(.systemGray6))
+                RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous)
+                    .fill(isSelected ? avatarColor.opacity(0.07) : Color.dsCard)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous)
                     .strokeBorder(
-                        isSelected
-                            ? Color(red: 0.18, green: 0.55, blue: 0.32).opacity(0.5)
-                            : Color.clear,
-                        lineWidth: 1.5
+                        isSelected ? avatarColor.opacity(0.4) : Color.dsDivider.opacity(0.6),
+                        lineWidth: 1
                     )
             )
         }
@@ -225,7 +229,7 @@ struct RangerAvatarCard: View {
     }
 }
 
-// MARK: - PIN keypad
+// MARK: - PIN Keypad
 
 private struct PINKeypad: View {
     let onDigit: (String) -> Void
@@ -234,29 +238,39 @@ private struct PINKeypad: View {
     private let rows = [["1","2","3"], ["4","5","6"], ["7","8","9"], ["","0","⌫"]]
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: DSSpace.sm) {
             ForEach(rows, id: \.self) { row in
-                HStack(spacing: 10) {
+                HStack(spacing: DSSpace.sm) {
                     ForEach(row, id: \.self) { key in
                         if key.isEmpty {
-                            Color.clear.frame(maxWidth: .infinity).frame(height: 64)
+                            Color.clear.frame(maxWidth: .infinity).frame(height: 60)
                         } else if key == "⌫" {
                             Button { onDelete() } label: {
                                 Image(systemName: "delete.left")
-                                    .font(.system(size: 20, weight: .medium))
-                                    .frame(maxWidth: .infinity).frame(height: 64)
-                                    .background(Color(.systemGray5))
-                                    .cornerRadius(14)
+                                    .font(.system(size: 18, weight: .medium))
+                                    .frame(maxWidth: .infinity).frame(height: 60)
+                                    .background(Color.dsSurface)
+                                    .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
+                                            .strokeBorder(Color.dsDivider, lineWidth: 0.75)
+                                    )
                             }
+                            .foregroundStyle(Color.dsInk2)
                             .buttonStyle(.plain)
                         } else {
                             Button { onDigit(key) } label: {
                                 Text(key)
-                                    .font(.system(size: 24, weight: .medium, design: .rounded))
-                                    .frame(maxWidth: .infinity).frame(height: 64)
-                                    .background(Color(.systemGray6))
-                                    .cornerRadius(14)
+                                    .font(.system(size: 22, weight: .medium, design: .rounded))
+                                    .frame(maxWidth: .infinity).frame(height: 60)
+                                    .background(Color.dsCard)
+                                    .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
+                                            .strokeBorder(Color.dsDivider, lineWidth: 0.75)
+                                    )
                             }
+                            .foregroundStyle(Color.dsInk)
                             .buttonStyle(.plain)
                         }
                     }
@@ -266,7 +280,7 @@ private struct PINKeypad: View {
     }
 }
 
-// Kept for any other call sites
+// MARK: - Ranger Chip (kept for any remaining callers)
 struct RangerChip: View {
     let ranger: RangerProfile
     let isSelected: Bool
@@ -275,11 +289,13 @@ struct RangerChip: View {
     var body: some View {
         Button(action: action) {
             Text(ranger.displayName ?? "Ranger")
-                .font(.callout.bold())
-                .padding(.horizontal, 16).padding(.vertical, 10)
-                .background(isSelected ? Color.green : Color(.systemGray5))
-                .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(20)
+                .font(DSFont.callout)
+                .fontWeight(.semibold)
+                .padding(.horizontal, DSSpace.lg)
+                .padding(.vertical, DSSpace.sm)
+                .background(isSelected ? Color.dsPrimary : Color.dsSurface)
+                .foregroundStyle(isSelected ? .white : Color.dsInk)
+                .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }

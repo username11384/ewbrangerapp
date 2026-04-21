@@ -12,161 +12,209 @@ struct DashboardView: View {
         ))
     }
 
+    // Build species color scale from all InvasiveSpecies cases
+    private var speciesColorScale: KeyValuePairs<String, Color> {
+        [
+            InvasiveSpecies.lantana.displayName:           InvasiveSpecies.lantana.color,
+            InvasiveSpecies.rubberVine.displayName:        InvasiveSpecies.rubberVine.color,
+            InvasiveSpecies.pricklyAcacia.displayName:     InvasiveSpecies.pricklyAcacia.color,
+            InvasiveSpecies.sicklepod.displayName:         InvasiveSpecies.sicklepod.color,
+            InvasiveSpecies.giantRatsTailGrass.displayName: InvasiveSpecies.giantRatsTailGrass.color,
+            InvasiveSpecies.pondApple.displayName:         InvasiveSpecies.pondApple.color,
+            InvasiveSpecies.unknown.displayName:           InvasiveSpecies.unknown.color,
+        ]
+    }
+
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Sync status
-                    if viewModel.pendingSyncCount > 0 {
-                        HStack {
-                            Image(systemName: "arrow.up.circle.fill")
-                                .foregroundColor(.orange)
-                            Text("\(viewModel.pendingSyncCount) records pending sync")
-                                .font(.callout)
-                            Spacer()
-                        }
-                        .padding(12)
-                        .background(Color.orange.opacity(0.1))
-                        .cornerRadius(10)
-                    }
+        ScrollView {
+            VStack(spacing: DSSpace.lg) {
 
-                    // Stat cards
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                        StatCard(title: "Total\nSightings", value: "\(viewModel.totalSightings)", color: .red)
-                        StatCard(title: "This\nMonth", value: "\(viewModel.sightingsThisMonth)", color: .orange)
-                        StatCard(title: "Treatments\nThis Month", value: "\(viewModel.treatmentsThisMonth)", color: .blue)
-                        StatCard(title: "Zones\nCleared", value: String(format: "%.0f%%", viewModel.clearedZonePercent), color: .green)
-                        StatCard(title: "Open\nFollow-ups", value: "\(viewModel.openFollowUpTasks)", color: viewModel.openFollowUpTasks > 0 ? .orange : .secondary)
+                // Pending sync banner
+                if viewModel.pendingSyncCount > 0 {
+                    HStack(spacing: DSSpace.sm) {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .foregroundStyle(Color.dsStatusTreat)
+                        Text("\(viewModel.pendingSyncCount) records pending sync")
+                            .font(DSFont.callout)
+                            .foregroundStyle(Color.dsInk2)
+                        Spacer()
                     }
+                    .padding(DSSpace.md)
+                    .background(Color.dsStatusTreatSoft)
+                    .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+                }
 
-                    // Zone status doughnut
-                    if !viewModel.zoneStatusCounts.isEmpty {
-                        VStack(alignment: .leading) {
-                            Text("Zones by Status")
-                                .font(.headline)
-                            Chart(Array(viewModel.zoneStatusCounts), id: \.key) { key, value in
-                                SectorMark(
-                                    angle: .value("Count", value),
-                                    innerRadius: .ratio(0.5)
-                                )
-                                .foregroundStyle(zoneStatusColor(key))
-                                .annotation(position: .overlay) {
-                                    Text("\(value)").font(.caption.bold()).foregroundColor(.white)
+                // Stat cards grid
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: DSSpace.md) {
+                    DSStatCard(title: "Total Sightings", value: "\(viewModel.totalSightings)",
+                               icon: "binoculars.fill", accent: Color.dsSpeciesLantana)
+                    DSStatCard(title: "This Month", value: "\(viewModel.sightingsThisMonth)",
+                               icon: "calendar", accent: Color.dsPrimary)
+                    DSStatCard(title: "Treatments", value: "\(viewModel.treatmentsThisMonth)",
+                               icon: "cross.case.fill", accent: Color(hex: "4A90A4"))
+                    DSStatCard(title: "Zones Cleared", value: String(format: "%.0f%%", viewModel.clearedZonePercent),
+                               icon: "checkmark.circle.fill", accent: Color.dsStatusCleared)
+                }
+
+                if viewModel.openFollowUpTasks > 0 {
+                    HStack(spacing: DSSpace.sm) {
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .foregroundStyle(Color.dsStatusTreat)
+                        Text("\(viewModel.openFollowUpTasks) open follow-up tasks")
+                            .font(DSFont.callout)
+                            .foregroundStyle(Color.dsInk2)
+                        Spacer()
+                    }
+                    .dsCard(padding: DSSpace.md)
+                }
+
+                // Zone status chart
+                if !viewModel.zoneStatusCounts.isEmpty {
+                    chartCard(title: "Zones by Status", icon: "square.dashed") {
+                        Chart(Array(viewModel.zoneStatusCounts), id: \.key) { key, value in
+                            SectorMark(
+                                angle: .value("Count", value),
+                                innerRadius: .ratio(0.52)
+                            )
+                            .foregroundStyle(zoneStatusColor(key))
+                            .annotation(position: .overlay) {
+                                if value > 0 {
+                                    Text("\(value)")
+                                        .font(DSFont.badge)
+                                        .foregroundStyle(.white)
                                 }
                             }
-                            .frame(height: 200)
-                        }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                    }
-
-                    // Monthly sightings line chart
-                    VStack(alignment: .leading) {
-                        Text("Sightings per Month")
-                            .font(.headline)
-                        Chart(viewModel.monthlySightingData, id: \.date) { entry in
-                            LineMark(
-                                x: .value("Month", entry.date),
-                                y: .value("Count", entry.count)
-                            )
-                            .foregroundStyle(by: .value("Variant", entry.variant))
                         }
                         .frame(height: 180)
-                        .chartForegroundStyleScale([
-                            LantanaVariant.pink.displayName:         LantanaVariant.pink.color,
-                            LantanaVariant.red.displayName:          LantanaVariant.red.color,
-                            LantanaVariant.pinkEdgedRed.displayName: LantanaVariant.pinkEdgedRed.color,
-                            LantanaVariant.orange.displayName:       LantanaVariant.orange.color,
-                            LantanaVariant.white.displayName:        Color(.systemGray3),
-                            LantanaVariant.unknown.displayName:      Color(.systemGray),
-                        ])
-                        .chartXAxis {
-                            AxisMarks(values: .stride(by: .month)) {
-                                AxisValueLabel(format: .dateTime.month(.abbreviated))
-                            }
-                        }
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
 
-                    // Per-ranger breakdown
-                    if !viewModel.rangerSightingCounts.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("Sightings by Ranger")
-                                .font(.headline)
-                            ForEach(viewModel.rangerSightingCounts, id: \.name) { entry in
-                                HStack {
-                                    Text(entry.name)
-                                        .font(.subheadline)
-                                    Spacer()
-                                    Text("\(entry.count)")
-                                        .font(.subheadline.bold())
-                                        .foregroundColor(.secondary)
-                                    GeometryReader { geo in
-                                        let maxCount = viewModel.rangerSightingCounts.first?.count ?? 1
-                                        let width = geo.size.width * CGFloat(entry.count) / CGFloat(maxCount)
-                                        RoundedRectangle(cornerRadius: 3)
-                                            .fill(Color.red.opacity(0.7))
-                                            .frame(width: max(width, 4), height: 8)
-                                    }
-                                    .frame(width: 80, height: 8)
+                        // Legend
+                        HStack(spacing: DSSpace.lg) {
+                            ForEach(["active", "underTreatment", "cleared"], id: \.self) { status in
+                                HStack(spacing: 5) {
+                                    Circle()
+                                        .fill(zoneStatusColor(status))
+                                        .frame(width: 8, height: 8)
+                                    Text(statusLabel(status))
+                                        .font(DSFont.caption)
+                                        .foregroundStyle(Color.dsInk3)
                                 }
                             }
                         }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                    }
-
-                    // Last sync
-                    if let lastSync = viewModel.lastSyncDate {
-                        HStack {
-                            Image(systemName: "checkmark.icloud.fill")
-                                .foregroundColor(.green)
-                            Text("Last synced: ")
-                            Text(lastSync, style: .relative)
-                        }
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                     }
                 }
-                .padding()
+
+                // Monthly sightings line chart
+                chartCard(title: "Sightings per Month", icon: "chart.line.uptrend.xyaxis") {
+                    Chart(viewModel.monthlySightingData, id: \.date) { entry in
+                        LineMark(
+                            x: .value("Month", entry.date),
+                            y: .value("Count", entry.count)
+                        )
+                        .foregroundStyle(by: .value("Species", entry.variant))
+                        PointMark(
+                            x: .value("Month", entry.date),
+                            y: .value("Count", entry.count)
+                        )
+                        .foregroundStyle(by: .value("Species", entry.variant))
+                        .symbolSize(30)
+                    }
+                    .frame(height: 160)
+                    .chartForegroundStyleScale(speciesColorScale)
+                    .chartXAxis {
+                        AxisMarks(values: .stride(by: .month)) {
+                            AxisValueLabel(format: .dateTime.month(.abbreviated))
+                                .font(DSFont.caption)
+                        }
+                    }
+                }
+
+                // Per-ranger breakdown
+                if !viewModel.rangerSightingCounts.isEmpty {
+                    chartCard(title: "Sightings by Ranger", icon: "person.2.fill") {
+                        VStack(spacing: DSSpace.sm) {
+                            ForEach(viewModel.rangerSightingCounts, id: \.name) { entry in
+                                HStack(spacing: DSSpace.sm) {
+                                    Text(entry.name.components(separatedBy: " ").first ?? entry.name)
+                                        .font(DSFont.callout)
+                                        .foregroundStyle(Color.dsInk)
+                                        .frame(width: 60, alignment: .leading)
+                                    GeometryReader { geo in
+                                        let maxCount = viewModel.rangerSightingCounts.first?.count ?? 1
+                                        let fraction = CGFloat(entry.count) / CGFloat(max(maxCount, 1))
+                                        ZStack(alignment: .leading) {
+                                            RoundedRectangle(cornerRadius: 3)
+                                                .fill(Color.dsSurface)
+                                                .frame(height: 8)
+                                            RoundedRectangle(cornerRadius: 3)
+                                                .fill(Color.dsPrimary.opacity(0.7))
+                                                .frame(width: max(geo.size.width * fraction, 4), height: 8)
+                                        }
+                                    }
+                                    .frame(height: 8)
+                                    Text("\(entry.count)")
+                                        .font(DSFont.badge)
+                                        .foregroundStyle(Color.dsInk3)
+                                        .frame(width: 28, alignment: .trailing)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Last sync
+                if let lastSync = viewModel.lastSyncDate {
+                    HStack(spacing: DSSpace.sm) {
+                        Image(systemName: "checkmark.icloud.fill")
+                            .foregroundStyle(Color.dsSynced)
+                        Text("Last synced")
+                            .font(DSFont.caption)
+                            .foregroundStyle(Color.dsInk3)
+                        Text(lastSync, style: .relative)
+                            .font(DSFont.caption)
+                            .foregroundStyle(Color.dsInk3)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }
             }
-            .navigationTitle("Dashboard")
-            .onAppear { viewModel.load() }
+            .padding(.horizontal, DSSpace.lg)
+            .padding(.vertical, DSSpace.lg)
         }
+        .background(Color.dsBackground.ignoresSafeArea())
+        .navigationTitle("Dashboard")
+        .navigationBarTitleDisplayMode(.large)
+        .onAppear { viewModel.load() }
+    }
+
+    @ViewBuilder
+    private func chartCard<Content: View>(title: String, icon: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: DSSpace.md) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.dsPrimary)
+                Text(title)
+                    .font(DSFont.headline)
+                    .foregroundStyle(Color.dsInk)
+            }
+            content()
+        }
+        .dsCard()
     }
 
     private func zoneStatusColor(_ status: String) -> Color {
         switch status {
-        case "active": return .red
-        case "underTreatment": return .orange
-        case "cleared": return .green
-        default: return .gray
+        case "active":         return .dsStatusActive
+        case "underTreatment": return .dsStatusTreat
+        case "cleared":        return .dsStatusCleared
+        default:               return .dsInkMuted
         }
     }
-}
 
-struct StatCard: View {
-    let title: String
-    let value: String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Text(value)
-                .font(.title.bold())
-                .foregroundColor(color)
-            Text(title)
-                .font(.caption)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+    private func statusLabel(_ status: String) -> String {
+        switch status {
+        case "underTreatment": return "Treating"
+        case "cleared":        return "Cleared"
+        default:               return "Active"
         }
-        .frame(maxWidth: .infinity)
-        .padding(12)
-        .background(Color(.systemGray6))
-        .cornerRadius(10)
     }
 }

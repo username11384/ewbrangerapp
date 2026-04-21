@@ -32,10 +32,10 @@ struct PortStewartZones {
     static let defaultChecklist: [PatrolChecklistItem] = [
         PatrolChecklistItem(label: "Check GPS is recording"),
         PatrolChecklistItem(label: "Photograph new infestations"),
-        PatrolChecklistItem(label: "Record all Lantana sightings"),
+        PatrolChecklistItem(label: "Record all invasive plant sightings"),
         PatrolChecklistItem(label: "Check previous treatment sites"),
         PatrolChecklistItem(label: "Note regrowth on treated plants"),
-        PatrolChecklistItem(label: "Check pesticide supply before departing")
+        PatrolChecklistItem(label: "Check herbicide supply before departing")
     ]
 
     static func defaultChecklist(for area: String) -> [PatrolChecklistItem] {
