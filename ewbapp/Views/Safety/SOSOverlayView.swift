@@ -161,19 +161,19 @@ struct SOSOverlayView: View {
     }
 
     private func preRespondContent(rangerName: String) -> some View {
-        VStack(spacing: DSSpace.xl) {
+        VStack(spacing: DSSpace.lg) {
             // Ranger identity
             VStack(spacing: DSSpace.xs) {
                 Text(rangerName)
-                    .font(.system(size: 34, weight: .black, design: .rounded))
+                    .font(.system(size: 28, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                 Text("missed their safety check-in")
-                    .font(DSFont.subhead)
-                    .foregroundStyle(Color.white.opacity(0.7))
+                    .font(DSFont.callout)
+                    .foregroundStyle(Color.white.opacity(0.65))
                     .multilineTextAlignment(.center)
             }
 
-            // Compass — pre-respond state (wider wobble)
+            // Big Find My arrow
             compassView(size: 160)
 
             // Distance pill
@@ -182,153 +182,138 @@ struct SOSOverlayView: View {
     }
 
     private func respondingContent(rangerName: String) -> some View {
-        VStack(spacing: DSSpace.lg) {
+        VStack(spacing: DSSpace.md) {
             // Ranger label (compact)
             Text(rangerName)
-                .font(.system(size: 22, weight: .black, design: .rounded))
+                .font(.system(size: 20, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
 
-            // Compass — tightens as distance shrinks
+            // Big Find My arrow — takes centre stage
             compassView(size: 180)
 
-            // Distance + GPS panel
-            VStack(spacing: DSSpace.sm) {
-                // Large distance readout
-                HStack(alignment: .lastTextBaseline, spacing: 6) {
-                    Text(safetyVM.sosDistanceDisplay)
-                        .font(.system(size: 40, weight: .black, design: .monospaced))
-                        .foregroundStyle(.white)
-                        .contentTransition(.numericText())
-                        .animation(.easeInOut(duration: 0.4), value: safetyVM.sosDistanceDisplay)
-                    Text("away")
-                        .font(DSFont.callout)
-                        .foregroundStyle(Color.white.opacity(0.6))
-                        .padding(.bottom, 4)
-                }
-
-                // GPS coordinate panel
-                gpsPanel
+            // Distance readout — large, below arrow
+            HStack(alignment: .lastTextBaseline, spacing: 6) {
+                Text(safetyVM.sosDistanceDisplay)
+                    .font(.system(size: 44, weight: .black, design: .monospaced))
+                    .foregroundStyle(.white)
+                    .contentTransition(.numericText())
+                    .animation(.easeInOut(duration: 0.4), value: safetyVM.sosDistanceDisplay)
+                Text("away")
+                    .font(DSFont.subhead)
+                    .foregroundStyle(Color.white.opacity(0.55))
+                    .padding(.bottom, 6)
             }
+
+            // GPS coordinate panel
+            gpsPanel
         }
     }
 
-    // MARK: - Compass
+    // MARK: - Precision Arrow (Find My style)
 
     private func compassView(size: CGFloat) -> some View {
         let phase = safetyVM.sosProximityPhase
-        let isFound = phase == 2
-        let isNear = phase == 1
 
         return ZStack {
-            // Outer ring
-            Circle()
-                .stroke(Color.white.opacity(0.15), lineWidth: 1.5)
-                .frame(width: size, height: size)
-
-            // Disc
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.white.opacity(0.12), Color.white.opacity(0.04)],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: size / 2
-                    )
-                )
-                .frame(width: size - 4, height: size - 4)
-
-            if !isFound {
-                // Cardinal labels
-                compassCardinals(size: size)
-            }
-
-            if isFound {
-                // Found state — checkmark + green proximity pulse
+            switch phase {
+            case 2:
+                // Found — large green checkmark with pulsing glow
                 ZStack {
-                    Circle()
-                        .stroke(Color(hex: "34C759").opacity(0.4), lineWidth: 2)
-                        .frame(width: size * 0.55, height: size * 0.55)
-                        .scaleEffect(proximityPulse)
-                        .opacity(proximityPulseOpacity)
-                        .animation(
-                            .easeOut(duration: 1.2).repeatForever(autoreverses: false),
-                            value: proximityPulse
-                        )
-
+                    // Outer glow rings
+                    ForEach(0..<2, id: \.self) { i in
+                        Circle()
+                            .fill(Color(hex: "34C759").opacity(0.15 - Double(i) * 0.06))
+                            .frame(width: 200 + CGFloat(i) * 60, height: 200 + CGFloat(i) * 60)
+                            .scaleEffect(proximityPulse)
+                            .opacity(proximityPulseOpacity)
+                            .animation(
+                                .easeOut(duration: 1.4).repeatForever(autoreverses: false).delay(Double(i) * 0.3),
+                                value: proximityPulse
+                            )
+                    }
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: size * 0.28, weight: .bold))
+                        .font(.system(size: 110, weight: .regular))
                         .foregroundStyle(Color(hex: "34C759"))
+                        .shadow(color: Color(hex: "34C759").opacity(0.5), radius: 24, x: 0, y: 0)
                 }
                 .onAppear {
-                    withAnimation(.easeOut(duration: 1.2).repeatForever(autoreverses: false)) {
-                        proximityPulse = 1.5
+                    withAnimation(.easeOut(duration: 1.4).repeatForever(autoreverses: false)) {
+                        proximityPulse = 1.6
                         proximityPulseOpacity = 0
                     }
                 }
-            } else if isNear {
-                // Near state — person icon with tight arc
+                .frame(height: 220)
+
+            case 1:
+                // Near — person icon, arrow locked, tight glow
                 ZStack {
-                    // Proximity arc behind person
+                    // Soft proximity glow
                     Circle()
-                        .stroke(Color.white.opacity(0.25), lineWidth: 2)
-                        .frame(width: size * 0.5, height: size * 0.5)
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 180, height: 180)
                         .scaleEffect(proximityPulse)
                         .opacity(proximityPulseOpacity)
                         .animation(
-                            .easeOut(duration: 1.0).repeatForever(autoreverses: false),
+                            .easeOut(duration: 1.1).repeatForever(autoreverses: false),
                             value: proximityPulse
                         )
                         .onAppear {
-                            withAnimation(.easeOut(duration: 1.0).repeatForever(autoreverses: false)) {
-                                proximityPulse = 1.35
+                            withAnimation(.easeOut(duration: 1.1).repeatForever(autoreverses: false)) {
+                                proximityPulse = 1.5
                                 proximityPulseOpacity = 0
                             }
                         }
 
-                    // Person icon rotates to locked bearing
-                    Image(systemName: "figure.stand")
-                        .font(.system(size: size * 0.22, weight: .semibold))
+                    // Large arrow — nearly locked at this distance
+                    Image(systemName: "arrowshape.up.fill")
+                        .font(.system(size: 110, weight: .regular))
                         .foregroundStyle(.white)
+                        .shadow(color: Color.white.opacity(0.35), radius: 22, x: 0, y: 0)
                         .rotationEffect(.degrees(safetyVM.sosBearing))
                         .animation(
-                            .spring(response: 0.6, dampingFraction: 0.75),
+                            .spring(response: 0.8, dampingFraction: 0.85),
+                            value: safetyVM.sosBearing
+                        )
+
+                    // Person icon — locked at center
+                    Image(systemName: "figure.stand")
+                        .font(.system(size: 30, weight: .semibold))
+                        .foregroundStyle(Color.white.opacity(0.9))
+                        .offset(y: -14)
+                }
+                .frame(height: 220)
+
+            default:
+                // Searching / tracking — full-size free arrow, no disc
+                ZStack {
+                    // Radial glow behind the arrow
+                    RadialGradient(
+                        colors: [Color.white.opacity(0.16), Color.clear],
+                        center: .center,
+                        startRadius: 10,
+                        endRadius: 110
+                    )
+                    .frame(width: 220, height: 220)
+                    .rotationEffect(.degrees(safetyVM.sosBearing))
+                    .animation(
+                        .interpolatingSpring(stiffness: 100, damping: 16),
+                        value: safetyVM.sosBearing
+                    )
+
+                    Image(systemName: "arrowshape.up.fill")
+                        .font(.system(size: 130, weight: .regular))
+                        .foregroundStyle(.white)
+                        .shadow(color: Color.white.opacity(0.3), radius: 28, x: 0, y: 0)
+                        .rotationEffect(.degrees(safetyVM.sosBearing))
+                        .animation(
+                            .interpolatingSpring(stiffness: 100, damping: 16),
                             value: safetyVM.sosBearing
                         )
                 }
-            } else {
-                // Searching / tracking — directional arrow
-                Image(systemName: "location.north.fill")
-                    .font(.system(size: size * 0.28, weight: .bold))
-                    .foregroundStyle(.white)
-                    .rotationEffect(.degrees(safetyVM.sosBearing))
-                    .animation(
-                        .interpolatingSpring(stiffness: 120, damping: 18),
-                        value: safetyVM.sosBearing
-                    )
+                .frame(height: 220)
             }
         }
-    }
-
-    private func compassCardinals(size: CGFloat) -> some View {
-        let inset = size * 0.14
-        return ZStack {
-            VStack {
-                Text("N").font(DSFont.caption).foregroundStyle(Color.white.opacity(0.4))
-                    .padding(.top, inset)
-                Spacer()
-                Text("S").font(DSFont.caption).foregroundStyle(Color.white.opacity(0.4))
-                    .padding(.bottom, inset)
-            }
-            .frame(height: size * 0.8)
-            HStack {
-                Text("W").font(DSFont.caption).foregroundStyle(Color.white.opacity(0.4))
-                    .padding(.leading, inset)
-                Spacer()
-                Text("E").font(DSFont.caption).foregroundStyle(Color.white.opacity(0.4))
-                    .padding(.trailing, inset)
-            }
-            .frame(width: size * 0.8)
-        }
+        .frame(height: 220)
     }
 
     // MARK: - GPS Panel
