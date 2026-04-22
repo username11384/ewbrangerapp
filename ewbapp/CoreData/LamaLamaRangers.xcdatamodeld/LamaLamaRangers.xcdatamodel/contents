@@ -139,6 +139,16 @@
         <attribute name="performedBy" attributeType="String" defaultValueString=""/>
         <relationship name="equipment" maxCount="1" deletionRule="Nullify" destinationEntity="Equipment" inverseName="maintenanceRecords" inverseEntity="Equipment"/>
     </entity>
+    <entity name="TreatmentFollowUp" representedClassName="TreatmentFollowUp" syncable="YES">
+        <attribute name="followUpDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="percentDead" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="photoPath" optional="YES" attributeType="String"/>
+        <attribute name="regrowthLevel" optional="YES" attributeType="String"/>
+        <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="treatment" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TreatmentRecord" inverseName="followUps" inverseEntity="TreatmentRecord"/>
+    </entity>
     <entity name="TreatmentRecord" representedClassName="TreatmentRecord" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="followUpDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -151,6 +161,7 @@
         <attribute name="treatmentDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="followUpTask" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RangerTask" inverseName="sourceTreatment" inverseEntity="RangerTask"/>
+        <relationship name="followUps" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TreatmentFollowUp" inverseName="treatment" inverseEntity="TreatmentFollowUp"/>
         <relationship name="pesticideUsageRecords" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PesticideUsageRecord" inverseName="treatment" inverseEntity="PesticideUsageRecord"/>
         <relationship name="ranger" maxCount="1" deletionRule="Nullify" destinationEntity="RangerProfile" inverseName="treatmentRecords" inverseEntity="RangerProfile"/>
         <relationship name="sighting" maxCount="1" deletionRule="Nullify" destinationEntity="SightingLog" inverseName="treatmentRecords" inverseEntity="SightingLog"/>

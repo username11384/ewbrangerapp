@@ -135,6 +135,28 @@ public class SyncQueue: NSManagedObject {
     @NSManaged public var lastErrorMessage: String?
 }
 
+// MARK: - TreatmentFollowUp
+
+@objc(TreatmentFollowUp)
+public class TreatmentFollowUp: NSManagedObject {
+    @NSManaged public var id: UUID?
+    @NSManaged public var followUpDate: Date?
+    @NSManaged public var percentDead: Double
+    @NSManaged public var regrowthLevel: String?
+    @NSManaged public var notes: String?
+    @NSManaged public var photoPath: String?
+    @NSManaged public var syncStatus: Int16
+    @NSManaged public var treatment: TreatmentRecord?
+}
+
+extension TreatmentFollowUp: Identifiable {}
+
+extension TreatmentFollowUp {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<TreatmentFollowUp> {
+        return NSFetchRequest<TreatmentFollowUp>(entityName: "TreatmentFollowUp")
+    }
+}
+
 // MARK: - TreatmentRecord
 
 @objc(TreatmentRecord)
@@ -153,6 +175,7 @@ public class TreatmentRecord: NSManagedObject {
     @NSManaged public var ranger: RangerProfile?
     @NSManaged public var pesticideUsageRecords: NSSet?
     @NSManaged public var followUpTask: RangerTask?
+    @NSManaged public var followUps: NSSet?
 }
 
 // MARK: - RangerTask

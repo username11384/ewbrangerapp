@@ -1,4 +1,5 @@
 import Combine
+import CoreData
 import Foundation
 import CoreLocation
 import UIKit

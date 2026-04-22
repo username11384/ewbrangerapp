@@ -6,6 +6,7 @@ import Foundation
 final class AppEnvironment: ObservableObject {
     let persistence: PersistenceController
     let syncEngine: SyncEngine
+    let meshSyncEngine: MeshSyncEngine
     let locationManager: LocationManager
     let authManager: AuthManager
 
@@ -17,6 +18,7 @@ final class AppEnvironment: ObservableObject {
         self.authManager = AuthManager()
         self.locationManager = LocationManager()
         self.syncEngine = SyncEngine(persistence: persistence)
+        self.meshSyncEngine = MeshSyncEngine(persistence: persistence, displayName: "Ranger")
 
         // Seed demo rangers synchronously before any UI renders.
         // Uses performAndWait so rangers exist in the store before ContentView checks auth.

@@ -18,8 +18,9 @@ struct LogSightingView: View {
     @State private var dismissedAlertForSpecies: InvasiveSpecies? = nil
 
     private var currentPhenologyAlert: PhenologyAlert? {
+        guard let species = viewModel.selectedSpecies else { return nil }
         let month = Calendar.current.component(.month, from: Date())
-        return PhenologyAlertStore.alert(for: viewModel.selectedSpecies, month: month)
+        return PhenologyAlertStore.alert(for: species, month: month)
     }
 
     @State private var voiceNotePath: String? = nil

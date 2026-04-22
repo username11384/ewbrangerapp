@@ -127,7 +127,7 @@ struct SizeEstimationOverlay: View {
                             .allowsHitTesting(true)
 
                         // Area badge
-                        areaBadge(displaySize: displaySize)
+                        areaBadge
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

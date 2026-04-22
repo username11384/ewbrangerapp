@@ -11,7 +11,7 @@ struct RangerStatusView: View {
             predicate: NSPredicate(format: "isCurrentDevice == YES")
         ))?.displayName ?? "Ranger"
         _viewModel = StateObject(wrappedValue: RangerStatusViewModel(
-            syncEngine: env.syncEngine,
+            syncEngine: env.meshSyncEngine,
             deviceID: deviceID,
             rangerName: rangerName
         ))

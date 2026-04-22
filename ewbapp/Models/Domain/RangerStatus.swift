@@ -3,21 +3,17 @@ import Foundation
 // MARK: - RangerStatus
 
 struct RangerStatus: Codable, Identifiable {
-    let id: String          // deviceID / peerID display name
+    var id: String           // deviceID
     var rangerName: String
     var lastSeen: Date
     var currentZone: String?
-    var statusMessage: String   // "On Patrol", "Base Camp", "Need Assistance", "Returning"
+    var statusMessage: StatusMessage
     var batteryLevel: Float?
-}
 
-// MARK: - Status options
-
-extension RangerStatus {
-    static let statusOptions: [String] = [
-        "On Patrol",
-        "Base Camp",
-        "Need Assistance",
-        "Returning"
-    ]
+    enum StatusMessage: String, Codable, CaseIterable {
+        case onPatrol       = "On Patrol"
+        case baseCamp       = "Base Camp"
+        case needAssistance = "Need Assistance"
+        case returning      = "Returning"
+    }
 }

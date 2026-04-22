@@ -121,7 +121,7 @@ struct SafetyCheckInView: View {
             // Check-in button — visible when active
             if vm.isActive {
                 DSPrimaryButton(
-                    title: "I'm Safe — Check In",
+                    "I'm Safe — Check In",
                     icon: "checkmark.shield.fill",
                     isLoading: false
                 ) {
