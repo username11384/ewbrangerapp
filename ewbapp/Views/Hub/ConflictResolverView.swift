@@ -30,62 +30,91 @@ struct ZoneConflict: Identifiable {
 
     // MARK: - Demo Data
 
-    static let demoConflicts: [ZoneConflict] = [
-        ZoneConflict(
-            zoneName: "Southern Scrub Belt",
-            myVersion: ConflictVersion(
-                rangerName: "Alice",
-                editedAt: Date().addingTimeInterval(-2 * 60 * 60),
-                areaM2: 24500
+    static let defaultPeerNames = ["Bob Smith", "Carol White"]
+
+    static func demoConflicts(
+        currentRangerName: String,
+        peerNames: [String]
+    ) -> [ZoneConflict] {
+        let peers = peerNames.isEmpty ? defaultPeerNames : peerNames
+        let peer1 = peers.indices.contains(0) ? peers[0] : defaultPeerNames[0]
+        let peer2 = peers.indices.contains(1) ? peers[1] : peer1
+
+        return [
+            ZoneConflict(
+                zoneName: "Southern Scrub Belt",
+                myVersion: ConflictVersion(
+                    rangerName: currentRangerName,
+                    editedAt: Date().addingTimeInterval(-2 * 60 * 60),
+                    areaM2: 24500
+                ),
+                peerVersion: ConflictVersion(
+                    rangerName: peer1,
+                    editedAt: Date().addingTimeInterval(-45 * 60),
+                    areaM2: 24620
+                ),
+                resolution: nil,
+                mergePreview: nil
             ),
-            peerVersion: ConflictVersion(
-                rangerName: "Bob",
-                editedAt: Date().addingTimeInterval(-45 * 60),
-                areaM2: 24620
+            ZoneConflict(
+                zoneName: "Creek Line East",
+                myVersion: ConflictVersion(
+                    rangerName: currentRangerName,
+                    editedAt: Date().addingTimeInterval(-26 * 60 * 60),
+                    areaM2: 18300
+                ),
+                peerVersion: ConflictVersion(
+                    rangerName: peer2,
+                    editedAt: Date().addingTimeInterval(-3 * 60 * 60),
+                    areaM2: 18420
+                ),
+                resolution: nil,
+                mergePreview: nil
             ),
-            resolution: nil,
-            mergePreview: nil
-        ),
-        ZoneConflict(
-            zoneName: "Creek Line East",
-            myVersion: ConflictVersion(
-                rangerName: "Carol",
-                editedAt: Date().addingTimeInterval(-26 * 60 * 60),
-                areaM2: 18300
-            ),
-            peerVersion: ConflictVersion(
-                rangerName: "Alice",
-                editedAt: Date().addingTimeInterval(-3 * 60 * 60),
-                areaM2: 18420
-            ),
-            resolution: nil,
-            mergePreview: nil
-        ),
-        ZoneConflict(
-            zoneName: "Riparian Buffer",
-            myVersion: ConflictVersion(
-                rangerName: "Bob",
-                editedAt: Date().addingTimeInterval(-6 * 60 * 60),
-                areaM2: 31200
-            ),
-            peerVersion: ConflictVersion(
-                rangerName: "Carol",
-                editedAt: Date().addingTimeInterval(-2 * 60 * 60),
-                areaM2: 31100
-            ),
-            resolution: nil,
-            mergePreview: nil
-        )
-    ]
+            ZoneConflict(
+                zoneName: "Riparian Buffer",
+                myVersion: ConflictVersion(
+                    rangerName: currentRangerName,
+                    editedAt: Date().addingTimeInterval(-6 * 60 * 60),
+                    areaM2: 31200
+                ),
+                peerVersion: ConflictVersion(
+                    rangerName: peer1,
+                    editedAt: Date().addingTimeInterval(-2 * 60 * 60),
+                    areaM2: 31100
+                ),
+                resolution: nil,
+                mergePreview: nil
+            )
+        ]
+    }
 }
 
 // MARK: - Conflict Resolver View
 
 struct ConflictResolverView: View {
-    @State private var conflicts: [ZoneConflict] = ZoneConflict.demoConflicts
+    @EnvironmentObject private var appEnv: AppEnvironment
+    @State private var conflicts: [ZoneConflict] = []
 
     private var unresolvedCount: Int {
         conflicts.filter { $0.resolution == nil }.count
+    }
+
+    private var currentRangerName: String {
+        guard let rangerID = appEnv.authManager.currentRangerID else { return "Current Ranger" }
+        let predicate = NSPredicate(format: "id == %@", rangerID as CVarArg)
+        return (try? appEnv.persistence.mainContext.fetchFirst(RangerProfile.self, predicate: predicate))?.displayName
+            ?? "Current Ranger"
+    }
+
+    private var peerNames: [String] {
+        let currentID = appEnv.authManager.currentRangerID
+        let all = (try? appEnv.persistence.mainContext.fetchAll(RangerProfile.self)) ?? []
+        let peers = all
+            .filter { $0.id != currentID }
+            .compactMap { $0.displayName }
+            .sorted()
+        return peers.isEmpty ? ZoneConflict.defaultPeerNames : peers
     }
 
     var body: some View {
@@ -152,6 +181,13 @@ struct ConflictResolverView: View {
         }
         .navigationTitle("Zone Conflicts")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            guard conflicts.isEmpty else { return }
+            conflicts = ZoneConflict.demoConflicts(
+                currentRangerName: currentRangerName,
+                peerNames: peerNames
+            )
+        }
     }
 }
 

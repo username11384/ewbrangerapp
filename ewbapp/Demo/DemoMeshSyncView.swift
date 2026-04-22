@@ -34,11 +34,34 @@ struct DemoMeshSyncView: View {
     }
 
     private var unresolvedConflictCount: Int {
-        ZoneConflict.demoConflicts.filter { $0.resolution == nil }.count
+        ZoneConflict.demoConflicts(
+            currentRangerName: currentRangerName,
+            peerNames: peerDisplayNames
+        )
+        .filter { $0.resolution == nil }
+        .count
     }
 
     private var syncedTaskDisplayCount: Int {
         max(pendingTaskCount, totalTaskCount)
+    }
+
+    private var currentRangerName: String {
+        guard let rangerID = appEnv.authManager.currentRangerID else { return "Current Ranger" }
+        let predicate = NSPredicate(format: "id == %@", rangerID as CVarArg)
+        return (try? appEnv.persistence.mainContext.fetchFirst(RangerProfile.self, predicate: predicate))?.displayName
+            ?? "Current Ranger"
+    }
+
+    private var peerDisplayNames: [String] {
+        let ctx = appEnv.persistence.mainContext
+        let all = (try? ctx.fetchAll(RangerProfile.self)) ?? []
+        let currentID = appEnv.authManager.currentRangerID
+        let others = all
+            .filter { $0.id != currentID }
+            .compactMap { $0.displayName }
+            .sorted()
+        return others.isEmpty ? ZoneConflict.defaultPeerNames : others
     }
 
     var body: some View {
@@ -69,12 +92,33 @@ struct DemoMeshSyncView: View {
                     Spacer()
                 } else {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Nearby Rangers")
-                            .font(DSFont.headline)
-                            .padding(.horizontal)
+                        HStack(spacing: DSSpace.sm) {
+                            Image(systemName: "point.3.connected.trianglepath.dotted")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Color.dsPrimary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Mesh Session")
+                                    .font(DSFont.headline)
+                                    .foregroundStyle(Color.dsInk)
+                                Text("Encrypted peer-to-peer handoff across nearby ranger devices")
+                                    .font(DSFont.caption)
+                                    .foregroundStyle(Color.dsInk3)
+                            }
+                            Spacer()
+                            Text("2 links")
+                                .font(DSFont.badge)
+                                .foregroundStyle(Color.dsPrimary)
+                                .padding(.horizontal, DSSpace.sm)
+                                .padding(.vertical, DSSpace.xs)
+                                .background(Color.dsPrimarySoft)
+                                .clipShape(Capsule())
+                        }
+                        .padding(.horizontal)
 
-                        DemoPeerRow(name: peers[0], status: peer1Status, progress: peer1Progress)
-                        DemoPeerRow(name: peers[1], status: peer2Status, progress: peer2Progress)
+                        VStack(spacing: DSSpace.sm) {
+                            DemoPeerRow(name: peers[0], status: peer1Status, progress: peer1Progress)
+                            DemoPeerRow(name: peers[1], status: peer2Status, progress: peer2Progress)
+                        }
                     }
                     .transition(.move(edge: .top).combined(with: .opacity))
 
@@ -244,21 +288,54 @@ private struct DemoPeerRow: View {
     let status: String
     let progress: Double
 
+    private var linkLabel: String {
+        if progress >= 1.0 { return "Synced" }
+        if progress > 0 { return "Transferring" }
+        if status.contains("Connecting") { return "Handshake" }
+        return "Queued"
+    }
+
+    private var signalIcon: String {
+        if progress >= 1.0 { return "checkmark.circle.fill" }
+        if progress > 0 { return "dot.radiowaves.left.and.right" }
+        if status.contains("Connecting") { return "antenna.radiowaves.left.and.right" }
+        return "circle.dotted"
+    }
+
+    private var signalColor: Color {
+        if progress >= 1.0 { return .dsStatusCleared }
+        if progress > 0 { return .dsPrimary }
+        if status.contains("Connecting") { return .dsStatusTreat }
+        return .dsInkMuted
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Image(systemName: "iphone.circle.fill")
-                    .foregroundStyle(Color.dsPrimary)
+                ZStack {
+                    Circle()
+                        .fill(Color.dsPrimarySoft)
+                        .frame(width: 36, height: 36)
+                    Image(systemName: "iphone.gen3")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.dsPrimary)
+                }
                 VStack(alignment: .leading, spacing: 1) {
                     Text(name).font(DSFont.subhead.bold())
                     Text(status).font(DSFont.caption).foregroundStyle(Color.dsInk3)
                 }
                 Spacer()
-                if progress >= 1.0 {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Color.dsStatusCleared)
-                        .transition(.scale.combined(with: .opacity))
+                HStack(spacing: DSSpace.xs) {
+                    Image(systemName: signalIcon)
+                        .font(.system(size: 13, weight: .semibold))
+                    Text(linkLabel)
+                        .font(DSFont.badge)
                 }
+                .foregroundStyle(signalColor)
+                .padding(.horizontal, DSSpace.sm)
+                .padding(.vertical, DSSpace.xs)
+                .background(signalColor.opacity(0.12))
+                .clipShape(Capsule())
             }
             if progress > 0 && progress < 1.0 {
                 ProgressView(value: progress)
