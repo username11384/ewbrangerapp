@@ -5,6 +5,15 @@ struct LogSightingView: View {
     @EnvironmentObject var appEnv: AppEnvironment
     @StateObject private var viewModel: LogSightingViewModel
 
+    /// Tracks which species the dismissed alert was shown for.
+    /// Resets when the species changes so the banner re-appears.
+    @State private var dismissedAlertForSpecies: InvasiveSpecies? = nil
+
+    private var currentPhenologyAlert: PhenologyAlert? {
+        let month = Calendar.current.component(.month, from: Date())
+        return PhenologyAlertStore.alert(for: viewModel.selectedSpecies, month: month)
+    }
+
     init(rangerID: UUID) {
         _viewModel = StateObject(wrappedValue: LogSightingViewModel(
             locationManager: AppEnvironment.shared.locationManager,
@@ -24,6 +33,17 @@ struct LogSightingView: View {
                     )
 
                     SpeciesPickerView(selectedSpecies: $viewModel.selectedSpecies)
+                        .onChange(of: viewModel.selectedSpecies) { _ in
+                            // Re-show alert whenever the species changes
+                            dismissedAlertForSpecies = nil
+                        }
+
+                    if let alert = currentPhenologyAlert,
+                       dismissedAlertForSpecies != viewModel.selectedSpecies {
+                        PhenologyAlertBanner(alert: alert) {
+                            dismissedAlertForSpecies = viewModel.selectedSpecies
+                        }
+                    }
 
                     if viewModel.selectedSpecies == .lantana {
                         BiocontrolPromptCard(observation: $viewModel.biocontrolObservation)
@@ -85,6 +105,87 @@ struct LogSightingView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Phenology Alert Banner
+
+struct PhenologyAlertBanner: View {
+    let alert: PhenologyAlert
+    let onDismiss: () -> Void
+
+    private var urgencyColor: Color {
+        switch alert.urgencyLevel {
+        case .urgent:   return Color(hex: "C94040")  // dsStatusActive red
+        case .priority: return Color(hex: "C4692A")  // dsAccent orange
+        case .routine:  return Color(hex: "2A7A4A")  // dsStatusCleared green
+        }
+    }
+
+    private var urgencySoftColor: Color {
+        switch alert.urgencyLevel {
+        case .urgent:   return Color(hex: "FAE8E8")
+        case .priority: return Color(hex: "F2DEC8")
+        case .routine:  return Color(hex: "DAEEE3")
+        }
+    }
+
+    private var urgencyIcon: String {
+        switch alert.urgencyLevel {
+        case .urgent:   return "exclamationmark.triangle.fill"
+        case .priority: return "calendar.badge.exclamationmark"
+        case .routine:  return "leaf.fill"
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DSSpace.sm) {
+            HStack(alignment: .top, spacing: DSSpace.sm) {
+                Image(systemName: urgencyIcon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(urgencyColor)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: DSSpace.xs) {
+                        Text(alert.phase)
+                            .font(DSFont.headline)
+                            .foregroundStyle(Color.dsInk)
+                        Spacer()
+                        Text(alert.urgencyLevel.rawValue)
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(urgencyColor)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(urgencyColor.opacity(0.12))
+                            .clipShape(Capsule())
+                    }
+
+                    Text(alert.actionRecommended)
+                        .font(DSFont.callout)
+                        .foregroundStyle(Color.dsInk2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Button {
+                    onDismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color.dsInk3)
+                        .padding(6)
+                        .background(Color.dsDivider.opacity(0.6))
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(DSSpace.md)
+        .background(urgencySoftColor)
+        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
+                .strokeBorder(urgencyColor.opacity(0.5), lineWidth: 0.75)
+        )
     }
 }
 
