@@ -114,6 +114,29 @@
         <relationship name="assignedRanger" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RangerProfile" inverseName="tasks" inverseEntity="RangerProfile"/>
         <relationship name="sourceTreatment" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TreatmentRecord" inverseName="followUpTask" inverseEntity="TreatmentRecord"/>
     </entity>
+    <entity name="Equipment" representedClassName="Equipment" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="equipmentType" attributeType="String" defaultValueString=""/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="lastMaintenanceDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String" defaultValueString=""/>
+        <attribute name="nextMaintenanceDue" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="serialNumber" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="maintenanceRecords" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MaintenanceRecord" inverseName="equipment" inverseEntity="MaintenanceRecord"/>
+    </entity>
+    <entity name="MaintenanceRecord" representedClassName="MaintenanceRecord" syncable="YES">
+        <attribute name="costAmount" optional="YES" attributeType="Double" usesScalarValueType="YES"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="descriptionText" attributeType="String" defaultValueString=""/>
+        <attribute name="equipmentID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="maintenanceType" attributeType="String" defaultValueString=""/>
+        <attribute name="performedBy" attributeType="String" defaultValueString=""/>
+        <relationship name="equipment" maxCount="1" deletionRule="Nullify" destinationEntity="Equipment" inverseName="maintenanceRecords" inverseEntity="Equipment"/>
+    </entity>
     <entity name="TreatmentRecord" representedClassName="TreatmentRecord" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="followUpDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
