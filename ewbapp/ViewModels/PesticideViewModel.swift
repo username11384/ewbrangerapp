@@ -6,6 +6,7 @@ import CoreData
 final class PesticideViewModel: ObservableObject {
     @Published var stocks: [PesticideStock] = []
     @Published var lowStockItems: [PesticideStock] = []
+    @Published var criticalStockItems: [PesticideStock] = []
 
     private let persistence: PersistenceController
     private let syncQueueManager: SyncQueueManager
@@ -22,6 +23,7 @@ final class PesticideViewModel: ObservableObject {
             sortDescriptors: [NSSortDescriptor(key: "productName", ascending: true)]
         )) ?? []
         lowStockItems = stocks.filter { $0.currentQuantity <= $0.minThreshold }
+        criticalStockItems = stocks.filter { $0.currentQuantity < $0.minThreshold * 0.5 }
     }
 
     func addStock(productName: String, unit: String, initialQuantity: Double, minThreshold: Double) async {
@@ -67,6 +69,20 @@ final class PesticideViewModel: ObservableObject {
             stockObj.syncStatus = SyncStatus.pendingUpdate.rawValue
 
             do { try context.save() } catch { print("[PesticideViewModel] logUsage save failed: \(error)") }
+        }
+        load()
+    }
+
+    /// Adds `volumeLitres` to the stock's current quantity and queues a sync update.
+    func restock(_ stock: PesticideStock, volumeLitres: Double) async {
+        let context = persistence.backgroundContext
+        let stockID = stock.objectID
+        await context.perform {
+            guard let stockObj = context.object(with: stockID) as? PesticideStock else { return }
+            stockObj.currentQuantity += volumeLitres
+            stockObj.updatedAt = Date()
+            stockObj.syncStatus = SyncStatus.pendingUpdate.rawValue
+            do { try context.save() } catch { print("[PesticideViewModel] restock save failed: \(error)") }
         }
         load()
     }
