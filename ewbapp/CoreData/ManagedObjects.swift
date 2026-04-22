@@ -252,6 +252,37 @@ extension TreatmentRecord {
     }
 }
 
+// MARK: - Equipment
+
+@objc(Equipment)
+public class Equipment: NSManagedObject {
+    @NSManaged public var id: UUID?
+    @NSManaged public var createdAt: Date?
+    @NSManaged public var updatedAt: Date?
+    @NSManaged public var name: String?
+    @NSManaged public var equipmentType: String?
+    @NSManaged public var serialNumber: String?
+    @NSManaged public var notes: String?
+    @NSManaged public var isActive: Bool
+    @NSManaged public var lastMaintenanceDate: Date?
+    @NSManaged public var nextMaintenanceDue: Date?
+    @NSManaged public var maintenanceRecords: NSSet?
+}
+
+// MARK: - MaintenanceRecord
+
+@objc(MaintenanceRecord)
+public class MaintenanceRecord: NSManagedObject {
+    @NSManaged public var id: UUID?
+    @NSManaged public var equipmentID: UUID?
+    @NSManaged public var maintenanceType: String
+    @NSManaged public var descriptionText: String
+    @NSManaged public var performedBy: String
+    @NSManaged public var costAmount: Double
+    @NSManaged public var date: Date
+    @NSManaged public var equipment: Equipment?
+}
+
 // MARK: - Identifiable conformances for SwiftUI
 
 extension SightingLog: Identifiable {}
@@ -261,3 +292,5 @@ extension PesticideUsageRecord: Identifiable {}
 extension RangerProfile: Identifiable {}
 extension TreatmentRecord: Identifiable {}
 extension InfestationZone: Identifiable {}
+extension Equipment: Identifiable {}
+extension MaintenanceRecord: Identifiable {}
