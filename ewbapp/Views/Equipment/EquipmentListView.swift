@@ -19,6 +19,7 @@ struct EquipmentListView: View {
                 equipmentList
             }
         }
+        .background(Color.dsBackground.ignoresSafeArea())
         .navigationTitle("Equipment")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -47,6 +48,7 @@ struct EquipmentListView: View {
                     .foregroundStyle(Color.dsStatusActive)
                     .font(DSFont.subhead)
                 }
+                .listRowBackground(Color.dsStatusActiveSoft)
             } else if !viewModel.dueSoonItems.isEmpty {
                 Section {
                     Label(
@@ -56,6 +58,7 @@ struct EquipmentListView: View {
                     .foregroundStyle(Color.dsStatusTreat)
                     .font(DSFont.subhead)
                 }
+                .listRowBackground(Color.dsStatusTreatSoft)
             }
 
             Section {
@@ -63,6 +66,7 @@ struct EquipmentListView: View {
                     NavigationLink(destination: EquipmentDetailView(item: item, viewModel: viewModel)) {
                         EquipmentRow(item: item, viewModel: viewModel)
                     }
+                    .listRowBackground(Color.dsCard)
                 }
                 .onDelete { offsets in
                     offsets.map { viewModel.equipment[$0] }.forEach { viewModel.deleteEquipment($0) }
@@ -70,6 +74,8 @@ struct EquipmentListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Color.dsBackground)
     }
 
     // MARK: - Empty State
@@ -98,6 +104,7 @@ struct EquipmentListView: View {
                     .clipShape(RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous))
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(DSSpace.xl)
     }
 }
@@ -237,6 +244,8 @@ struct EquipmentDetailView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Color.dsBackground)
         .navigationTitle(item.name ?? "Equipment")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

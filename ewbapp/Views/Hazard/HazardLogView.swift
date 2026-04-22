@@ -19,6 +19,7 @@ struct HazardLogView: View {
                     title: "No hazards logged",
                     message: "Tap + to log a hazard or incident."
                 )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List {
                     ForEach(viewModel.hazards, id: \.id) { hazard in

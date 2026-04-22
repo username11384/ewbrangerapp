@@ -74,6 +74,8 @@ struct AddEquipmentView: View {
                         .font(DSFont.callout)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.dsBackground)
             .navigationTitle("Add Equipment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -95,5 +97,6 @@ struct AddEquipmentView: View {
                 }
             }
         }
+        .background(Color.dsBackground.ignoresSafeArea())
     }
 }

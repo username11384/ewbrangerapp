@@ -106,6 +106,8 @@ struct AddMaintenanceRecordView: View {
                     .padding(.vertical, DSSpace.xs)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.dsBackground)
             .navigationTitle("Log Maintenance")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -128,5 +130,6 @@ struct AddMaintenanceRecordView: View {
                 }
             }
         }
+        .background(Color.dsBackground.ignoresSafeArea())
     }
 }

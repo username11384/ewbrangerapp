@@ -13,116 +13,119 @@ struct LogHazardView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: DSSpace.xl) {
+            ZStack {
+                Color.dsBackground.ignoresSafeArea()
 
-                    // MARK: GPS Location
-                    GPSCaptureView(
-                        location: viewModel.capturedLocation,
-                        accuracyLevel: viewModel.accuracyLevel,
-                        onRecapture: { viewModel.recaptureLocation() }
-                    )
+                ScrollView {
+                    VStack(alignment: .leading, spacing: DSSpace.xl) {
 
-                    // MARK: Hazard Type
-                    VStack(alignment: .leading, spacing: DSSpace.sm) {
-                        Text("Hazard Type")
-                            .font(DSFont.headline)
-                            .foregroundStyle(Color.dsInk)
+                        // MARK: GPS Location
+                        GPSCaptureView(
+                            location: viewModel.capturedLocation,
+                            accuracyLevel: viewModel.accuracyLevel,
+                            onRecapture: { viewModel.recaptureLocation() }
+                        )
 
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: DSSpace.sm) {
-                            ForEach(HazardViewModel.HazardType.allCases, id: \.self) { type in
-                                HazardTypeChip(
-                                    type: type,
-                                    isSelected: viewModel.selectedType == type
-                                ) {
-                                    viewModel.selectedType = type
+                        // MARK: Hazard Type
+                        VStack(alignment: .leading, spacing: DSSpace.sm) {
+                            Text("Hazard Type")
+                                .font(DSFont.headline)
+                                .foregroundStyle(Color.dsInk)
+
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: DSSpace.sm) {
+                                ForEach(HazardViewModel.HazardType.allCases, id: \.self) { type in
+                                    HazardTypeChip(
+                                        type: type,
+                                        isSelected: viewModel.selectedType == type
+                                    ) {
+                                        viewModel.selectedType = type
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    // MARK: Severity
-                    VStack(alignment: .leading, spacing: DSSpace.sm) {
-                        Text("Severity")
-                            .font(DSFont.headline)
-                            .foregroundStyle(Color.dsInk)
+                        // MARK: Severity
+                        VStack(alignment: .leading, spacing: DSSpace.sm) {
+                            Text("Severity")
+                                .font(DSFont.headline)
+                                .foregroundStyle(Color.dsInk)
 
-                        HStack(spacing: DSSpace.sm) {
-                            ForEach(HazardViewModel.HazardSeverity.allCases, id: \.self) { sev in
-                                SeverityChip(
-                                    severity: sev,
-                                    isSelected: viewModel.selectedSeverity == sev
-                                ) {
-                                    viewModel.selectedSeverity = sev
+                            HStack(spacing: DSSpace.sm) {
+                                ForEach(HazardViewModel.HazardSeverity.allCases, id: \.self) { sev in
+                                    SeverityChip(
+                                        severity: sev,
+                                        isSelected: viewModel.selectedSeverity == sev
+                                    ) {
+                                        viewModel.selectedSeverity = sev
+                                    }
                                 }
                             }
                         }
+
+                        // MARK: Title
+                        VStack(alignment: .leading, spacing: DSSpace.sm) {
+                            Text("Title")
+                                .font(DSFont.headline)
+                                .foregroundStyle(Color.dsInk)
+                            TextField("Brief description of hazard", text: $viewModel.title)
+                                .font(DSFont.body)
+                                .padding(DSSpace.md)
+                                .background(Color.dsSurface)
+                                .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
+                                        .strokeBorder(Color.dsDivider, lineWidth: 0.75)
+                                )
+                        }
+
+                        // MARK: Notes
+                        VStack(alignment: .leading, spacing: DSSpace.sm) {
+                            Text("Notes (optional)")
+                                .font(DSFont.headline)
+                                .foregroundStyle(Color.dsInk)
+                            TextEditor(text: $viewModel.notes)
+                                .font(DSFont.body)
+                                .frame(height: 90)
+                                .padding(DSSpace.md)
+                                .background(Color.dsSurface)
+                                .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
+                                        .strokeBorder(Color.dsDivider, lineWidth: 0.75)
+                                )
+                        }
+
+                        // MARK: Photo
+                        PhotoCaptureView(photoFilenames: Binding(
+                            get: { viewModel.photoPath.map { [$0] } ?? [] },
+                            set: { viewModel.photoPath = $0.first }
+                        ))
+
+                        // MARK: Error
+                        if let error = viewModel.saveError {
+                            Text(error)
+                                .font(DSFont.callout)
+                                .foregroundStyle(Color.dsStatusActive)
+                        }
+
+                        // MARK: Save Button
+                        LargeButton(
+                            title: "Log Hazard",
+                            action: {
+                                Task {
+                                    await viewModel.logHazard()
+                                    if viewModel.didSave { dismiss() }
+                                }
+                            },
+                            isEnabled: viewModel.canSave,
+                            isLoading: viewModel.isSaving
+                        )
+                        .padding(.bottom, DSSpace.lg)
                     }
-
-                    // MARK: Title
-                    VStack(alignment: .leading, spacing: DSSpace.sm) {
-                        Text("Title")
-                            .font(DSFont.headline)
-                            .foregroundStyle(Color.dsInk)
-                        TextField("Brief description of hazard", text: $viewModel.title)
-                            .font(DSFont.body)
-                            .padding(DSSpace.md)
-                            .background(Color.dsSurface)
-                            .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
-                                    .strokeBorder(Color.dsDivider, lineWidth: 0.75)
-                            )
-                    }
-
-                    // MARK: Notes
-                    VStack(alignment: .leading, spacing: DSSpace.sm) {
-                        Text("Notes (optional)")
-                            .font(DSFont.headline)
-                            .foregroundStyle(Color.dsInk)
-                        TextEditor(text: $viewModel.notes)
-                            .font(DSFont.body)
-                            .frame(height: 90)
-                            .padding(DSSpace.md)
-                            .background(Color.dsSurface)
-                            .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
-                                    .strokeBorder(Color.dsDivider, lineWidth: 0.75)
-                            )
-                    }
-
-                    // MARK: Photo
-                    PhotoCaptureView(photoFilenames: Binding(
-                        get: { viewModel.photoPath.map { [$0] } ?? [] },
-                        set: { viewModel.photoPath = $0.first }
-                    ))
-
-                    // MARK: Error
-                    if let error = viewModel.saveError {
-                        Text(error)
-                            .font(DSFont.callout)
-                            .foregroundStyle(Color.dsStatusActive)
-                    }
-
-                    // MARK: Save Button
-                    LargeButton(
-                        title: "Log Hazard",
-                        action: {
-                            Task {
-                                await viewModel.logHazard()
-                                if viewModel.didSave { dismiss() }
-                            }
-                        },
-                        isEnabled: viewModel.canSave,
-                        isLoading: viewModel.isSaving
-                    )
-                    .padding(.bottom, DSSpace.lg)
+                    .padding(.horizontal, DSSpace.lg)
+                    .padding(.top, DSSpace.lg)
                 }
-                .padding(.horizontal, DSSpace.lg)
-                .padding(.top, DSSpace.lg)
             }
-            .background(Color.dsBackground.ignoresSafeArea())
             .navigationTitle("Log Hazard")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
