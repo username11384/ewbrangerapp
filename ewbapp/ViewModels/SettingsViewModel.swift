@@ -26,7 +26,7 @@ final class SettingsViewModel: ObservableObject {
         self.persistence = persistence
         self.recentRainFlagged = UserDefaults.standard.bool(forKey: SeasonalAlertConfig.recentRainKey)
         self.tileStatus = OfflineTileManager.shared.tileStatus
-        Task { await refreshSyncStatus() }
+        refreshSyncStatus()
         loadProfile()
     }
 
@@ -87,7 +87,7 @@ final class SettingsViewModel: ObservableObject {
             // Fake a realistic 2–3 s sync round-trip for the demo
             try? await Task.sleep(for: .seconds(Double.random(in: 2.0...3.2)))
             UserDefaults.standard.set(Date(), forKey: "lastSyncTimestamp")
-            await refreshSyncStatus()
+            refreshSyncStatus()
             isSyncing = false
         }
     }
@@ -115,9 +115,9 @@ final class SettingsViewModel: ObservableObject {
         authManager.logout()
     }
 
-    private func refreshSyncStatus() async {
-        pendingSyncCount = await syncEngine.pendingSyncCount
-        lastSyncDate = await syncEngine.lastSyncDate
+    private func refreshSyncStatus() {
+        pendingSyncCount = (try? persistence.mainContext.fetchAll(SyncQueue.self))?.count ?? 0
+        lastSyncDate = syncEngine.lastSyncDate
     }
 
     var appVersion: String {

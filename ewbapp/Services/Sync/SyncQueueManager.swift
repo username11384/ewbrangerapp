@@ -19,7 +19,7 @@ final class SyncQueueManager {
         let entry = SyncQueue(context: context)
         entry.id = UUID()
         entry.createdAt = Date()
-        entry.entityName = entityName
+        entry.entityTypeName = entityName
         entry.entityID = entityID
         entry.operationType = operationType
         entry.payload = payload

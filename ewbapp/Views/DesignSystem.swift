@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - Design System
 // Warm Australian bushland palette for Lama Lama Rangers — invasive plants control.
@@ -7,40 +8,79 @@ import SwiftUI
 // MARK: - Color Tokens
 
 extension Color {
-    // Surfaces
-    /// Warm parchment — main app background
-    static let dsBackground   = Color(hex: "F7F3EC")
-    /// Slightly deeper warm cream — secondary background, list rows
-    static let dsSurface      = Color(hex: "EEE9DF")
-    /// Card surfaces — close to white with warmth
-    static let dsCard         = Color(hex: "FDFAF4")
+    // Surfaces — adaptive light / dark
+    /// Warm parchment (light) / dark warm charcoal (dark)
+    static let dsBackground   = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "1A1712") : UIColor(hex: "F7F3EC")
+    })
+    /// Slightly deeper surface (light) / slightly lighter dark surface (dark)
+    static let dsSurface      = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "242118") : UIColor(hex: "EEE9DF")
+    })
+    /// Card surfaces (light) / elevated dark surface (dark)
+    static let dsCard         = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "2A2722") : UIColor(hex: "FDFAF4")
+    })
     /// Hairline dividers
-    static let dsDivider      = Color(hex: "D6CEBA")
+    static let dsDivider      = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "3A3630") : UIColor(hex: "D6CEBA")
+    })
 
-    // Brand — deep rainforest green
+    // Brand — deep rainforest green (same in both modes, readable on dark bg)
     static let dsPrimary      = Color(hex: "2A5C3F")
     static let dsPrimaryDeep  = Color(hex: "1A3D28")
     static let dsPrimaryLight = Color(hex: "3D7A57")
-    static let dsPrimarySoft  = Color(hex: "D4E6DA")
+    static let dsPrimarySoft  = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "1A3028") : UIColor(hex: "D4E6DA")
+    })
 
     // Accent — warm amber/ochre (field gear, CTA)
     static let dsAccent       = Color(hex: "C4692A")
     static let dsAccentDeep   = Color(hex: "9B4F1C")
-    static let dsAccentSoft   = Color(hex: "F2DEC8")
+    static let dsAccentSoft   = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "302018") : UIColor(hex: "F2DEC8")
+    })
 
-    // Text
-    static let dsInk          = Color(hex: "1C1309")   // near-black with warmth
-    static let dsInk2         = Color(hex: "4A3A2A")   // secondary text
-    static let dsInk3         = Color(hex: "7A6650")   // tertiary text
-    static let dsInkMuted     = Color(hex: "A89880")   // placeholder / disabled
+    // Text — adaptive
+    static let dsInk          = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "F0EBE3") : UIColor(hex: "1C1309")
+    })
+    static let dsInk2         = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "C0AD98") : UIColor(hex: "4A3A2A")
+    })
+    static let dsInk3         = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "8A7A6A") : UIColor(hex: "7A6650")
+    })
+    static let dsInkMuted     = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "6A5A4A") : UIColor(hex: "A89880")
+    })
 
-    // Status colors
-    static let dsStatusActive    = Color(hex: "C94040")  // active infestation — alert red
-    static let dsStatusActiveSoft = Color(hex: "FAE8E8")
-    static let dsStatusTreat     = Color(hex: "C4692A")  // under treatment — amber
-    static let dsStatusTreatSoft  = Color(hex: "F2DEC8")
-    static let dsStatusCleared   = Color(hex: "2A7A4A")  // cleared — success green
-    static let dsStatusClearedSoft = Color(hex: "DAEEE3")
+    // Status colors — semantic, same hue in both modes (backgrounds adapt)
+    static let dsStatusActive    = Color(hex: "C94040")
+    static let dsStatusActiveSoft = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "301818") : UIColor(hex: "FAE8E8")
+    })
+    static let dsStatusTreat     = Color(hex: "C4692A")
+    static let dsStatusTreatSoft  = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "302018") : UIColor(hex: "F2DEC8")
+    })
+    static let dsStatusCleared   = Color(hex: "2A7A4A")
+    static let dsStatusClearedSoft = Color(UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(hex: "182A20") : UIColor(hex: "DAEEE3")
+    })
 
     // Species colors — earthy, differentiated, legible on map
     static let dsSpeciesLantana          = Color(hex: "D4763A")  // burnt orange
@@ -57,7 +97,7 @@ extension Color {
     static let dsFailed      = Color(hex: "C94040")
 }
 
-// MARK: - Hex Color Initializer
+// MARK: - Hex Color Initializers
 
 extension Color {
     init(hex: String) {
@@ -81,6 +121,31 @@ extension Color {
             green: Double(g) / 255,
             blue: Double(b) / 255,
             opacity: Double(a) / 255
+        )
+    }
+}
+
+extension UIColor {
+    convenience init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3:
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6:
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8:
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(
+            red: CGFloat(r) / 255,
+            green: CGFloat(g) / 255,
+            blue: CGFloat(b) / 255,
+            alpha: CGFloat(a) / 255
         )
     }
 }

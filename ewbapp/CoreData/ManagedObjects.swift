@@ -25,7 +25,7 @@ public class InfestationZoneSnapshot: NSManagedObject {
     @NSManaged public var polygonCoordinates: NSArray?
     @NSManaged public var area: Double
     @NSManaged public var createdByRangerID: UUID?
-    @NSManaged public var zone: InfestationZone?
+    @objc(zone) @NSManaged public var parentZone: InfestationZone?
 }
 
 // MARK: - PatrolRecord
@@ -126,7 +126,7 @@ public class SightingLog: NSManagedObject {
 public class SyncQueue: NSManagedObject {
     @NSManaged public var id: UUID?
     @NSManaged public var createdAt: Date?
-    @NSManaged public var entityName: String?
+    @objc(entityName) @NSManaged public var entityTypeName: String?
     @NSManaged public var entityID: UUID
     @NSManaged public var operationType: String?
     @NSManaged public var payload: Data?
@@ -317,6 +317,24 @@ extension TreatmentRecord: Identifiable {}
 extension InfestationZone: Identifiable {}
 extension Equipment: Identifiable {}
 extension MaintenanceRecord: Identifiable {}
+
+// MARK: - @unchecked Sendable — NSManagedObject subclasses are not Sendable by default,
+// but all cross-context access in this app goes through performAndWait / perform blocks.
+
+extension SightingLog: @unchecked Sendable {}
+extension TreatmentRecord: @unchecked Sendable {}
+extension TreatmentFollowUp: @unchecked Sendable {}
+extension RangerTask: @unchecked Sendable {}
+extension RangerProfile: @unchecked Sendable {}
+extension PatrolRecord: @unchecked Sendable {}
+extension PesticideStock: @unchecked Sendable {}
+extension PesticideUsageRecord: @unchecked Sendable {}
+extension InfestationZone: @unchecked Sendable {}
+extension InfestationZoneSnapshot: @unchecked Sendable {}
+extension SyncQueue: @unchecked Sendable {}
+extension Equipment: @unchecked Sendable {}
+extension MaintenanceRecord: @unchecked Sendable {}
+extension HazardLog: @unchecked Sendable {}
 
 extension Equipment {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Equipment> {

@@ -51,11 +51,7 @@ actor SyncEngine {
 
     // MARK: - Status
 
-    var pendingSyncCount: Int {
-        (try? persistence.mainContext.fetchAll(SyncQueue.self))?.count ?? 0
-    }
-
-    var lastSyncDate: Date? {
+    nonisolated var lastSyncDate: Date? {
         UserDefaults.standard.object(forKey: lastSyncKey) as? Date
     }
 }

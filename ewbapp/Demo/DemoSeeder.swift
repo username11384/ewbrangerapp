@@ -55,7 +55,7 @@ struct DemoSeeder {
                     [spec.lat - d, spec.lon],
                     [spec.lat,     spec.lon - d],
                 ] as NSArray
-                snap.zone = zone
+                snap.parentZone = zone
                 zones.append(zone)
             }
 

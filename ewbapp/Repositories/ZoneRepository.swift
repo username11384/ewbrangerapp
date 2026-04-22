@@ -79,7 +79,7 @@ final class ZoneRepository: ZoneRepositoryProtocol {
             snapshot.polygonCoordinates = coordinates as NSArray
             snapshot.area = area
             snapshot.createdByRangerID = rangerID
-            snapshot.zone = zoneObj
+            snapshot.parentZone = zoneObj
             try context.save()
         }
     }
