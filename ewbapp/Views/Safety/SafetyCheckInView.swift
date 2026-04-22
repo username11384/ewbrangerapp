@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SafetyCheckInView: View {
-    @StateObject private var vm = SafetyCheckInViewModel()
+    @EnvironmentObject private var vm: SafetyCheckInViewModel
 
     private let intervalOptions = [30, 60, 90, 120]
 
@@ -176,4 +176,5 @@ struct SafetyCheckInView: View {
 
 #Preview {
     SafetyCheckInView()
+        .environmentObject(SafetyCheckInViewModel())
 }
