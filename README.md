@@ -117,6 +117,69 @@ ewbapp/
 
 ---
 
+## Feature Progression
+
+### V1 — Proof of Concept (`v1-poc`)
+
+Initial prototype scoped to Lantana camara only. Validated the core field workflow on-device.
+
+| # | Feature |
+|---|---|
+| 1 | Log Lantana sightings with GPS coordinates |
+| 2 | Basic map view centred on Port Stewart |
+| 3 | Log treatment method and outcome notes |
+| 4 | CoreData local persistence |
+| 5 | PIN-based ranger authentication |
+| 6 | 3-tab UI: Map, Sightings, Settings |
+
+### V2 — Multi-Species Demo (`demonewui`)
+
+Full design and architecture overhaul. Expanded from Lantana-only to 6 invasive species. Introduced MVVM + Repository pattern, a new design system, and all core field workflows.
+
+| # | Feature |
+|---|---|
+| 1 | **Multi-species support** — Lantana, Rubber Vine, Prickly Acacia, Sicklepod, Giant Rat's Tail Grass, Pond Apple |
+| 2 | **Design system** — warm Australian bushland palette, Epilogue + SF Pro typography, semantic tokens |
+| 3 | **Map** — satellite/standard views, sighting pins colour-coded by species, infestation zone polygons, patrol area markers, layer toggles |
+| 4 | **Bloom Calendar** — seasonal flowering/seeding risk overlay for all 6 species by month |
+| 5 | **Sighting Log** — GPS capture, species picker, infestation size, photos, full history |
+| 6 | **Lantana Biocontrol Prompt** — *Aconophora compressa* presence check; warns against foliar spray if biocontrol observed |
+| 7 | **Treatment Records** — method picker (foliar spray, cut stump, basal bark, mechanical, stem injection, fire), herbicide, outcome notes, follow-up date |
+| 8 | **Before/After Photo Comparison** — attach after-photos to a treatment; comparison card in sighting detail |
+| 9 | **Patrol** — checklist of pre-departure tasks, area, duration, notes, calendar view |
+| 10 | **Patrol Stamina Metric** — time-estimate per checklist item, two-tone progress bar, 85% warning |
+| 11 | **Species Guide** — reference cards for all 6 species with ID features, control methods, and seasonal notes |
+| 12 | **Pesticide Inventory** — stock tracking, usage logging against treatment records, low-stock alerts |
+| 13 | **Tasks** — assign follow-up tasks to rangers with priority and due date |
+| 14 | **Hub** — tile grid linking to Dashboard, Supplies, Day Sync, Zones, Cloud Sync, Handover, Settings |
+| 15 | **Dashboard** — sightings-per-month bar chart, zone status breakdown, sightings by ranger, open tasks |
+| 16 | **Day Sync (Mesh)** — peer-to-peer Bluetooth/WiFi sync via MultipeerConnectivity, no internet required |
+| 17 | **Zone Conflict Resolver** — Keep Mine / Keep Theirs / Merge when two rangers edit the same zone boundary offline |
+| 18 | **Shift Handover Card** — end-of-shift summary with live CoreData counts; exports shareable text report |
+| 19 | **Cloud Sync (demo)** — fake V3 preview: Supabase + S3, live table counts, pg_dump simulation, jittery upload speed |
+| 20 | **Pre-seeded demo data** — 6 zones, 28 sightings, 10 patrols, pesticide stocks, tasks seeded on first launch |
+
+### V3 — Extended Demo (`demov3`)
+
+12 new features layered onto V2. All offline; no new cloud dependencies. Adds a dedicated Safety tab and 4 new CoreData entities.
+
+| # | Feature | Entry point |
+|---|---|---|
+| 1 | **Safety Check-In** | Safety tab → countdown timer, "I'm Safe" reset |
+| 2 | **Hazard Logger** | Hub → Hazards tile → Log Hazard |
+| 3 | **Voice Notes** | Log Sighting → microphone icon |
+| 4 | **Photo Size Estimation** | Log Sighting → size overlay, drag to estimate area in m² |
+| 5 | **Phenology Alerts** | Log Sighting → contextual banner fires automatically per species + season |
+| 6 | **Herbicide Checker** | Treatment Entry → "Check herbicide" — product/species/method compatibility |
+| 7 | **Treatment Effectiveness** | Sighting Detail → Record Follow-Up — regrowth level against earlier treatment |
+| 8 | **Per-Area Patrol Checklists** | Patrol → checklist toolbar button |
+| 9 | **Pesticide Stock Alerts** | Dashboard → alert banner when any stock is critical |
+| 10 | **Equipment Maintenance Log** | Hub → Equipment tile — add equipment, log service, overdue highlights |
+| 11 | **Ranger Status Broadcast** | Day Sync → ranger status list over mesh |
+| 12 | **Night Mode (Red Light)** | Settings → Display → Theme — colour-multiply overlay for night vision |
+
+---
+
 ## Requirements
 
 - Xcode 17+
