@@ -59,37 +59,6 @@ struct SettingsView: View {
                     Text("Display")
                 }
 
-                // Sync
-                Section("Sync") {
-                    HStack {
-                        Text("Pending Records")
-                        Spacer()
-                        Text("\(viewModel.pendingSyncCount)")
-                            .foregroundStyle(viewModel.pendingSyncCount > 0 ? Color.dsStatusTreat : Color.dsInk3)
-                    }
-                    if let last = viewModel.lastSyncDate {
-                        HStack {
-                            Text("Last Synced")
-                            Spacer()
-                            Text(last, style: .relative)
-                                .foregroundStyle(Color.dsInk3)
-                        }
-                    }
-                    Button {
-                        viewModel.syncNow()
-                    } label: {
-                        HStack {
-                            Text("Sync Now")
-                            if viewModel.isSyncing {
-                                Spacer()
-                                ProgressView()
-                                    .controlSize(.small)
-                            }
-                        }
-                    }
-                    .disabled(viewModel.isSyncing)
-                }
-
                 // Seasonal
                 Section("Field Conditions") {
                     Toggle("Recent Rain Event", isOn: Binding(
@@ -171,6 +140,8 @@ struct SettingsView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.dsBackground)
             .navigationTitle("Settings")
             .confirmationDialog(
                 "Reset App Data",
@@ -191,6 +162,7 @@ struct SettingsView: View {
                 ChangePINView(viewModel: viewModel)
             }
         }
+        .background(Color.dsBackground.ignoresSafeArea())
     }
 }
 
@@ -217,11 +189,13 @@ struct ChangePINView: View {
                 if let error = viewModel.pinChangeError {
                     Section {
                         Text(error)
-                            .foregroundColor(.red)
-                            .font(.caption)
+                            .foregroundStyle(Color.dsStatusActive)
+                            .font(DSFont.caption)
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.dsBackground)
             .navigationTitle("Change PIN")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -237,5 +211,6 @@ struct ChangePINView: View {
                 }
             }
         }
+        .background(Color.dsBackground.ignoresSafeArea())
     }
 }
