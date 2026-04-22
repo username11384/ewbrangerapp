@@ -5,6 +5,7 @@ struct SightingDetailView: View {
     @StateObject private var viewModel: SightingDetailViewModel
     @State private var showTreatmentEntry = false
     @State private var showZonePicker = false
+    @State private var followUpTreatment: TreatmentRecord? = nil
 
     init(sighting: SightingLog) {
         _viewModel = StateObject(wrappedValue: SightingDetailViewModel(
@@ -103,6 +104,18 @@ struct SightingDetailView: View {
                                             species: viewModel.species
                                         )
                                     }
+                                    Button {
+                                        followUpTreatment = treatment
+                                    } label: {
+                                        Label("Record Follow-Up", systemImage: "arrow.clockwise.circle.fill")
+                                            .font(DSFont.callout)
+                                            .foregroundStyle(Color.dsPrimary)
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 38)
+                                            .background(Color.dsPrimarySoft)
+                                            .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
@@ -134,6 +147,11 @@ struct SightingDetailView: View {
             ) { zone in
                 viewModel.assignToZone(zone)
                 showZonePicker = false
+            }
+        }
+        .sheet(item: $followUpTreatment) { treatment in
+            TreatmentFollowUpView(treatment: treatment) {
+                viewModel.loadTreatments()
             }
         }
         .onAppear { viewModel.loadTreatments() }
