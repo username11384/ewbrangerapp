@@ -111,8 +111,9 @@ ewbapp/
 | Branch | Purpose |
 |---|---|
 | `main` | Production build — starts clean, real GPS, real peer sync |
-| `demonewui` | Demo build — multi-species, new design system, pre-seeded data, all demo features |
-| `demov3` | Extended demo — all of `demonewui` plus 12 new features (see below) |
+| `demonewui` | Intermediate — new design system merged into demo build |
+| `demov2` | Full V2 demo — multi-species, complete UI redesign, all demo features, pre-seeded data |
+| `demov3` | Extended demo — all of `demov2` plus 12 new features (see below) |
 | `v1-poc` | Original proof-of-concept (archived) |
 
 ---
@@ -132,7 +133,7 @@ Initial prototype scoped to Lantana camara only. Validated the core field workfl
 | 5 | PIN-based ranger authentication |
 | 6 | 3-tab UI: Map, Sightings, Settings |
 
-### V2 — Multi-Species Demo (`demonewui`)
+### V2 — Multi-Species Demo (`demov2`)
 
 Full design and architecture overhaul. Expanded from Lantana-only to 6 invasive species. Introduced MVVM + Repository pattern, a new design system, and all core field workflows.
 
@@ -190,7 +191,7 @@ Full design and architecture overhaul. Expanded from Lantana-only to 6 invasive 
 
 ## demov3 Features
 
-The `demov3` branch adds 12 features on top of the `demonewui` base:
+The `demov3` branch adds 12 features on top of the `demov2` base:
 
 | # | Feature | Entry point |
 |---|---|---|
@@ -218,7 +219,7 @@ The `demov3` branch adds 12 features on top of the `demonewui` base:
 
 ## Running the Demo Build
 
-1. Checkout the `demov3` branch (or `demonewui` for the base feature set)
+1. Checkout the `demov3` branch (or `demov2` for the base feature set)
 2. Build and run on a simulator or device
 3. Log in as any ranger (PIN: `1234` for all demo accounts)
 4. Data is pre-seeded on first launch — 6 zones, 28 sightings across 6 species, 10 patrols, pesticide stocks, and tasks

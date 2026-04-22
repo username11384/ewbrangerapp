@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-iOS app for Yintjingga Aboriginal Corporation (YAC). Lama Lama Rangers track Lantana camara infestations around Port Stewart, Cape York, QLD. The active demo branch is **`demov3`** — a fully functional offline app with local-only persistence, Bluetooth mesh sync (MultipeerConnectivity), 5-tab UI, and 12 new field-safety and data-quality features added on top of `demonewui`. No cloud backend is implemented (Supabase cloud sync is a simulated demo only).
+iOS app for Yintjingga Aboriginal Corporation (YAC). Lama Lama Rangers track Lantana camara infestations around Port Stewart, Cape York, QLD. The active demo branch is **`demov3`** — a fully functional offline app with local-only persistence, Bluetooth mesh sync (MultipeerConnectivity), 5-tab UI, and 12 new field-safety and data-quality features added on top of `demov2`. No cloud backend is implemented (Supabase cloud sync is a simulated demo only).
 
 ## Build command
 
@@ -113,7 +113,7 @@ Do not add real Supabase API calls, real S3 uploads, MapKit paid tiers, or any l
 
 ## demov3 features (branch: demov3)
 
-12 features added on top of `demonewui`. All are fully offline; no new cloud dependencies.
+12 features added on top of `demov2`. All are fully offline; no new cloud dependencies.
 
 | Feature | Key files |
 |---|---|
