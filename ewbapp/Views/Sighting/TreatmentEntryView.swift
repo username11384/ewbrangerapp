@@ -14,6 +14,12 @@ struct TreatmentEntryView: View {
     @State private var followUpDate = Calendar.current.date(byAdding: .month, value: 1, to: Date()) ?? Date()
     @State private var isSaving = false
     @State private var afterPhotoFilenames: [String] = []
+    @State private var showHerbicideChecker = false
+
+    /// Species display name used to pre-filter the herbicide checker
+    private var speciesDisplayName: String {
+        InvasiveSpecies.from(legacyVariant: sighting.variant ?? "").displayName
+    }
 
     var body: some View {
         NavigationStack {
@@ -70,6 +76,27 @@ struct TreatmentEntryView: View {
                     }
                 }
 
+                Section("Herbicide Reference") {
+                    Button {
+                        showHerbicideChecker = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "checkmark.shield")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Color.dsPrimary)
+                                .frame(width: 22)
+                            Text("Check herbicide compatibility")
+                                .font(DSFont.callout)
+                                .foregroundStyle(Color.dsPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(Color.dsInkMuted)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
+
                 Section("Follow-up") {
                     Toggle("Schedule regrowth check", isOn: $hasFollowUp)
                     if hasFollowUp {
@@ -86,6 +113,17 @@ struct TreatmentEntryView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { save() }
                         .disabled(isSaving)
+                }
+            }
+            .sheet(isPresented: $showHerbicideChecker) {
+                NavigationStack {
+                    HerbicideCheckerView(preFilteredSpecies: speciesDisplayName)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done") { showHerbicideChecker = false }
+                                    .foregroundStyle(Color.dsPrimary)
+                            }
+                        }
                 }
             }
         }

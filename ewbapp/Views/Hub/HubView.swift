@@ -44,6 +44,12 @@ struct HubView: View {
                         HubTile(title: "Handover", subtitle: "End of shift report",
                                 icon: "doc.text.fill", accent: Color(hex: "8B5E3C"), index: 5,
                                 appeared: tilesAppeared) { ShiftHandoverView() }
+                        HubTile(title: "Equipment", subtitle: "Maintenance logs",
+                                icon: "wrench.and.screwdriver.fill", accent: Color(hex: "8B5E3C"), index: 6,
+                                appeared: tilesAppeared) { EquipmentListView() }
+                        HubTile(title: "Hazards", subtitle: "Log field hazards",
+                                icon: "exclamationmark.triangle.fill", accent: Color(hex: "C94040"), index: 7,
+                                appeared: tilesAppeared) { HazardLogView() }
                     }
                     .padding(.horizontal, DSSpace.lg)
                     .padding(.top, DSSpace.lg)

@@ -37,6 +37,10 @@
     <key>NSCameraUsageDescription</key>
     <string>Lama Lama Rangers uses the camera to photograph invasive plant infestations when logging a sighting.</string>
 
+    <!-- Microphone (voice notes) -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Lama Lama Rangers uses the microphone to record optional voice notes when logging a sighting.</string>
+
     <!-- UI -->
     <key>UIApplicationSceneManifest</key>
     <dict>

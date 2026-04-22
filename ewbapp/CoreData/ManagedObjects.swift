@@ -108,10 +108,12 @@ public class SightingLog: NSManagedObject {
     @NSManaged public var horizontalAccuracy: Double
     @NSManaged public var variant: String?
     @NSManaged public var infestationSize: String?
+    @NSManaged public var infestationAreaEstimate: String?
     @NSManaged public var notes: String?
     @NSManaged public var photoFilenames: NSArray?
     @NSManaged public var deviceID: String?
     @NSManaged public var serverID: String?
+    @NSManaged public var voiceNotePath: String?
     @NSManaged public var syncStatus: Int16
     @NSManaged public var ranger: RangerProfile?
     @NSManaged public var infestationZone: InfestationZone?
@@ -173,7 +175,31 @@ public class RangerTask: NSManagedObject {
 
 extension RangerTask: Identifiable {}
 
+// MARK: - HazardLog
+
+@objc(HazardLog)
+public class HazardLog: NSManagedObject {
+    @NSManaged public var id: UUID?
+    @NSManaged public var timestamp: Date?
+    @NSManaged public var title: String?
+    @NSManaged public var hazardType: String?
+    @NSManaged public var severity: String?
+    @NSManaged public var notes: String?
+    @NSManaged public var latitude: Double
+    @NSManaged public var longitude: Double
+    @NSManaged public var photoPath: String?
+    @NSManaged public var syncedToCloud: Bool
+}
+
+extension HazardLog: Identifiable {}
+
 // MARK: - NSFetchRequest convenience
+
+extension HazardLog {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<HazardLog> {
+        return NSFetchRequest<HazardLog>(entityName: "HazardLog")
+    }
+}
 
 extension InfestationZone {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<InfestationZone> {
@@ -226,6 +252,37 @@ extension TreatmentRecord {
     }
 }
 
+// MARK: - Equipment
+
+@objc(Equipment)
+public class Equipment: NSManagedObject {
+    @NSManaged public var id: UUID?
+    @NSManaged public var createdAt: Date?
+    @NSManaged public var updatedAt: Date?
+    @NSManaged public var name: String?
+    @NSManaged public var equipmentType: String?
+    @NSManaged public var serialNumber: String?
+    @NSManaged public var notes: String?
+    @NSManaged public var isActive: Bool
+    @NSManaged public var lastMaintenanceDate: Date?
+    @NSManaged public var nextMaintenanceDue: Date?
+    @NSManaged public var maintenanceRecords: NSSet?
+}
+
+// MARK: - MaintenanceRecord
+
+@objc(MaintenanceRecord)
+public class MaintenanceRecord: NSManagedObject {
+    @NSManaged public var id: UUID?
+    @NSManaged public var equipmentID: UUID?
+    @NSManaged public var maintenanceType: String
+    @NSManaged public var descriptionText: String
+    @NSManaged public var performedBy: String
+    @NSManaged public var costAmount: Double
+    @NSManaged public var date: Date
+    @NSManaged public var equipment: Equipment?
+}
+
 // MARK: - Identifiable conformances for SwiftUI
 
 extension SightingLog: Identifiable {}
@@ -235,3 +292,16 @@ extension PesticideUsageRecord: Identifiable {}
 extension RangerProfile: Identifiable {}
 extension TreatmentRecord: Identifiable {}
 extension InfestationZone: Identifiable {}
+extension Equipment: Identifiable {}
+extension MaintenanceRecord: Identifiable {}
+
+extension Equipment {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Equipment> {
+        return NSFetchRequest<Equipment>(entityName: "Equipment")
+    }
+}
+extension MaintenanceRecord {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<MaintenanceRecord> {
+        return NSFetchRequest<MaintenanceRecord>(entityName: "MaintenanceRecord")
+    }
+}

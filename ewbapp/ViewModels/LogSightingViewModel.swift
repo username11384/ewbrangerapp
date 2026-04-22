@@ -15,6 +15,10 @@ final class LogSightingViewModel: ObservableObject {
     @Published var saveError: String?
     @Published var didSave = false
     @Published var biocontrolObservation: BiocontrolObservation = .notChecked
+    /// Area estimate produced by SizeEstimationOverlay (Feature 11), e.g. "~4.2 m²"
+    @Published var infestationAreaEstimate: String? = nil
+    /// File path to a recorded voice note (set by VoiceNoteRecorder before save)
+    @Published var voiceNotePath: String? = nil
 
     enum BiocontrolObservation: String, CaseIterable {
         case notChecked, observed, notObserved, unsure
@@ -80,7 +84,12 @@ final class LogSightingViewModel: ObservableObject {
                     finalNotes += " ⚠️ Biocontrol present - consider delaying herbicide"
                 }
             }
-            _ = try await sightingRepository.createSighting(
+            // Append area estimate to notes if provided
+            if let area = infestationAreaEstimate {
+                let areaNote = "[Estimated area: \(area)]"
+                finalNotes = finalNotes.isEmpty ? areaNote : finalNotes + " " + areaNote
+            }
+            let sighting = try await sightingRepository.createSighting(
                 latitude: location.coordinate.latitude,
                 longitude: location.coordinate.longitude,
                 horizontalAccuracy: location.horizontalAccuracy,
@@ -90,6 +99,20 @@ final class LogSightingViewModel: ObservableObject {
                 photoFilenames: photoFilenames,
                 rangerID: rangerID
             )
+            // Persist area estimate and voice note path on the CoreData entity
+            if infestationAreaEstimate != nil || voiceNotePath != nil,
+               let ctx = sighting.managedObjectContext {
+                ctx.performAndWait {
+                    if let area = infestationAreaEstimate {
+                        sighting.infestationAreaEstimate = area
+                    }
+                    if let path = voiceNotePath {
+                        sighting.voiceNotePath = path
+                    }
+                    try? ctx.save()
+                }
+            }
+            _ = sighting
             didSave = true
         } catch {
             saveError = error.localizedDescription

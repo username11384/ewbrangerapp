@@ -34,6 +34,15 @@ struct PatrolView: View {
             }
             .navigationTitle("Patrol")
             .onAppear { viewModel.load() }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: AreaChecklistView(
+                        areaName: viewModel.activePatrol?.areaName ?? viewModel.selectedAreaName
+                    )) {
+                        Label("Checklist", systemImage: "checklist")
+                    }
+                }
+            }
         }
     }
 

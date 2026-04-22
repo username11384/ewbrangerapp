@@ -20,6 +20,11 @@ struct MainTabView: View {
                     Label("Guide", systemImage: "leaf.fill")
                 }
 
+            SafetyCheckInView()
+                .tabItem {
+                    Label("Safety", systemImage: "shield.fill")
+                }
+
             HubView()
                 .tabItem {
                     Label("Hub", systemImage: "square.grid.2x2.fill")

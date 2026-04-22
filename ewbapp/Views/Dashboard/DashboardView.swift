@@ -4,12 +4,16 @@ import Charts
 struct DashboardView: View {
     @EnvironmentObject var appEnv: AppEnvironment
     @StateObject private var viewModel: DashboardViewModel
+    @StateObject private var pesticideViewModel: PesticideViewModel
     @State private var statCardsAppeared = false
 
     init() {
         _viewModel = StateObject(wrappedValue: DashboardViewModel(
             persistence: AppEnvironment.shared.persistence,
             syncEngine: AppEnvironment.shared.syncEngine
+        ))
+        _pesticideViewModel = StateObject(wrappedValue: PesticideViewModel(
+            persistence: AppEnvironment.shared.persistence
         ))
     }
 
@@ -29,6 +33,11 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: DSSpace.lg) {
+
+                // Pesticide stock alert banner
+                if !pesticideViewModel.lowStockItems.isEmpty || !pesticideViewModel.criticalStockItems.isEmpty {
+                    PesticideAlertBanner(viewModel: pesticideViewModel)
+                }
 
                 // Pending sync banner
                 if viewModel.pendingSyncCount > 0 {
@@ -212,6 +221,7 @@ struct DashboardView: View {
         .navigationBarTitleDisplayMode(.large)
         .onAppear {
             viewModel.load()
+            pesticideViewModel.load()
             withAnimation(.spring(response: 0.5, dampingFraction: 0.75).delay(0.1)) {
                 statCardsAppeared = true
             }

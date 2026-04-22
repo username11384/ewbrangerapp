@@ -84,6 +84,14 @@ struct MeshSyncView: View {
                 .padding(.bottom)
             }
             .navigationTitle("End of Day Sync")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: RangerStatusView()) {
+                        Image(systemName: "person.badge.shield.checkmark.fill")
+                            .foregroundStyle(Color.dsPrimary)
+                    }
+                }
+            }
         }
     }
 }

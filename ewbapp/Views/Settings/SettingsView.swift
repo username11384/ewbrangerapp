@@ -3,6 +3,7 @@ import CoreLocation
 
 struct SettingsView: View {
     @EnvironmentObject var appEnv: AppEnvironment
+    @EnvironmentObject var themeVM: AppThemeViewModel
     @StateObject private var viewModel: SettingsViewModel
 
     @State private var showEditName = false
@@ -35,6 +36,27 @@ struct SettingsView: View {
                         showEditName = true
                     }
                     Button("Change PIN") { showChangePIN = true }
+                }
+
+                // Display
+                Section {
+                    Picker("Theme", selection: $themeVM.theme) {
+                        ForEach(AppTheme.allCases, id: \.self) { theme in
+                            Text(theme.displayName).tag(theme)
+                        }
+                    }
+                    if themeVM.isRedLightMode {
+                        Label {
+                            Text("Red-Light preserves night vision by tinting the display deep red. Ideal for use in the field after dark.")
+                                .font(DSFont.caption)
+                                .foregroundStyle(Color.dsInk3)
+                        } icon: {
+                            Image(systemName: "moon.stars.fill")
+                                .foregroundStyle(Color.dsStatusActive)
+                        }
+                    }
+                } header: {
+                    Text("Display")
                 }
 
                 // Sync
