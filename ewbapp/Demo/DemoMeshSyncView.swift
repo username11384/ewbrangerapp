@@ -33,6 +33,14 @@ struct DemoMeshSyncView: View {
         return ["\(others[0])'s iPhone", "\(others[1])'s iPhone"]
     }
 
+    private var unresolvedConflictCount: Int {
+        ZoneConflict.demoConflicts.filter { $0.resolution == nil }.count
+    }
+
+    private var syncedTaskDisplayCount: Int {
+        max(pendingTaskCount, totalTaskCount)
+    }
+
     var body: some View {
         VStack(spacing: 20) {
                 // Status banner
@@ -92,7 +100,7 @@ struct DemoMeshSyncView: View {
                                 Text("Zone Conflicts Detected")
                                     .font(DSFont.subhead)
                                     .foregroundStyle(Color.dsInk)
-                                Text("2 boundaries need review")
+                                Text("\(unresolvedConflictCount) boundaries need review")
                                     .font(DSFont.caption)
                                     .foregroundStyle(Color.dsInk3)
                             }
@@ -197,15 +205,15 @@ struct DemoMeshSyncView: View {
             after(delay) { withAnimation(.linear(duration: 0.25)) { peer2Progress = value } }
         }
 
-        let half = (pendingTaskCount + 1) / 2
+        let half = (syncedTaskDisplayCount + 1) / 2
         after(4.8) { peer1Status = "Complete — \(half) tasks synced" }
-        after(5.1) { peer2Status = "Complete — \(pendingTaskCount - half) tasks synced" }
+        after(5.1) { peer2Status = "Complete — \(syncedTaskDisplayCount - half) tasks synced" }
         after(5.4) {
             // Actually mark all pending tasks as synced in CoreData.
             flushPendingTasks()
             withAnimation {
                 phase   = .done
-                summary = "Sync complete. 3 rangers up to date.\n\(totalTaskCount) tasks · 0 conflicts"
+                summary = "Sync complete. 3 rangers up to date.\n\(totalTaskCount) tasks · \(unresolvedConflictCount) conflicts"
             }
         }
     }
