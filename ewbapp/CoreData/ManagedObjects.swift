@@ -108,10 +108,12 @@ public class SightingLog: NSManagedObject {
     @NSManaged public var horizontalAccuracy: Double
     @NSManaged public var variant: String?
     @NSManaged public var infestationSize: String?
+    @NSManaged public var infestationAreaEstimate: String?
     @NSManaged public var notes: String?
     @NSManaged public var photoFilenames: NSArray?
     @NSManaged public var deviceID: String?
     @NSManaged public var serverID: String?
+    @NSManaged public var voiceNotePath: String?
     @NSManaged public var syncStatus: Int16
     @NSManaged public var ranger: RangerProfile?
     @NSManaged public var infestationZone: InfestationZone?

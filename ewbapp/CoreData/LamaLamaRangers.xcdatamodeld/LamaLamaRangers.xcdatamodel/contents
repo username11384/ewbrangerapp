@@ -79,9 +79,11 @@
         <attribute name="infestationSize" attributeType="String" defaultValueString="small"/>
         <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="infestationAreaEstimate" optional="YES" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
         <attribute name="photoFilenames" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="NSArray"/>
         <attribute name="serverID" optional="YES" attributeType="String"/>
+        <attribute name="voiceNotePath" optional="YES" attributeType="String"/>
         <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="variant" attributeType="String" defaultValueString="unknown"/>
