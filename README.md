@@ -112,6 +112,7 @@ ewbapp/
 |---|---|
 | `main` | Production build — starts clean, real GPS, real peer sync |
 | `demonewui` | Demo build — multi-species, new design system, pre-seeded data, all demo features |
+| `demov3` | Extended demo — all of `demonewui` plus 12 new features (see below) |
 | `v1-poc` | Original proof-of-concept (archived) |
 
 ---
@@ -124,15 +125,43 @@ ewbapp/
 
 ---
 
+## demov3 Features
+
+The `demov3` branch adds 12 features on top of the `demonewui` base:
+
+| # | Feature | Entry point |
+|---|---|---|
+| 1 | **Safety Check-In** | Safety tab → countdown timer, "I'm Safe" button |
+| 2 | **Hazard Logger** | Hub → Hazards tile → Log Hazard |
+| 3 | **Voice Notes** | Log Sighting → voice recorder field |
+| 4 | **Photo Size Estimation** | Log Sighting → size estimation overlay |
+| 5 | **Phenology Alerts** | Log Sighting → contextual alert banner per species + window |
+| 6 | **Herbicide Checker** | Treatment Entry → "Check herbicide" button |
+| 7 | **Treatment Effectiveness** | Sighting Detail → Record Follow-Up |
+| 8 | **Per-Area Patrol Checklists** | Patrol → checklist toolbar button |
+| 9 | **Pesticide Stock Alerts** | Dashboard → alert banner; Hub → Supplies |
+| 10 | **Equipment Maintenance Log** | Hub → Equipment tile |
+| 11 | **Ranger Status Broadcast** | Day Sync → ranger status list |
+| 12 | **Night Mode (Red Light)** | Settings → Display → Theme |
+
+### New CoreData entities in demov3
+
+- `Equipment` — tracked equipment with service dates and maintenance history
+- `MaintenanceRecord` — individual service events linked to an `Equipment`
+- `SafetyCheckIn` — persisted check-in sessions for the Safety tab
+- `HazardLog` — GPS-tagged hazard records with type, severity, and photo
+
+---
+
 ## Running the Demo Build
 
-1. Checkout the `demonewui` branch
+1. Checkout the `demov3` branch (or `demonewui` for the base feature set)
 2. Build and run on a simulator or device
 3. Log in as any ranger (PIN: `1234` for all demo accounts)
 4. Data is pre-seeded on first launch — 6 zones, 28 sightings across 6 species, 10 patrols, pesticide stocks, and tasks
 5. To reset data: Settings → Reset App Data
 
-### Key demo flows
+### Key demo flows (core)
 - **Map → Bloom button** — seasonal invasive species risk calendar
 - **Log Sighting → select Lantana** — shows biocontrol prompt
 - **Sighting Detail → Add Treatment → attach after photos → view detail** — before/after comparison card
@@ -140,6 +169,18 @@ ewbapp/
 - **Hub → Handover** — shift summary with live CoreData counts
 - **Hub → Cloud Sync** — fake Supabase + S3 sync with Starlink speed simulation
 - **Patrol → Start → checklist** — time estimates and stamina bar
+
+### Key demo flows (demov3 additions)
+- **Safety tab** — set a check-in interval, "I'm Safe" button resets countdown
+- **Log Sighting → microphone icon** — record and play back a voice note
+- **Log Sighting → size icon** — drag overlay rectangle to estimate infestation area
+- **Log Sighting → any species in season** — phenology alert banner fires automatically
+- **Treatment Entry → "Check herbicide"** — herbicide/species/method compatibility check
+- **Sighting Detail → Record Follow-Up** — log regrowth level against an earlier treatment
+- **Hub → Equipment** — add equipment, log maintenance, see overdue items highlighted
+- **Hub → Hazards** — log a GPS hazard with severity and type
+- **Day Sync screen** — ranger status list broadcast over mesh
+- **Settings → Display → Theme** — switch to Red Light mode for night vision
 
 ### GPS Spoofing (Demo)
 Settings → Developer → Spoof Location — pick any zone or patrol area centroid to simulate being on-site at Port Stewart without leaving your desk.

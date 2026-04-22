@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-iOS app for Yintjingga Aboriginal Corporation (YAC). Lama Lama Rangers track Lantana camara infestations around Port Stewart, Cape York, QLD. This is **V2** — a fully functional offline app with local-only persistence, Bluetooth mesh sync (MultipeerConnectivity), and no cloud backend. V3 (Supabase cloud sync, real API calls, paid services) has no planned timeline.
+iOS app for Yintjingga Aboriginal Corporation (YAC). Lama Lama Rangers track Lantana camara infestations around Port Stewart, Cape York, QLD. The active demo branch is **`demov3`** — a fully functional offline app with local-only persistence, Bluetooth mesh sync (MultipeerConnectivity), 5-tab UI, and 12 new field-safety and data-quality features added on top of `demonewui`. No cloud backend is implemented (Supabase cloud sync is a simulated demo only).
 
 ## Build command
 
@@ -62,6 +62,10 @@ SwiftUI Views
 | `PatrolRecord` | `→ RangerProfile`, `checklistItems` stored as `NSData` (JSON-encoded `[PatrolChecklistItem]`) |
 | `PesticideStock` | `↔ PesticideUsageRecord` (to-many) |
 | `SyncQueue` | Created atomically with entity saves via `SyncQueueManager.enqueue(...)` |
+| `Equipment` | `↔ MaintenanceRecord` (to-many via `maintenanceRecords`) |
+| `MaintenanceRecord` | `→ Equipment` |
+| `SafetyCheckIn` | Standalone (no relationships) — stores interval, last check-in time, isActive |
+| `HazardLog` | Standalone — GPS coords, hazardType, severity, photoPath, syncedToCloud |
 
 `InfestationZone.snapshots` is `NSOrderedSet?` — access as `zone.snapshots?.array as? [InfestationZoneSnapshot]`, not `as? [...]` directly.
 
@@ -86,13 +90,13 @@ Single shared PIN stored as a hash in Keychain (`KeychainService`). First login 
 - Patrol area coordinates are hardcoded in `Resources/PortStewartZones.areaCoordinates` (10 named areas).
 - GPS in simulator: 8-second timeout falls back to Port Stewart coords `(-14.7019, 143.7075)`.
 
-## V3 scope (not in this codebase)
+## Cloud sync scope
 
-Do not add: Supabase cloud sync, real API calls, MapKit paid tiers, push notifications, or any network-dependent feature. All `Services/API/` files are stubs and must remain so until V3 is scoped. V3 has no planned timeline.
+Do not add real Supabase API calls, real S3 uploads, MapKit paid tiers, or any live network-dependent feature. `Services/API/` files are stubs. `SyncEngine.triggerSync()` is a no-op. The "Cloud Sync" view in Hub is a simulation only.
 
 ## Tab structure
 
-`MainTabView` has **4 tabs**: Map, Activity (Sightings/Patrols/Tasks segments), Guide (species field guide), Hub. `HubView` replaced `MoreView` — it is a tile grid linking to Dashboard, Supplies, Day Sync, Zones, Cloud Sync, Handover, and Settings.
+`MainTabView` has **5 tabs**: Map, Activity (Sightings/Patrols/Tasks segments), Guide (species field guide), Safety (`SafetyCheckInView`), Hub. `HubView` is a tile grid linking to Dashboard, Supplies, Day Sync, Zones, Cloud Sync, Handover, Equipment, Hazards, and Settings.
 
 ## Design system
 
@@ -106,6 +110,31 @@ Do not add: Supabase cloud sync, real API calls, MapKit paid tiers, push notific
 ## Species model
 
 `InvasiveSpecies` enum (in `Models/Enums/`) replaces `LantanaVariant`. Cases: lantana, rubberVine, pricklyAcacia, sicklepod, giantRatsTailGrass, pondApple, unknown. `InvasiveSpecies.from(legacyVariant:)` maps old Lantana variant strings → `.lantana`. CoreData still stores species as String via `variant` attribute — no schema migration needed.
+
+## demov3 features (branch: demov3)
+
+12 features added on top of `demonewui`. All are fully offline; no new cloud dependencies.
+
+| Feature | Key files |
+|---|---|
+| **Safety Check-In** | `SafetyCheckInView.swift`, `SafetyCheckInViewModel.swift` — countdown ring, UNNotification, "I'm Safe" reset |
+| **Hazard Logger** | `HazardLogView.swift`, `LogHazardView.swift`, `HazardViewModel.swift` — GPS hazard records |
+| **Voice Notes** | `VoiceNoteRecorder.swift` (component) — AVAudioRecorder/AVAudioPlayer, 3 states: idle/recording/recorded; saved to `SightingLog.voiceNotePath` |
+| **Photo Size Estimation** | `SizeEstimationOverlay.swift` — draggable rect, reference object picker, area estimate in m²; saves to `SightingLog.infestationAreaEstimate` |
+| **Phenology Alerts** | `PhenologyAlerts.swift` (`PhenologyAlertStore`) — real Cape York phenology for all 6 species; banner in `LogSightingView` |
+| **Herbicide Checker** | `HerbicideCheckerView.swift`, `HerbicideDatabase.swift` — product/species/method compatibility |
+| **Treatment Effectiveness** | `TreatmentFollowUpView.swift`, `TreatmentEffectivenessViewModel.swift` — `RegrowthLevel` enum (none/light/moderate/heavy), timeline |
+| **Per-Area Checklists** | `AreaChecklistView.swift`, `PatrolViewModel+Checklist.swift`, `AreaChecklists.swift` |
+| **Pesticide Stock Alerts** | `PesticideAlertBanner.swift` (component) — surfaces on `DashboardView` when any stock is critical |
+| **Equipment Log** | `EquipmentListView.swift`, `AddEquipmentView.swift`, `AddMaintenanceRecordView.swift`, `EquipmentViewModel.swift` |
+| **Ranger Status Broadcast** | `RangerStatusView.swift`, `RangerStatusViewModel.swift`, `RangerStatus.swift` — status over mesh |
+| **Night Mode** | `AppThemeViewModel.swift` (`AppTheme` enum), `RedLightOverlay.swift` (`RedLightModifier`) — colour-multiply overlay, no view changes needed |
+
+### App-level wiring (demov3)
+
+`ewbappApp.swift` holds two additional `@StateObject`s injected as `.environmentObject()`:
+- `AppThemeViewModel` — provides `.preferredColorScheme` and drives `RedLightModifier`
+- `SafetyCheckInViewModel` — shared instance for the Safety tab
 
 ## Demo features (branch: demonewui)
 
