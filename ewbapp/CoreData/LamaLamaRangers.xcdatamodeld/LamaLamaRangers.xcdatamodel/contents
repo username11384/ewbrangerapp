@@ -149,6 +149,26 @@
         <attribute name="syncStatus" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="treatment" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TreatmentRecord" inverseName="followUps" inverseEntity="TreatmentRecord"/>
     </entity>
+    <entity name="HazardLog" representedClassName="HazardLog" syncable="YES">
+        <attribute name="hazardType" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="photoPath" optional="YES" attributeType="String"/>
+        <attribute name="severity" optional="YES" attributeType="String"/>
+        <attribute name="syncedToCloud" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="SafetyCheckIn" representedClassName="SafetyCheckIn" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="intervalMinutes" attributeType="Integer 16" defaultValueString="30" usesScalarValueType="YES"/>
+        <attribute name="isActive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="lastCheckInTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="startTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
     <entity name="TreatmentRecord" representedClassName="TreatmentRecord" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="followUpDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
