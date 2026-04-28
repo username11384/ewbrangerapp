@@ -17,62 +17,20 @@ struct LoginView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         // ── Hero ─────────────────────────────────────────
-                        ZStack(alignment: .bottom) {
-                            // Background photo or gradient fallback
-                            if let img = UIImage(named: "login_hero") {
-                                Image(uiImage: img)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: geo.size.width,
-                                           height: viewModel.selectedRanger == nil ? 300 : 180)
-                                    .clipped()
-                                    .overlay(
-                                        LinearGradient(
-                                            colors: [Color.dsPrimaryDeep.opacity(0.7), Color.dsPrimaryDeep.opacity(0.2)],
-                                            startPoint: .top, endPoint: .bottom
-                                        )
-                                    )
-                                    .overlay(
-                                        LinearGradient(
-                                            colors: [.clear, Color.dsBackground],
-                                            startPoint: .center, endPoint: .bottom
-                                        )
-                                    )
-                            } else {
-                                LinearGradient(
-                                    colors: [Color.dsPrimaryDeep, Color.dsPrimary],
-                                    startPoint: .top, endPoint: .bottom
-                                )
-                                .frame(height: viewModel.selectedRanger == nil ? 300 : 180)
-                            }
+                        LoginHeroView(
+                            width: geo.size.width,
+                            isCompact: viewModel.selectedRanger != nil
+                        )
 
-                            // Logo + title
-                            VStack(spacing: 6) {
-                                Image(systemName: "leaf.fill")
-                                    .font(.system(size: 38, weight: .medium))
-                                    .foregroundStyle(.white.opacity(0.95))
-                                    .shadow(color: .black.opacity(0.3), radius: 4)
-                                Text("Lama Lama Rangers")
-                                    .font(.system(size: 26, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.white)
-                                    .shadow(color: .black.opacity(0.4), radius: 4)
-                                Text("Yintjingga Aboriginal Corporation")
-                                    .font(.system(size: 14, weight: .regular))
-                                    .foregroundStyle(.white.opacity(0.8))
-                                    .shadow(color: .black.opacity(0.3), radius: 2)
-                            }
-                            .padding(.bottom, 28)
-                        }
-                        .animation(.spring(response: 0.4, dampingFraction: 0.8),
-                                   value: viewModel.selectedRanger == nil)
+                        // ── Content ───────────────────────────────────────
+                        VStack(spacing: DSSpace.xxl) {
 
-                        // ── Card ──────────────────────────────────────────
-                        VStack(spacing: DSSpace.xl) {
                             // Ranger selection
                             VStack(alignment: .leading, spacing: DSSpace.md) {
-                                Text("Who are you?")
-                                    .font(DSFont.headline)
-                                    .foregroundStyle(Color.dsInk)
+                                Text("SELECT RANGER")
+                                    .font(DSFont.badge)
+                                    .foregroundStyle(Color.dsInk3)
+                                    .tracking(1.2)
 
                                 HStack(spacing: DSSpace.sm) {
                                     ForEach(viewModel.rangers, id: \.id) { ranger in
@@ -94,28 +52,29 @@ struct LoginView: View {
                             // PIN entry
                             if viewModel.selectedRanger != nil {
                                 VStack(spacing: DSSpace.lg) {
-                                    VStack(spacing: DSSpace.sm) {
-                                        Text("Enter PIN")
-                                            .font(DSFont.callout)
-                                            .foregroundStyle(Color.dsInk3)
-                                        HStack(spacing: 18) {
-                                            ForEach(0..<4, id: \.self) { i in
-                                                Circle()
-                                                    .fill(i < viewModel.enteredPIN.count
-                                                          ? Color.dsPrimary
-                                                          : Color.dsSurface)
-                                                    .frame(width: 14, height: 14)
-                                                    .overlay(
-                                                        Circle().strokeBorder(
-                                                            i < viewModel.enteredPIN.count
-                                                            ? Color.clear
-                                                            : Color.dsDivider,
-                                                            lineWidth: 1.5
-                                                        )
+                                    Text("ENTER PIN")
+                                        .font(DSFont.badge)
+                                        .foregroundStyle(Color.dsInk3)
+                                        .tracking(1.2)
+
+                                    // PIN dots
+                                    HStack(spacing: 18) {
+                                        ForEach(0..<4, id: \.self) { i in
+                                            let filled = i < viewModel.enteredPIN.count
+                                            Circle()
+                                                .fill(filled ? Color.dsPrimary : Color.clear)
+                                                .frame(width: 15, height: 15)
+                                                .overlay(
+                                                    Circle().strokeBorder(
+                                                        filled ? Color.dsPrimary : Color.dsDivider,
+                                                        lineWidth: 1.5
                                                     )
-                                                    .animation(.spring(response: 0.2),
-                                                               value: viewModel.enteredPIN.count)
-                                            }
+                                                )
+                                                .scaleEffect(filled ? 1.2 : 1.0)
+                                                .animation(
+                                                    .spring(response: 0.2, dampingFraction: 0.6),
+                                                    value: filled
+                                                )
                                         }
                                     }
 
@@ -128,19 +87,30 @@ struct LoginView: View {
                                 .transition(.move(edge: .bottom).combined(with: .opacity))
                             }
 
+                            // Error pill
                             if let error = viewModel.loginError {
-                                Text(error)
-                                    .font(DSFont.callout)
-                                    .foregroundStyle(Color.dsStatusActive)
-                                    .multilineTextAlignment(.center)
+                                HStack(spacing: DSSpace.sm) {
+                                    Image(systemName: "exclamationmark.circle.fill")
+                                        .font(.system(size: 14, weight: .semibold))
+                                    Text(error)
+                                        .font(DSFont.callout)
+                                }
+                                .foregroundStyle(Color.dsStatusActive)
+                                .padding(.horizontal, DSSpace.lg)
+                                .padding(.vertical, DSSpace.sm)
+                                .background(Color.dsStatusActiveSoft)
+                                .clipShape(Capsule())
+                                .transition(.scale(scale: 0.9).combined(with: .opacity))
                             }
                         }
+                        .animation(.spring(response: 0.3), value: viewModel.loginError != nil)
                         .padding(.horizontal, DSSpace.xl)
                         .padding(.top, DSSpace.xl)
                         .padding(.bottom, geo.safeAreaInsets.bottom + DSSpace.xl)
-                        .frame(minHeight: geo.size.height
-                               - (viewModel.selectedRanger == nil ? 300 : 180)
-                               + 1, alignment: .top)
+                        .frame(
+                            minHeight: geo.size.height - (viewModel.selectedRanger == nil ? 240 : 140) + 1,
+                            alignment: .top
+                        )
                         .background(Color.dsBackground)
                     }
                 }
@@ -154,6 +124,73 @@ struct LoginView: View {
                 persistence: appEnv.persistence
             )
         }
+    }
+}
+
+// MARK: - Hero
+
+private struct LoginHeroView: View {
+    let width: CGFloat
+    let isCompact: Bool
+
+    private var heroHeight: CGFloat { isCompact ? 140 : 240 }
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            // Solid gradient — no blending into the background
+            LinearGradient(
+                colors: [Color.dsPrimaryDeep, Color.dsPrimary],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(width: width, height: heroHeight)
+
+            // Subtle concentric topo rings
+            Canvas { ctx, size in
+                for i in 0..<6 {
+                    let r = CGFloat(i) * 40 + 20
+                    let cx = size.width * 0.78
+                    let cy = size.height * 0.30
+                    let rect = CGRect(x: cx - r, y: cy - r, width: r * 2, height: r * 2)
+                    ctx.stroke(
+                        Path(ellipseIn: rect),
+                        with: .color(.white.opacity(0.045)),
+                        lineWidth: 1.5
+                    )
+                }
+            }
+            .frame(width: width, height: heroHeight)
+
+            // Brand lockup
+            VStack(spacing: DSSpace.sm) {
+                if !isCompact {
+                    ZStack {
+                        Circle()
+                            .fill(.white.opacity(0.12))
+                            .frame(width: 70, height: 70)
+                        Circle()
+                            .strokeBorder(.white.opacity(0.2), lineWidth: 1)
+                            .frame(width: 70, height: 70)
+                        Image(systemName: "leaf.fill")
+                            .font(.system(size: 30, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.95))
+                    }
+                    .transition(.scale(scale: 0.8).combined(with: .opacity))
+                }
+
+                VStack(spacing: 4) {
+                    Text("Lama Lama Rangers")
+                        .font(isCompact ? DSFont.headline : DSFont.largeTitle)
+                        .foregroundStyle(.white)
+                    Text("Yintjingga Aboriginal Corporation")
+                        .font(DSFont.callout)
+                        .foregroundStyle(.white.opacity(0.72))
+                }
+            }
+            .padding(.bottom, DSSpace.xl)
+        }
+        .frame(height: heroHeight)
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: isCompact)
     }
 }
 
@@ -199,30 +236,33 @@ struct RangerAvatarCard: View {
                         lineWidth: isSelected ? 2.5 : 1
                     )
                 )
-                .shadow(color: isSelected ? avatarColor.opacity(0.25) : .clear, radius: 4, y: 2)
+                .shadow(color: isSelected ? avatarColor.opacity(0.3) : .clear, radius: 6, y: 3)
 
                 VStack(spacing: 2) {
                     Text(ranger.displayName?.components(separatedBy: " ").first ?? "Ranger")
                         .font(DSFont.callout)
-                        .foregroundStyle(isSelected ? avatarColor : Color.dsInk)
+                        .foregroundStyle(Color.dsInk)
                     Text(roleLabel)
                         .font(.system(size: 10))
                         .foregroundStyle(Color.dsInk3)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, DSSpace.md)
             .background(
                 RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous)
-                    .fill(isSelected ? avatarColor.opacity(0.07) : Color.dsCard)
+                    .fill(isSelected ? avatarColor.opacity(0.08) : Color.dsCard)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous)
                     .strokeBorder(
-                        isSelected ? avatarColor.opacity(0.4) : Color.dsDivider.opacity(0.6),
-                        lineWidth: 1
+                        isSelected ? avatarColor.opacity(0.45) : Color.dsDivider.opacity(0.6),
+                        lineWidth: isSelected ? 1.5 : 1
                     )
             )
+            .shadow(color: isSelected ? avatarColor.opacity(0.12) : Color.dsInk.opacity(0.04), radius: 4, y: 2)
         }
         .buttonStyle(.plain)
         .animation(.spring(response: 0.25), value: isSelected)
@@ -243,12 +283,14 @@ private struct PINKeypad: View {
                 HStack(spacing: DSSpace.sm) {
                     ForEach(row, id: \.self) { key in
                         if key.isEmpty {
-                            Color.clear.frame(maxWidth: .infinity).frame(height: 60)
+                            Color.clear.frame(maxWidth: .infinity).frame(height: 64)
                         } else if key == "⌫" {
                             Button { onDelete() } label: {
                                 Image(systemName: "delete.left")
                                     .font(.system(size: 18, weight: .medium))
-                                    .frame(maxWidth: .infinity).frame(height: 60)
+                                    .foregroundStyle(Color.dsInk2)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 64)
                                     .background(Color.dsSurface)
                                     .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
                                     .overlay(
@@ -256,27 +298,37 @@ private struct PINKeypad: View {
                                             .strokeBorder(Color.dsDivider, lineWidth: 0.75)
                                     )
                             }
-                            .foregroundStyle(Color.dsInk2)
-                            .buttonStyle(.plain)
+                            .buttonStyle(KeyTapStyle())
                         } else {
                             Button { onDigit(key) } label: {
                                 Text(key)
-                                    .font(.system(size: 22, weight: .medium, design: .rounded))
-                                    .frame(maxWidth: .infinity).frame(height: 60)
+                                    .font(.system(size: 24, weight: .medium, design: .rounded))
+                                    .foregroundStyle(Color.dsInk)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 64)
                                     .background(Color.dsCard)
                                     .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: DSRadius.sm, style: .continuous)
                                             .strokeBorder(Color.dsDivider, lineWidth: 0.75)
                                     )
+                                    .shadow(color: Color.dsInk.opacity(0.05), radius: 2, y: 1)
                             }
-                            .foregroundStyle(Color.dsInk)
-                            .buttonStyle(.plain)
+                            .buttonStyle(KeyTapStyle())
                         }
                     }
                 }
             }
         }
+    }
+}
+
+// Subtle scale-down press effect for keypad buttons
+private struct KeyTapStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.93 : 1.0)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 
