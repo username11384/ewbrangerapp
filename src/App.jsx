@@ -109,9 +109,9 @@ function SectionTag({ children }) {
   )
 }
 
-function PhoneFrame({ label, icon, src, tint }) {
+function PhoneFrame({ label, icon, src }) {
   return (
-    <div className="phone-frame" style={tint ? { background: tint } : {}}>
+    <div className="phone-frame">
       <div className="phone-screen">
         {src
           ? <img src={src} alt={label} />
@@ -761,12 +761,12 @@ function Hero() {
         <div className="hero-phones">
           <div className="hero-phone-wrap hero-phone-wrap--1">
             <div className="hero-phone" ref={phone1Ref}>
-              <PhoneFrame label="Map view" icon="🗺️" src={imgMap} tint="#1A3828" />
+              <PhoneFrame label="Map view" icon="🗺️" src={imgMap} />
             </div>
           </div>
           <div className="hero-phone-wrap hero-phone-wrap--2">
             <div className="hero-phone" ref={phone2Ref}>
-              <PhoneFrame label="Hub" icon="🏠" src={imgHub} tint="#2A5C3F" />
+              <PhoneFrame label="Hub" icon="🏠" src={imgHub} />
             </div>
           </div>
         </div>
@@ -1141,8 +1141,8 @@ function OfflineSection() {
           <Reveal delay={0.15}>
             <div className="offline-right-col">
               <div className="offline-phones">
-                <PhoneFrame label="Day Sync" icon="📡" src={imgDaySync} tint="#1A3828" />
-                <PhoneFrame label="Conflict Resolver" icon="🔀" src={imgConflict} tint="#2A5C3F" />
+                <PhoneFrame label="Day Sync" icon="📡" src={imgDaySync} />
+                <PhoneFrame label="Conflict Resolver" icon="🔀" src={imgConflict} />
               </div>
               <PatrolMeshViz />
             </div>
