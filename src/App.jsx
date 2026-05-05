@@ -180,30 +180,34 @@ const FEATURE_SECTIONS = [
     headline: 'The whole picture before you leave the vehicle',
     body: 'Satellite imagery over Port Stewart shows every logged sighting, infestation zone, and patrol area at a glance. The Bloom Calendar overlays monthly flowering and seeding risk for all 6 species — so Rangers know which threats are most active and treat before seed set.',
     highlights: ['Species-coded sighting pins', 'Zone polygon drawing & editing', 'Bloom Calendar: monthly risk by species', 'Layer toggles for sightings, zones & patrols'],
-    phones: [{ label: 'Map view', icon: '🗺️', src: imgMap }, { label: 'Bloom Calendar', icon: '🌸', src: imgBloom }],
+    phones: [{ label: 'Map view', src: imgMap }, { label: 'Bloom Calendar', src: imgBloom }],
+    figStart: 1,
   },
   {
     tag: 'Sighting Log',
     headline: 'Record what you find, where you find it',
     body: 'GPS-tagged sightings with species picker, infestation size, and photos. When Rangers log Lantana, a biocontrol prompt asks about Aconophora compressa — if the Lantana bug is present, the app recommends delaying foliar spray to protect established biocontrol agents. This reflects documented non-target risk from peer-reviewed literature.',
     highlights: ['Automatic GPS capture', 'Lantana biocontrol safety prompt', 'Photo attachment', 'Infestation size estimate'],
-    phones: [{ label: 'Log Sighting', icon: '📍', src: imgLogSighting }, { label: 'Biocontrol prompt', icon: '🦗', src: imgBiocontrol }],
+    phones: [{ label: 'Log Sighting', src: imgLogSighting }, { label: 'Biocontrol prompt', src: imgBiocontrol }],
     reversed: true, alt: true,
+    figStart: 3,
   },
   {
     tag: 'Treatment Records',
     headline: 'Document the work. Track what happens next.',
     body: 'Log treatment method — foliar spray, cut stump, basal bark, mechanical, stem injection, or fire management — alongside herbicide product, outcome notes, and a scheduled follow-up date. Every treatment is linked to its sighting, building a complete history of each infestation site over time.',
     highlights: ['Foliar spray, cut stump, basal bark, fire', 'Herbicide product and quantity', 'Outcome notes per treatment', 'Scheduled follow-up date'],
-    phones: [{ label: 'Treatment Entry', icon: '💊', src: imgTreatment }],
+    phones: [{ label: 'Treatment Entry', src: imgTreatment }],
+    figStart: 5,
   },
   {
     tag: 'Patrol & Stamina Metric',
     headline: 'Stay on time across the whole area',
     body: 'Start a patrol with a structured pre-departure checklist — each item carries a time estimate. A two-tone stamina bar tracks completed vs remaining time live, raising a warning at 85% of planned duration so Rangers can adjust before running short in the field.',
     highlights: ['Pre-departure checklist', 'Time-estimated items', 'Live stamina progress bar', 'Running-long warning at 85%'],
-    phones: [{ label: 'Active Patrol', icon: '🥾', src: imgPatrol }, { label: 'Checklist', icon: '✅', src: imgChecklist }],
+    phones: [{ label: 'Active Patrol', src: imgPatrol }, { label: 'Checklist', src: imgChecklist }],
     reversed: true, alt: true,
+    figStart: 6,
   },
 ]
 
@@ -706,10 +710,10 @@ function Nav({ scrollY }) {
         Lama Lama Rangers<span className="nav-logo-dot">.</span>
       </a>
       <ul className="nav-links">
+        <li><a href="#project">Project</a></li>
         <li><a href="#background">Background</a></li>
-        <li><a href="#design">Design</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#sync">Sync</a></li>
+        <li><a href="#design">Criteria</a></li>
+        <li><a href="#features">Design</a></li>
         <li><a href="#implementation">Implementation</a></li>
       </ul>
     </nav>
@@ -787,6 +791,11 @@ function ExecSummary() {
         <div className="exec-inner">
           <Reveal>
             <SectionTag>Executive Summary</SectionTag>
+            <div className="exec-meta-row">
+              <span className="exec-meta-item"><span className="exec-meta-label">Design Area</span> 5.5 — Technology for Communities</span>
+              <span className="exec-meta-divider" />
+              <span className="exec-meta-item"><span className="exec-meta-label">Keywords</span> invasive plant management · offline-first mobile application · field data collection · Indigenous land stewardship · Cape York Peninsula · peer-to-peer sync</span>
+            </div>
             <h2 className="section-headline">A digital system built around how Rangers already work</h2>
             <p className="exec-body">
               The Lama Lama Rangers of Yintjingga Aboriginal Corporation (YAC) patrol invasive plant infestations across Lama Lama Country on Cape York Peninsula, Queensland. Six species — <em>Lantana camara</em>, Rubber Vine, Prickly Acacia, Sicklepod, Giant Rat's Tail Grass, and Pond Apple — are actively managed on foot, without reliable mobile coverage.
@@ -830,7 +839,10 @@ function Background() {
               Lama Lama Country encompasses a range of vegetation communities — coastal lowland rainforest, open savanna woodland, melaleuca wetlands, and riparian corridors. Each community hosts a different invasive species profile. Lantana dominates disturbed woodland edges; Rubber Vine targets the riparian corridor; Pond Apple invades wetland margins.
             </p>
             <p className="context-para">
-              Effective management requires species-specific treatment matched to vegetation type — a level of precision that paper-based recording cannot support. The app produces GPS-tagged, species-attributed records at the infestation site, enabling Rangers to track whether treatment is working, identify re-infestation patterns, and prioritise effort toward high-risk areas.
+              Existing management relies on paper-based field sheets completed during or after patrol, verbal handovers between shift changes, and periodic reports to Queensland DAFF under Working on Country Programme obligations. These approaches produce records that are not GPS-tagged, not species-attributed at site level, and not accessible to the whole Ranger team in real time.
+            </p>
+            <p className="context-para">
+              The result is a data gap: Rangers cannot reliably track whether a treated site has re-infested, identify which species are spreading fastest across which vegetation community, or produce the structured evidence required for grant reporting and programme evaluation. Effective management requires species-specific treatment matched to vegetation type — a level of precision that paper-based recording cannot support. The app closes this gap by producing GPS-tagged, species-attributed records at the infestation site, linked to treatment outcome and follow-up scheduling.
             </p>
           </Reveal>
           <Reveal delay={0.15} className="species-sidebar">
@@ -1014,7 +1026,7 @@ function FeaturesOverview() {
   )
 }
 
-function FeatureSection({ tag, headline, body, highlights, phones, reversed, alt, index = 0 }) {
+function FeatureSection({ tag, headline, body, highlights, phones, reversed, alt, index = 0, figStart = 1 }) {
   return (
     <section className={`feature-section${alt ? ' feature-section--alt' : ''}`}>
       <div className="feature-section-watermark" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
@@ -1036,12 +1048,18 @@ function FeatureSection({ tag, headline, body, highlights, phones, reversed, alt
           <Reveal delay={0.1}>
             {phones.length === 1
               ? <div className="phone-column">
-                  <div className="phone-solo">
+                  <figure className="phone-solo">
                     <PhoneFrame {...phones[0]} />
-                  </div>
+                    <figcaption className="fig-caption">Figure {figStart}. {phones[0].label}</figcaption>
+                  </figure>
                 </div>
               : <div className="phone-column phone-column--stacked">
-                  {phones.map(p => <PhoneFrame key={p.label} {...p} />)}
+                  {phones.map((p, j) => (
+                    <figure key={p.label} className="phone-figure">
+                      <PhoneFrame {...p} />
+                      <figcaption className="fig-caption">{`Figure ${figStart + j}. ${p.label}`}</figcaption>
+                    </figure>
+                  ))}
                 </div>
             }
           </Reveal>
@@ -1393,6 +1411,45 @@ function ReferencesSection() {
   )
 }
 
+function ProjectDetails() {
+  return (
+    <section className="project-details-section" id="project">
+      <div className="container">
+        <Reveal>
+          <SectionTag>Project Details</SectionTag>
+          <div className="project-meta-grid">
+            <div className="project-meta-item">
+              <div className="project-meta-label">Design Area</div>
+              <div className="project-meta-value">5.5 — Technology for Communities</div>
+            </div>
+            <div className="project-meta-item">
+              <div className="project-meta-label">Project Opportunity</div>
+              <div className="project-meta-value">Invasive Plant Management — Yintjingga Aboriginal Corporation, Cape York Peninsula</div>
+            </div>
+            <div className="project-meta-item">
+              <div className="project-meta-label">Subject</div>
+              <div className="project-meta-value">31265 Communications for IT Professionals · UTS Autumn 2026</div>
+            </div>
+          </div>
+          <h2 className="section-headline" style={{ marginTop: 48 }}>Why this matters</h2>
+          <p className="section-body">
+            The Lama Lama Rangers of Yintjingga Aboriginal Corporation (YAC) manage six declared invasive plant species across Lama Lama Country on Cape York Peninsula — without reliable mobile coverage, with limited resources, and in extreme tropical field conditions. Systematic, GPS-attributed tracking is critical: untreated infestations spread rapidly across ecologically significant habitat and directly undermine the Rangers' custodianship work.
+          </p>
+          <p className="section-body" style={{ marginTop: 16 }}>
+            No existing commercial solution addresses the combination of full offline operation, cultural data sovereignty under YAC control, and the specific six-species management profile of Lama Lama Country. This project responds to that gap.
+          </p>
+          <div className="hmw-block" style={{ marginTop: 32, background: 'var(--green-50)', border: '1px solid var(--green-200)' }}>
+            <div className="hmw-label" style={{ color: 'var(--green-700)' }}>Needs Statement</div>
+            <blockquote className="hmw-quote" style={{ color: 'var(--ink)' }}>
+              How might we support the Lama Lama Rangers in systematically monitoring and managing invasive plant species across Lama Lama Country, in a way that works fully offline, respects data sovereignty, and fits their existing patrol workflow?
+            </blockquote>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 function AcknowledgementSection() {
   return (
     <section className="acknowledgement-section" id="acknowledgement">
@@ -1507,8 +1564,9 @@ export default function App() {
       <Nav scrollY={scrollY} />
       <Hero />
       <ExecSummary />
-      <AcknowledgementSection />
       <GroupDeclarationSection />
+      <AcknowledgementSection />
+      <ProjectDetails />
       <Background />
       <CriteriaSection />
       <OptionsSection />
