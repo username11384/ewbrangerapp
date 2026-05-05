@@ -318,6 +318,15 @@ const REFERENCES = [
   '[Insert individual Task 1b sources, EWB Design Brief citation, and any additional sources used in the written document.]',
 ]
 
+const GROUP_DECLARATION_DATA = [
+  { name: 'Immanuel', area: 'Q1 — Economic Constraints', contributions: 'App development, design solution, implementation plan, cost analysis, team coordination' },
+  { name: 'Essy', area: 'Q2 — Habitats', contributions: 'Background research: ecosystem types and priority zones' },
+  { name: 'Marisa', area: 'Q3 — Species', contributions: 'Background research: species biology, spread, control methods' },
+  { name: 'Garv', area: 'Q4 — Traditional Management', contributions: 'Background research: traditional burning, IWM intersection' },
+  { name: 'Jai', area: 'Q5 — Environmental Threats', contributions: 'Background research: climate-driven spread risk' },
+  { name: 'Caleb', area: 'Q6 — Ecosystem Protection', contributions: 'Background research: outcome metrics for biodiversity recovery' },
+]
+
 // ─── Animated widgets ─────────────────────────────────────────────────────────
 
 function BloomHeat() {
@@ -738,6 +747,7 @@ function Hero() {
             <span className="hero-eyebrow-pip" />
             Yintjingga Aboriginal Corporation · Cape York
           </div>
+          <div className="hero-eyebrow-rule" />
           <h1 className="hero-headline">
             <span className="hero-headline-intro">Protecting</span>
             <span className="hero-headline-em">Country.</span>
@@ -1038,9 +1048,10 @@ function FeaturesOverview() {
   )
 }
 
-function FeatureSection({ tag, headline, body, highlights, phones, reversed, alt }) {
+function FeatureSection({ tag, headline, body, highlights, phones, reversed, alt, index = 0 }) {
   return (
     <section className={`feature-section${alt ? ' feature-section--alt' : ''}`}>
+      <div className="feature-section-watermark" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
       <div className="container">
         <div className={`feature-section-inner${reversed ? ' feature-section-inner--reversed' : ''}`}>
           <Reveal>
@@ -1416,6 +1427,62 @@ function ReferencesSection() {
   )
 }
 
+function AcknowledgementSection() {
+  return (
+    <section className="acknowledgement-section" id="acknowledgement">
+      <div className="container">
+        <div className="acknowledgement-inner">
+          <div className="acknowledgement-label">Acknowledgement of Country</div>
+          <blockquote className="acknowledgement-quote">
+            "We acknowledge the Lama Lama people as the Traditional Owners and custodians of Lama Lama Country, including the lands and waters around Port Stewart, Cape York. We pay our respects to Elders past, present, and emerging. This design work was developed in partnership with Yintjingga Aboriginal Corporation under the principle of designing with, not for."
+          </blockquote>
+          <p className="acknowledgement-body">
+            This project was developed as part of the EWB Challenge 2026 in partnership with Engineers Without Borders Australia and Yintjingga Aboriginal Corporation.
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function GroupDeclarationSection() {
+  return (
+    <section className="declaration-section" id="declaration">
+      <div className="container">
+        <Reveal>
+          <SectionTag>Group Declaration</SectionTag>
+          <h2 className="section-headline">Team Contributions</h2>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <div className="declaration-table-wrap">
+            <table className="declaration-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Research Area</th>
+                  <th>Contributions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {GROUP_DECLARATION_DATA.map((row, i) => (
+                  <tr key={row.name} className={i % 2 === 1 ? 'declaration-row--alt' : ''}>
+                    <td className="declaration-td--name">{row.name}</td>
+                    <td className="declaration-td--area">{row.area}</td>
+                    <td>{row.contributions}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="declaration-note">
+            All team members contributed to the final design solution through research, review, and feedback. Assessment Task 3 website content was produced collaboratively. Generative AI (Claude by Anthropic) was used throughout — a full prompt log is included in the appendices.
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 function Footer() {
   return (
     <footer className="footer">
@@ -1460,6 +1527,8 @@ export default function App() {
       <Nav scrollY={scrollY} />
       <Hero />
       <ExecSummary />
+      <AcknowledgementSection />
+      <GroupDeclarationSection />
       <Background />
       <TeamSection />
       <CriteriaSection />
@@ -1468,7 +1537,7 @@ export default function App() {
       <FeaturesOverview />
       {FEATURE_SECTIONS.map((fs, i) => (
         <div key={fs.tag}>
-          <FeatureSection {...fs} />
+          <FeatureSection {...fs} index={i} />
           {i === 1 && (
             <section className="sighting-cascade-section">
               <div className="container">
