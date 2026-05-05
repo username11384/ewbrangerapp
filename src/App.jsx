@@ -224,15 +224,6 @@ const SIGHTING_ENTRIES = [
   { species: 'Sicklepod', color: '#2A5C3F', coords: '−14.7028° S, 143.7076° E', size: '~8m²', time: '09:51', note: 'Dry season growth. Cut stump.' },
 ]
 
-const TEAM = [
-  { name: 'Immanuel', role: 'Q1 — Economic constraints', detail: 'Labour, materials, funding sources, and stakeholder mapping' },
-  { name: 'Essy', role: 'Q2 — Habitats', detail: 'Ecosystem types and priority protection zones across Lama Lama Country' },
-  { name: 'Marisa', role: 'Q3 — Species', detail: 'Biology, spread vectors, and control efficacy for all 6 target species' },
-  { name: 'Garv', role: 'Q4 — Traditional practices', detail: 'Intersection of traditional burning and stewardship with Integrated Weed Management' },
-  { name: 'Jai', role: 'Q5 — Environmental threats', detail: 'Climate-driven spread risk and cumulative habitat pressure' },
-  { name: 'Caleb', role: 'Q6 — Ecosystem protection', detail: 'Outcome metrics for long-term biodiversity recovery' },
-]
-
 const CRITERIA = [
   { w: '25%', c: 'Connectivity independence', desc: 'Must function fully without mobile data or Wi-Fi at any point', just: 'Port Stewart has no reliable mobile coverage', extended: 'Port Stewart sits approximately 90km from Coen, the nearest town with reliable services. Commercial mobile coverage does not extend to the area. Satellite internet via Starlink is available at the Ranger base but not during field patrols. Any solution requiring a live connection at the point of use is not viable as a primary system.' },
   { w: '20%', c: 'Field usability', desc: 'Usable one-handed in heat; minimal text input; large tap targets', just: 'Rangers work in tropical conditions while managing equipment', extended: 'Rangers patrol on foot in tropical heat, often carrying equipment and tools simultaneously. A sighting log requiring more than 30 seconds of focused attention is unlikely to be used consistently in practice. The app is designed for single-handed use with large tap targets, a species picker (no text entry), and GPS capture that requires zero manual coordinate input.' },
@@ -319,12 +310,12 @@ const REFERENCES = [
 ]
 
 const GROUP_DECLARATION_DATA = [
-  { name: 'Immanuel', area: 'Q1 — Economic Constraints', contributions: 'App development, design solution, implementation plan, cost analysis, team coordination' },
-  { name: 'Essy', area: 'Q2 — Habitats', contributions: 'Background research: ecosystem types and priority zones' },
-  { name: 'Marisa', area: 'Q3 — Species', contributions: 'Background research: species biology, spread, control methods' },
-  { name: 'Garv', area: 'Q4 — Traditional Management', contributions: 'Background research: traditional burning, IWM intersection' },
-  { name: 'Jai', area: 'Q5 — Environmental Threats', contributions: 'Background research: climate-driven spread risk' },
-  { name: 'Caleb', area: 'Q6 — Ecosystem Protection', contributions: 'Background research: outcome metrics for biodiversity recovery' },
+  { name: 'Immanuel', area: 'Q1 — Economic Constraints', contributions: 'App design and development (Swift, SwiftUI, CoreData, MultipeerConnectivity, Supabase); design solution documentation; cost model and implementation plan; AT3 website; team coordination' },
+  { name: 'Essy', area: 'Q2 — Habitats', contributions: 'Vegetation community types and priority habitat zones across Lama Lama Country; species–habitat mapping; contributed to Background and Design Criteria sections' },
+  { name: 'Marisa', area: 'Q3 — Species', contributions: 'Biology, phenology, and spread vectors for all 6 target species; chemical and mechanical control efficacy; informed species content and bloom calendar rationale' },
+  { name: 'Garv', area: 'Q4 — Traditional Management', contributions: 'Traditional fire stewardship and IWM intersection with YAC land management; informed cultural appropriateness design criterion and data sovereignty framing' },
+  { name: 'Jai', area: 'Q5 — Environmental Threats', contributions: 'Climate-driven invasive spread projections and cumulative habitat pressure on Cape York; contributed to environmental context and design rationale sections' },
+  { name: 'Caleb', area: 'Q6 — Ecosystem Protection', contributions: 'Long-term biodiversity recovery metrics and Working on Country reporting frameworks; informed the data utility design criterion and export requirements' },
 ]
 
 // ─── Animated widgets ─────────────────────────────────────────────────────────
@@ -854,31 +845,6 @@ function Background() {
               </div>
             ))}
           </Reveal>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function TeamSection() {
-  return (
-    <section className="team-section">
-      <div className="container">
-        <Reveal>
-          <SectionTag>The Team</SectionTag>
-          <h2 className="section-headline">Six research streams. One solution.</h2>
-        </Reveal>
-        <div className="team-grid" style={{ marginTop: 48 }}>
-          {TEAM.map((m, i) => (
-            <Reveal key={m.name} delay={0.07 * (i % 3)}>
-              <div className="team-card">
-                <div className="team-initial">{m.name[0]}</div>
-                <div className="team-name">{m.name}</div>
-                <div className="team-role">{m.role}</div>
-                <div className="team-detail">{m.detail}</div>
-              </div>
-            </Reveal>
-          ))}
         </div>
       </div>
     </section>
@@ -1434,10 +1400,10 @@ function AcknowledgementSection() {
         <div className="acknowledgement-inner">
           <div className="acknowledgement-label">Acknowledgement of Country</div>
           <blockquote className="acknowledgement-quote">
-            "We acknowledge the Lama Lama people as the Traditional Owners and custodians of Lama Lama Country, including the lands and waters around Port Stewart, Cape York. We pay our respects to Elders past, present, and emerging. This design work was developed in partnership with Yintjingga Aboriginal Corporation under the principle of designing with, not for."
+            We acknowledge the Lama Lama people as the Traditional Owners and custodians of Lama Lama Country, including the lands and waters around Port Stewart, Cape York Peninsula. We pay our respects to Elders past, present, and emerging, and recognise their continuing connection to land, sea, and community. This design work was undertaken in partnership with Yintjingga Aboriginal Corporation under the principle of designing with, not for.
           </blockquote>
           <p className="acknowledgement-body">
-            This project was developed as part of the EWB Challenge 2026 in partnership with Engineers Without Borders Australia and Yintjingga Aboriginal Corporation.
+            The Lama Lama Rangers exercise custodianship of their Country through ongoing patrol, treatment, and monitoring of invasive species. This project supports — and must never substitute — that sovereign stewardship.
           </p>
         </div>
       </div>
@@ -1451,7 +1417,10 @@ function GroupDeclarationSection() {
       <div className="container">
         <Reveal>
           <SectionTag>Group Declaration</SectionTag>
-          <h2 className="section-headline">Team Contributions</h2>
+          <h2 className="section-headline">Individual Contributions</h2>
+          <p className="section-body" style={{ marginBottom: 0 }}>
+            Each team member led one research question as primary author. All members reviewed the final design solution and contributed feedback on the AT3 deliverables.
+          </p>
         </Reveal>
         <Reveal delay={0.1}>
           <div className="declaration-table-wrap">
@@ -1460,7 +1429,7 @@ function GroupDeclarationSection() {
                 <tr>
                   <th>Name</th>
                   <th>Research Area</th>
-                  <th>Contributions</th>
+                  <th>Contributions to AT3</th>
                 </tr>
               </thead>
               <tbody>
@@ -1474,9 +1443,20 @@ function GroupDeclarationSection() {
               </tbody>
             </table>
           </div>
-          <p className="declaration-note">
-            All team members contributed to the final design solution through research, review, and feedback. Assessment Task 3 website content was produced collaboratively. Generative AI (Claude by Anthropic) was used throughout — a full prompt log is included in the appendices.
-          </p>
+          <div className="declaration-statements">
+            <div className="declaration-statement">
+              <div className="declaration-statement-label">Originality</div>
+              <p className="declaration-statement-text">
+                All written analysis, design rationale, and decision-making in this report represents the original work of the group. Source material is cited in accordance with APA 7th edition. Contributions attributed to specific team members above are accurate.
+              </p>
+            </div>
+            <div className="declaration-statement">
+              <div className="declaration-statement-label">Generative AI Use</div>
+              <p className="declaration-statement-text">
+                Generative AI (Claude by Anthropic) was used to assist with: writing and editing website copy, generating React component code for this site, structuring arguments, and reviewing content for clarity. AI was not used to generate the research content, technical analysis, or design decisions in the report. A full prompt log is included in the appendices.
+              </p>
+            </div>
+          </div>
         </Reveal>
       </div>
     </section>
@@ -1530,7 +1510,6 @@ export default function App() {
       <AcknowledgementSection />
       <GroupDeclarationSection />
       <Background />
-      <TeamSection />
       <CriteriaSection />
       <OptionsSection />
       <SelectionSection />
