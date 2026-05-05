@@ -457,7 +457,6 @@ function SyncDash() {
     const timeline = [
       { t: 400, fn: () => setStage(1) },
       { t: 1200, fn: () => setStage(2) },
-      { t: 2400, fn: () => setStage(3) },
     ]
     const ids = timeline.map(({ t, fn }) => setTimeout(fn, t))
     return () => ids.forEach(clearTimeout)
@@ -474,12 +473,12 @@ function SyncDash() {
       setProgress(prog)
       setRecordCount(recs)
       setSpeed(prog >= 100 ? null : spd)
-      if (prog >= 100) clearInterval(id)
+      if (prog >= 100) { clearInterval(id); setStage(3) }
     }, 80)
     return () => clearInterval(id)
   }, [stage, key])
 
-  const status = stage === 0 ? 'idle' : stage < 3 ? 'active' : 'done'
+  const status = stage === 0 ? 'idle' : (stage >= 3 && progress >= 100) ? 'done' : 'active'
   const statusLabel = { idle: 'Idle', active: 'Syncing…', done: 'Complete' }[status]
 
   return (
