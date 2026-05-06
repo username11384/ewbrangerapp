@@ -1029,7 +1029,6 @@ function FeaturesOverview() {
 function FeatureSection({ tag, headline, body, highlights, phones, reversed, alt, index = 0, figStart = 1 }) {
   return (
     <section className={`feature-section${alt ? ' feature-section--alt' : ''}`}>
-      <div className="feature-section-watermark" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
       <div className="container">
         <div className={`feature-section-inner${reversed ? ' feature-section-inner--reversed' : ''}`}>
           <Reveal>
@@ -1429,6 +1428,14 @@ function ProjectDetails() {
             <div className="project-meta-item">
               <div className="project-meta-label">Subject</div>
               <div className="project-meta-value">31265 Communications for IT Professionals · UTS Autumn 2026</div>
+            </div>
+            <div className="project-meta-item">
+              <div className="project-meta-label">Tutorial &amp; Zone</div>
+              <div className="project-meta-value">Tutorial 02 — Dhanesh</div>
+            </div>
+            <div className="project-meta-item">
+              <div className="project-meta-label">Group Name</div>
+              <div className="project-meta-value">Garv Fan Club</div>
             </div>
           </div>
           <h2 className="section-headline" style={{ marginTop: 48 }}>Why this matters</h2>
