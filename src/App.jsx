@@ -246,8 +246,10 @@ const REFS = [
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 
 const SPY_SECTIONS = [
-  { id: 'top',             label: 'Overview',        subs: [] },
-  { id: 'background',      label: 'Background',      subs: [
+  { id: 'top',             label: 'Overview',         subs: [] },
+  { id: 'exec-summary',    label: 'Exec Summary',     subs: [] },
+  { id: 'project',         label: 'Project Details',  subs: [] },
+  { id: 'background',      label: 'Background',       subs: [
     { id: 'sub-2-1', label: '2.1 Context' },
     { id: 'sub-2-2', label: '2.2 Stakeholders' },
     { id: 'sub-2-3', label: '2.3 Existing Solutions' },
