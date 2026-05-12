@@ -399,8 +399,9 @@ tfoot td {
 /* ── Lead paragraph ──────────────────────────────────────────────────────── */
 
 p.lead {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1.08rem;
+  font-weight: 400;
   color: var(--ink);
   line-height: 1.82;
   margin-bottom: 1.25rem;
