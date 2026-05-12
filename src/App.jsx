@@ -303,6 +303,7 @@ function Hero() {
           </div>
         </div>
       </div>
+      <p className="hero-credit">Photo: Cape York Tours (2023, July 16). https://capeyorktours.com.au/what-will-i-do-in-cape-york/</p>
     </section>
   )
 }
