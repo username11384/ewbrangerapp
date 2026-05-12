@@ -123,8 +123,35 @@ a:hover { opacity: 0.7; }
 
 .hero {
   background: var(--ocean);
+  background-size: cover;
+  background-position: center 40%;
   color: #DDD8CF;
   padding: 9rem 0 5.5rem;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ocean);
+  opacity: 0.78;
+  z-index: 0;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-credit {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: #2E4060;
+  position: absolute;
+  bottom: 0.6rem;
+  right: 1.5rem;
+  z-index: 1;
 }
 
 .eyebrow {
@@ -297,6 +324,30 @@ tfoot td {
   font-weight: 700;
   background: rgba(44, 83, 56, 0.07);
   border-top: 1.5px solid var(--rule);
+}
+
+/* ── Banner images ───────────────────────────────────────────────────────── */
+
+.banner {
+  margin: 0.5rem 0 2.5rem;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.banner img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+.banner figcaption {
+  font-size: 0.65rem;
+  color: var(--ink-mid);
+  font-style: italic;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--rule);
+  line-height: 1.4;
 }
 
 /* ── Lead paragraph ──────────────────────────────────────────────────────── */

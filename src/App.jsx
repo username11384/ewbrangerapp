@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
+import imgBannerHero     from './assets/banners/hero.jpg'
+import imgBannerLantana  from './assets/banners/lantanainfestation.jpg'
+import imgBannerRangers  from './assets/banners/rangers.jpg'
+import imgBannerWetlands from './assets/banners/capeyorkwetlands.jpg'
+
 import imgMap         from './assets/screenshots/map.png'
 import imgLog         from './assets/screenshots/log-sighting.png'
 import imgSpecies     from './assets/screenshots/species-guide.png'
@@ -93,6 +98,15 @@ function Phone({ src, caption }) {
     <figure className="phone">
       <div className="phone-shell"><img src={src} alt={caption} loading="lazy" /></div>
       {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  )
+}
+
+function Banner({ src, alt, credit }) {
+  return (
+    <figure className="banner">
+      <img src={src} alt={alt} loading="lazy" />
+      <figcaption>{credit}</figcaption>
     </figure>
   )
 }
@@ -238,7 +252,7 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="hero" id="top">
+    <section className="hero" id="top" style={{ backgroundImage: `url(${imgBannerHero})` }}>
       <div className="container">
         <p className="eyebrow">EWB Challenge 2026 · Design Area 5 · Project Opportunity 5.5</p>
         <h1>Lama Lama Rangers App</h1>
@@ -274,6 +288,7 @@ function Hero() {
             </div>
           </div>
         </div>
+        <p className="hero-credit">Photo: Cape York Tours (2023, July 16). https://capeyorktours.com.au/what-will-i-do-in-cape-york/</p>
       </div>
     </section>
   )
@@ -357,6 +372,11 @@ function BackgroundSection() {
       <div className="container">
         <Reveal>
           <SH n={2} title="Background" />
+          <Banner
+            src={imgBannerLantana}
+            alt="Dense Lantana camara infestation"
+            credit="Invasive Species Blog. (2022, October 12). Research reveals invasive Lantana camara reduced growth of maize by 29% in East Usambara, Tanzania. https://blog.invasive-species.org/2022/10/12/research-reveals-invasive-lantana-camara-reduced-growth-of-maize-by-29-in-east-usambara-tanzania/"
+          />
 
           <h3>2.1 Context of the Problem</h3>
           <p className="lead">
@@ -601,6 +621,11 @@ function DetailedSection() {
       <div className="container">
         <Reveal>
           <SH n={6} title="Detailed Design" />
+          <Banner
+            src={imgBannerRangers}
+            alt="Lama Lama Land and Sea Rangers on Country"
+            credit="Lama Lama Land and Sea Rangers. (n.d.). Rangers on Country. Yintjingga Aboriginal Corporation. https://www.lamalama.org.au/about-us/"
+          />
           <p className="lead">
             The Lama Lama Rangers App is an offline-first mobile application for iOS (Swift/SwiftUI)
             and Android (Jetpack Compose). Every core function operates without internet connectivity.
@@ -928,6 +953,11 @@ function ConsiderationsSection() {
       <div className="container">
         <Reveal>
           <SH n={10} title="Other Considerations" />
+          <Banner
+            src={imgBannerWetlands}
+            alt="Cape York wetlands and native vegetation"
+            credit="NRM Regions Australia. (n.d.). Cape York wetlands and native vegetation resilience. https://nrmregionsaustralia.com.au/project/cape-york-wetlands-and-native-vegetation-resilience/"
+          />
 
           <div>
             <div className="con">
