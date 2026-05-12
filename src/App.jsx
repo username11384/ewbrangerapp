@@ -203,9 +203,12 @@ function Nav() {
         <a href="#top" className="nav-brand">Lama Lama Rangers</a>
         <div className="nav-links">
           <a href="#background">Background</a>
-          <a href="#design">Design</a>
+          <a href="#options">Options</a>
+          <a href="#design">Selection</a>
+          <a href="#detailed">Detailed Design</a>
           <a href="#prototype">Prototype</a>
           <a href="#implementation">Implementation</a>
+          <a href="#considerations">Considerations</a>
           <a href="#references">References</a>
         </div>
       </div>

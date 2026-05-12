@@ -11,6 +11,9 @@
   --ochre:    #A05025;
   --rule:     #C5BAB0;
   --cream:    #FAF6EF;
+  --ocean:    #112233;
+  --ocean-mid:#1A3D5C;
+  --ocean-lt: #4A7AAC;
 
   --serif: 'Lora', Georgia, serif;
   --sans:  'Inter', system-ui, sans-serif;
@@ -79,8 +82,8 @@ a:hover { opacity: 0.7; }
 }
 
 .nav-solid {
-  background: var(--bg-dark);
-  border-bottom-color: #252E20;
+  background: var(--ocean);
+  border-bottom-color: #1A2E44;
 }
 
 .nav-inner {
@@ -101,20 +104,20 @@ a:hover { opacity: 0.7; }
 
 .nav-links {
   display: flex;
-  gap: 1.75rem;
+  gap: 1.4rem;
 }
 
 .nav-links a {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #7A8070;
+  color: #7A8890;
   border: none;
   transition: color 0.15s;
 }
 
-.nav-links a:hover { color: #DDD8CF; }
+.nav-links a:hover { color: #C8DFF0; }
 
 /* ── Hero ────────────────────────────────────────────────────────────────── */
 
@@ -212,7 +215,7 @@ a:hover { opacity: 0.7; }
 /* ── Acknowledgement ─────────────────────────────────────────────────────── */
 
 .ack {
-  background: var(--green);
+  background: var(--ocean-mid);
   padding: 4.5rem 0;
 }
 
@@ -221,7 +224,7 @@ a:hover { opacity: 0.7; }
   font-size: 0.62rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #6A9E78;
+  color: #6AA8C8;
   margin-bottom: 1.1rem;
 }
 
@@ -230,8 +233,8 @@ a:hover { opacity: 0.7; }
   font-size: 1.05rem;
   font-style: italic;
   line-height: 1.85;
-  color: #C8DECC;
-  border-left: 2px solid #4A7A52;
+  color: #C0D8EC;
+  border-left: 2px solid var(--ocean-lt);
   padding-left: 1.5rem;
   max-width: 680px;
 }
