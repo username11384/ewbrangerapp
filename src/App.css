@@ -340,9 +340,12 @@ a:hover { opacity: 0.7; }
 
 /* ── Tables ──────────────────────────────────────────────────────────────── */
 
+.tbl-wrap {
+  margin: 1.75rem 0;
+}
+
 .tbl {
   overflow-x: auto;
-  margin: 1.75rem 0;
   border: 1px solid var(--rule);
   border-radius: 2px;
 }
@@ -371,6 +374,37 @@ tfoot td {
   background: rgba(44, 83, 56, 0.07);
   border-top: 1.5px solid var(--rule);
 }
+
+.tbl-caption {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--ink-mid);
+  text-align: center;
+  margin: 0.5rem 0 0;
+  font-style: italic;
+}
+
+/* ── Executive Summary ───────────────────────────────────────────────────── */
+
+.exec-summary { background: var(--bg); }
+
+.exec-h {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 2.25rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--rule);
+}
+.exec-h:first-child { margin-top: 0; }
+
+.exec-list {
+  padding-left: 1.4rem;
+  line-height: 1.75;
+  margin: 0 0 1rem;
+}
+.exec-list li { margin-bottom: 0.35rem; }
 
 /* ── Scrollspy ───────────────────────────────────────────────────────────── */
 

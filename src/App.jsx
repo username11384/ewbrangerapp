@@ -70,12 +70,14 @@ function SH({ n, title }) {
 
 function Tbl({ cols, rows, foot, caption }) {
   return (
-    <div className="tbl">
-      <table>
-        <thead><tr>{cols.map((c, i) => <th key={i}>{c}</th>)}</tr></thead>
-        <tbody>{rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
-        {foot && <tfoot><tr>{foot.map((c, i) => <td key={i}>{c}</td>)}</tr></tfoot>}
-      </table>
+    <div className="tbl-wrap">
+      <div className="tbl">
+        <table>
+          <thead><tr>{cols.map((c, i) => <th key={i}>{c}</th>)}</tr></thead>
+          <tbody>{rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
+          {foot && <tfoot><tr>{foot.map((c, i) => <td key={i}>{c}</td>)}</tr></tfoot>}
+        </table>
+      </div>
       {caption && <p className="tbl-caption">{caption}</p>}
     </div>
   )
@@ -425,6 +427,14 @@ function Hero() {
             <span className="meta-key">Opportunity</span>
             <span className="meta-val">5.5 — Biodiversity and Habitat Protection Tools</span>
           </div>
+          <div className="meta-cell">
+            <span className="meta-key">Tutorial Number and Zone</span>
+            <span className="meta-val">Activity 02</span>
+          </div>
+          <div className="meta-cell">
+            <span className="meta-key">Group Name</span>
+            <span className="meta-val">Garv Fan Club</span>
+          </div>
           <div className="meta-cell full">
             <span className="meta-key">How Might We Statement</span>
             <span className="meta-val">
@@ -443,6 +453,64 @@ function Hero() {
           </div>
         </div>
         <p className="hero-credit">Photo: Cape York Tours (2023, July 16). https://capeyorktours.com.au/what-will-i-do-in-cape-york/</p>
+      </div>
+    </section>
+  )
+}
+
+function ExecSummarySection() {
+  return (
+    <section className="section exec-summary">
+      <div className="container">
+        <Reveal>
+          <h2 className="exec-h">Proposal Summary</h2>
+          <p>
+            The project aims to address the gap between the Lama Lama Rangers' operational
+            knowledge and the technology available to support invasive plant management across
+            their Country, through a purpose-built offline-first mobile application. The
+            application enables GPS-referenced sighting capture, photo documentation, treatment
+            recording, and peer-to-peer data sharing — directly responding to Project Opportunity
+            5.5: Biodiversity and Habitat Protection Tools in the 2026 EWB Challenge — without
+            dependence on internet connectivity that is not reliably available on Country.
+          </p>
+
+          <h2 className="exec-h">Overview of Design</h2>
+          <p>
+            The Lama Lama Rangers App is a native mobile application for iOS (Swift/SwiftUI) and
+            Android (Jetpack Compose), storing all records locally using CoreData and Room
+            respectively. Peer-to-peer synchronisation between ranger devices operates over
+            Bluetooth mesh via Apple MultipeerConnectivity and Google Nearby Connections, requiring
+            no internet infrastructure during field operations. The application covers six declared
+            invasive species, including <em>Lantana camara</em> as the primary Class 3 weed in the
+            Port Stewart area. The primary users are the Lama Lama Land and Sea Rangers, who manage
+            invasive plants across approximately 400–500 km² of Country from four remote camps.
+            The prototype has progressed through three versions (V1–V3); the current V3 release
+            contains 32 features validated across two physical iOS devices in the field.
+          </p>
+
+          <h2 className="exec-h">Key Considerations</h2>
+          <ul className="exec-list">
+            <li>Community consultation with YAC is a prerequisite for any future feature additions or AI integration — not optional.</li>
+            <li>In-person training at the ranger station is the most effective adoption pathway; remote onboarding is not appropriate for this context.</li>
+            <li>All ranger records are stored locally on ranger-owned devices; no data is transmitted without explicit ranger action.</li>
+            <li>The Supabase/AWS dashboard sync shown in the app is a demonstration animation only and does not represent a live backend connection.</li>
+            <li>The open-source codebase means the community retains full control and can modify or transfer repository ownership to YAC at any point.</li>
+            <li>Repair pathways depend on maintaining a relationship with the development team or building in-community technical capacity — addressed in the implementation plan.</li>
+          </ul>
+
+          <h2 className="exec-h">Proposed Materials and Cost Summary</h2>
+          <p>
+            The design requires no physical materials or construction. Estimated annual running
+            costs are approximately AUD $166 in Year 1, comprising the Apple Developer Program
+            fee ($149/year, required for TestFlight distribution to ranger devices) and
+            approximately $17/year for AWS S3 photo record storage. The Supabase database tier
+            required for current data volumes is free. There are no per-seat licensing fees; the
+            open-source application can be installed on additional ranger devices at no extra cost.
+            Potential funding sources include the National Indigenous Australians Agency Indigenous
+            Rangers Program (NIAA, n.d.), which funds operational costs for ranger programs, and
+            the Queensland Government's Protected Area Strategy grant rounds (Queensland Government, 2020).
+          </p>
+        </Reveal>
       </div>
     </section>
   )
@@ -1162,7 +1230,7 @@ function ConsiderationsSection() {
           </div>
 
           <h3>Community Journey Map</h3>
-          <Tbl cols={['Stage', 'Ranger Experience']} rows={JOURNEY} />
+          <Tbl cols={['Stage', 'Ranger Experience']} rows={JOURNEY} caption="Table 5: Community journey map — ranger experience across implementation stages" />
         </Reveal>
       </div>
     </section>
@@ -1322,6 +1390,7 @@ function MeetingMinutesSection() {
                   ['Jai',      'Complete assigned presentation slides', 'Before 30 Mar'],
                   ['Caleb',    'Complete assigned presentation slides; to be briefed on meeting outcomes asynchronously', 'Before 30 Mar'],
                 ]}
+                caption="Table 6: Action items — meeting 26 March 2026"
               />
             </div>
 
@@ -1435,6 +1504,7 @@ export default function App() {
       <ScrollSpy />
       <main>
         <Hero />
+        <ExecSummarySection />
         <AckSection />
         <GroupSection />
         <ProjectSection />
