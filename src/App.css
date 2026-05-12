@@ -122,7 +122,7 @@ a:hover { opacity: 0.7; }
 /* ── Hero ────────────────────────────────────────────────────────────────── */
 
 .hero {
-  background: var(--bg-dark);
+  background: var(--ocean);
   color: #DDD8CF;
   padding: 9rem 0 5.5rem;
 }
@@ -462,9 +462,9 @@ tfoot td {
 
 /* ── References section ──────────────────────────────────────────────────── */
 
-.section-refs { background: var(--bg-dark); }
+.section-refs { background: var(--ocean); }
 
-.section-refs .sec-hd { border-bottom-color: #252E20; }
+.section-refs .sec-hd { border-bottom-color: #1A2E44; }
 .section-refs .sec-hd h2 { color: #DDD8CF; }
 .section-refs .sec-n { color: #4C5448; }
 
@@ -485,9 +485,9 @@ tfoot td {
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 
 .footer {
-  background: #101410;
+  background: #0A1520;
   padding: 2.25rem 0;
-  border-top: 1px solid #1A1E18;
+  border-top: 1px solid #162030;
 }
 
 .footer .container { display: flex; flex-direction: column; gap: 0.3rem; }
