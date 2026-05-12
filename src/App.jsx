@@ -226,28 +226,45 @@ const REFS = [
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 
+const NAV_LINKS = [
+  ['#background',    'Background'],
+  ['#options',       'Options'],
+  ['#design',        'Selection'],
+  ['#detailed',      'Detailed Design'],
+  ['#prototype',     'Prototype'],
+  ['#implementation','Implementation'],
+  ['#considerations','Considerations'],
+  ['#references',    'References'],
+]
+
 function Nav() {
   const [solid, setSolid] = useState(false)
+  const [open, setOpen] = useState(false)
+
   useEffect(() => {
     const fn = () => setSolid(window.scrollY > 80)
     window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
   }, [])
+
   return (
     <nav className={`nav${solid ? ' nav-solid' : ''}`}>
       <div className="nav-inner">
-        <a href="#top" className="nav-brand">Lama Lama Rangers</a>
+        <a href="#top" className="nav-brand" onClick={() => setOpen(false)}>Lama Lama Rangers</a>
         <div className="nav-links">
-          <a href="#background">Background</a>
-          <a href="#options">Options</a>
-          <a href="#design">Selection</a>
-          <a href="#detailed">Detailed Design</a>
-          <a href="#prototype">Prototype</a>
-          <a href="#implementation">Implementation</a>
-          <a href="#considerations">Considerations</a>
-          <a href="#references">References</a>
+          {NAV_LINKS.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
         </div>
+        <button className="nav-burger" onClick={() => setOpen(o => !o)} aria-label="Toggle menu">
+          <span /><span /><span />
+        </button>
       </div>
+      {open && (
+        <div className="nav-mobile">
+          {NAV_LINKS.map(([href, label]) => (
+            <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>
+          ))}
+        </div>
+      )}
     </nav>
   )
 }
@@ -302,8 +319,8 @@ function Hero() {
             </div>
           </div>
         </div>
+        <p className="hero-credit">Photo: Cape York Tours (2023, July 16). https://capeyorktours.com.au/what-will-i-do-in-cape-york/</p>
       </div>
-      <p className="hero-credit">Photo: Cape York Tours (2023, July 16). https://capeyorktours.com.au/what-will-i-do-in-cape-york/</p>
     </section>
   )
 }

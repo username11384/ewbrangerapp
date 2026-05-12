@@ -27,7 +27,8 @@
 /* ── Reset ───────────────────────────────────────────────────────────────── */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body { overflow-x: hidden; }
 
 body {
   background: var(--bg);
@@ -119,6 +120,49 @@ a:hover { opacity: 0.7; }
 
 .nav-links a:hover { color: #C8DFF0; }
 
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 1;
+}
+
+.nav-burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #C8DFF0;
+  border-radius: 1px;
+  transition: opacity 0.15s;
+}
+
+.nav-mobile {
+  display: flex;
+  flex-direction: column;
+  background: var(--ocean);
+  border-top: 1px solid #1A2E44;
+  padding: 0.5rem 0;
+}
+
+.nav-mobile a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #A8C0D8;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-bottom: 1px solid #1A2E44;
+  letter-spacing: 0.02em;
+  display: block;
+}
+
+.nav-mobile a:last-child { border-bottom: none; }
+.nav-mobile a:hover { color: #C8DFF0; background: rgba(255,255,255,0.03); }
+
 /* ── Hero ────────────────────────────────────────────────────────────────── */
 
 .hero {
@@ -145,13 +189,12 @@ a:hover { opacity: 0.7; }
 }
 
 .hero-credit {
-  position: relative;
-  z-index: 1;
   font-family: var(--mono);
   font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.25);
-  text-align: right;
-  padding: 0.75rem 1.5rem 0;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 0.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 
@@ -614,6 +657,7 @@ p.lead {
   :root { --gap: 3.5rem; }
 
   .nav-links { display: none; }
+  .nav-burger { display: flex; }
   .hero { padding: 7rem 0 3.5rem; }
 
   .meta-grid { grid-template-columns: 1fr; }
