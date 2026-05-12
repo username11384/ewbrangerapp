@@ -142,6 +142,34 @@ function Accordion({ label, children, dark = false }) {
   )
 }
 
+function FigurePlaceholder({ num, caption, src }) {
+  return (
+    <figure style={{ margin: '32px 0' }}>
+      {src
+        ? <img src={src} alt={caption} style={{ width: '100%', borderRadius: 'var(--r-lg)', display: 'block' }} />
+        : <div style={{
+            background: 'var(--cream-dark)',
+            border: '1px dashed var(--divider)',
+            borderRadius: 'var(--r-lg)',
+            padding: '40px 24px',
+            textAlign: 'center',
+            color: 'var(--ink-muted)',
+            fontSize: '.82rem',
+            minHeight: 120,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            [Figure {num} — image to be added]
+          </div>
+      }
+      <figcaption className="fig-caption" style={{ marginTop: 10 }}>
+        <strong>Figure {num}.</strong> {caption}
+      </figcaption>
+    </figure>
+  )
+}
+
 function CountUpStat({ target, suffix = '', label, duration = 900 }) {
   const [ref, val] = useCountUp(target, duration)
   return (
@@ -158,7 +186,7 @@ const SPECIES = [
   { name: 'Lantana', scientific: 'Lantana camara', color: '#C4692A', risk: 'Year-round risk', note: 'Biocontrol prompt at point of logging' },
   { name: 'Rubber Vine', scientific: 'Cryptostegia grandiflora', color: '#7A4E2D', risk: 'Aug – Nov peak', note: 'Riparian corridor invader' },
   { name: 'Prickly Acacia', scientific: 'Vachellia nilotica', color: '#5C8A3C', risk: 'May – Aug peak', note: 'Dense thicket formation' },
-  { name: 'Sicklepod', scientific: 'Senna obtusifolia', color: '#2A5C3F', risk: 'Apr – Jul peak', note: 'Annual herb, prolific seeder' },
+  { name: 'Sicklepod', scientific: 'Senna obtusifolia', color: '#0077B6', risk: 'Apr – Jul peak', note: 'Annual herb, prolific seeder' },
   { name: "Giant Rat's Tail", scientific: 'Sporobolus pyramidalis', color: '#8B6914', risk: 'Mar – May peak', note: 'Outcompetes native pasture' },
   { name: 'Pond Apple', scientific: 'Annona glabra', color: '#3D6B8C', risk: 'Apr – Jun peak', note: 'Wetland and waterway invader' },
 ]
@@ -220,106 +248,122 @@ const BLOOM_DATA = {
   'Pond Apple':      [0,0,0,2,2,2,1,0,0,0,0,0],
 }
 const MONTHS = ['J','F','M','A','M','J','J','A','S','O','N','D']
-const BLOOM_COLORS = ['transparent','#ddecd6','#C4692A55','#C4692A']
+const BLOOM_COLORS = ['transparent','#ADE8F4','#0096C755','#0077B6']
 
 const SIGHTING_ENTRIES = [
   { species: 'Lantana', color: '#C4692A', coords: '−14.7031° S, 143.7088° E', size: '~3m²', time: '07:42', note: 'Lantana bug observed — delay spray' },
   { species: 'Rubber Vine', color: '#7A4E2D', coords: '−14.7019° S, 143.7102° E', size: '~12m²', time: '08:15', note: 'Dense flowering. Basal bark treatment.' },
-  { species: 'Sicklepod', color: '#2A5C3F', coords: '−14.7028° S, 143.7076° E', size: '~8m²', time: '09:51', note: 'Dry season growth. Cut stump.' },
+  { species: 'Sicklepod', color: '#0077B6', coords: '−14.7028° S, 143.7076° E', size: '~8m²', time: '09:51', note: 'Dry season growth. Cut stump.' },
 ]
 
 const CRITERIA = [
-  { w: '25%', c: 'Connectivity independence', desc: 'Must function fully without mobile data or Wi-Fi at any point', just: 'Port Stewart has no reliable mobile coverage', extended: 'Port Stewart sits approximately 90km from Coen, the nearest town with reliable services. Commercial mobile coverage does not extend to the area. Satellite internet via Starlink is available at the Ranger base but not during field patrols. Any solution requiring a live connection at the point of use is not viable as a primary system.' },
-  { w: '20%', c: 'Field usability', desc: 'Usable one-handed in heat; minimal text input; large tap targets', just: 'Rangers work in tropical conditions while managing equipment', extended: 'Rangers patrol on foot in tropical heat, often carrying equipment and tools simultaneously. A sighting log requiring more than 30 seconds of focused attention is unlikely to be used consistently in practice. The app is designed for single-handed use with large tap targets, a species picker (no text entry), and GPS capture that requires zero manual coordinate input.' },
-  { w: '15%', c: 'Cultural appropriateness', desc: 'Designed with the Rangers; respects data sovereignty', just: 'YAC and Lama Lama people control their own land data', extended: "Land data belongs to the Lama Lama people and Yintjingga Aboriginal Corporation. YAC's data sovereignty principle means that sighting records, zone boundaries, and patrol histories must remain under YAC control. No data should transit third-party systems without explicit YAC consent. The app stores all records locally on Ranger devices; cloud sync requires deliberate action from the Ranger." },
-  { w: '15%', c: 'Workflow alignment', desc: 'Augments existing patrol and treatment practice', just: 'Adoption risk is reduced when the tool fits the workflow', extended: 'Adoption risk is highest when a new tool requires Rangers to change their sequence of work. The app mirrors the existing patrol workflow: pre-departure checklist → sightings logged in field → treatment applied and recorded → return to base and sync. Rangers do not need to learn a new methodology — they log what they were already doing, in the order they were already doing it.' },
-  { w: '15%', c: 'Cost and maintenance', desc: 'No ongoing SaaS fees; no server infrastructure required in field', just: 'YAC has limited budget for ongoing technology costs', extended: 'YAC has limited discretionary budget for technology services. Any solution requiring annual subscription fees, server maintenance, or contracted technical support is unsustainable without continuous external funding. The V2 app runs entirely on-device with no infrastructure dependency. Supabase and S3 cloud features are optional and use free-tier pricing sufficient for typical Ranger data volumes.' },
-  { w: '10%', c: 'Data utility', desc: 'Produces records usable for reporting and grant applications', just: 'Without usable outputs, data collection has no long-term value', extended: 'Raw sighting data has limited value unless it is structured, attributable, and exportable. The app produces records with GPS coordinates, species identification, date and time, Ranger attribution, treatment method, and outcome notes — the minimum structure required by Working on Country Programme reporting templates and Queensland Land Restoration Fund progress reports.' },
+  { w: '25%', c: 'Offline-first architecture', desc: 'All data stored on-device; app functions completely without internet; peer-to-peer Bluetooth sync between devices', just: 'Starlink access is restricted to the ranger office — no mobile network coverage exists during field operations', extended: 'This is the non-negotiable baseline. Starlink is available at the ranger office only, and there is no mobile network coverage during field operations. A cloud-dependent system cannot function in this environment. Any feature that requires connectivity — however occasionally — is unavailable to a ranger in the field and cannot be relied upon.' },
+  { w: '20%', c: 'Integrated field workflow', desc: 'A ranger completes a full sighting record — GPS, photo, species, treatment, notes — in a single screen without switching apps or referring to paper', just: 'Rangers work in physically demanding tropical conditions and carry equipment simultaneously', extended: 'Rangers patrol on foot in tropical heat, often carrying tools and equipment simultaneously. A sighting record requiring more than 30 seconds of focused attention is unlikely to be completed consistently in practice. Fragmented workflows — switching between apps or devices to capture GPS, photo, and notes separately — raise recording time and reduce adoption (Jayawardena, 2024).' },
+  { w: '20%', c: 'Shared data visibility', desc: 'All ranger records aggregate into a shared map view, colour-coded by species and treatment status, visible to the whole team', just: 'Individual sighting records have limited management value without a team-wide view of infestation patterns across the land', extended: 'Individual sighting records have limited management value unless the team can see the broader pattern of infestation across the land. Without a shared view, the same areas may be treated twice while others go unmonitored. The current paper-based system produces records that are not accessible to the whole team in real time.' },
+  { w: '15%', c: 'Cost-effectiveness & scalability', desc: 'Runs on existing ranger devices with minimal ongoing infrastructure cost; scales to cover the full Lama Lama land mass without per-seat fees', just: 'Ranger programs operate on grant funding cycles — ongoing licensing or cloud costs create sustainability risk', extended: 'Ranger programs operate on grant funding that can change between cycles. Ongoing licensing or cloud costs create sustainability risk (GRDC, 2025). The ~$166 annual software cost is fundable through existing ranger program operational budgets without requiring a separate grant application.' },
+  { w: '10%', c: 'Cultural appropriateness', desc: 'Rangers control what is recorded, how it is used, and who has access; complements Indigenous ecological knowledge rather than replacing it', just: 'The Lama Lama Rangers are custodians of their Country — data sovereignty belongs to the community, not the app developer', extended: "The Lama Lama Rangers are custodians of their Country. A system that only values GPS coordinates and species counts risks sidelining the knowledge and practices that make their land management effective (Aboriginal Cultural Landscape Management, 2025; ORIC, n.d.). Voice memo support allows rangers to record observations in language." },
+  { w: '10%', c: 'Ease of use', desc: 'Learnable quickly and usable confidently in the field with minimal technical training; accessible to rangers with varying technology experience', just: 'Rangers have varying technology experience — a tool that is confusing in the field will not be adopted regardless of its capabilities', extended: 'Rangers have varying technology experience. If the tool is confusing or inconsistent in the field, it will not be adopted regardless of its technical capabilities (Jayawardena, 2024). The prototype was designed for in-person training, with a two-day workshop as the primary onboarding mechanism.' },
 ]
 
 const MATRIX_ROWS = [
-  { criterion: 'Connectivity independence', weight: 25, paper: 8, app: 10, sms: 2 },
-  { criterion: 'Field usability', weight: 20, paper: 5, app: 10, sms: 2 },
-  { criterion: 'Cultural appropriateness', weight: 15, paper: 6, app: 8, sms: 5 },
-  { criterion: 'Workflow alignment', weight: 15, paper: 5, app: 9, sms: 5 },
-  { criterion: 'Cost and maintenance', weight: 15, paper: 9, app: 9, sms: 6 },
-  { criterion: 'Data utility', weight: 10, paper: 3, app: 9, sms: 2 },
+  { criterion: 'Offline-first architecture', weight: 25, paper: 4, cyber: 3, app: 5 },
+  { criterion: 'Integrated field workflow', weight: 20, paper: 1, cyber: 2, app: 5 },
+  { criterion: 'Shared data visibility', weight: 20, paper: 1, cyber: 2, app: 5 },
+  { criterion: 'Cost-effectiveness & scalability', weight: 15, paper: 4, cyber: 2, app: 5 },
+  { criterion: 'Cultural appropriateness', weight: 10, paper: 3, cyber: 2, app: 5 },
+  { criterion: 'Ease of use', weight: 10, paper: 4, cyber: 3, app: 4 },
 ]
+const MATRIX_TOTALS = { paper: 2.65, cyber: 2.35, app: 4.90 }
 
 const OPTIONS = [
   {
-    title: 'Paper-based forms',
-    score: '~56%',
+    title: 'Option 1 — Enhanced Paper-Based System',
+    score: '2.65/5',
     selected: false,
-    pros: ['No device required', 'Zero learning curve', 'Works in any condition'],
-    cons: ['Manual transcription burden at base', 'Data loss risk', 'No spatial visualisation', 'No treatment history linkage'],
+    pros: ['No device required', 'Zero learning curve', 'Works in any conditions'],
+    cons: ['Cannot share records between rangers in the field', 'Separate GPS device required', 'Digitisation delays data availability', 'Does not enable early detection at scale'],
   },
   {
-    title: 'Offline-first mobile app',
-    score: '~93%',
+    title: 'Option 2 — Adaptation of CyberTracker',
+    score: '2.35/5',
+    selected: false,
+    pros: ['Offline data collection', 'Established track record in ranger programs', 'Open-source platform'],
+    cons: ['No peer-to-peer sync without internet', 'No treatment decision support or herbicide compatibility', 'No biocontrol prompts', 'Configuration effort for six-species seasonal overlays'],
+  },
+  {
+    title: 'Option 3 — Purpose-Built Offline-First App',
+    score: '4.90/5',
     selected: true,
-    pros: ['Full offline operation', 'GPS-tagged sightings', 'Peer-to-peer mesh sync', 'Cloud backup via Supabase + S3', 'Species guide in-hand', 'Export for grant reporting'],
-    cons: ['Requires device procurement', 'Initial onboarding required'],
-  },
-  {
-    title: 'SMS / USSD reporting',
-    score: '~40%',
-    selected: false,
-    pros: ['Works on basic phones', 'Low data overhead'],
-    cons: ['Requires cell signal', 'No map or spatial data', 'No species guide', 'No peer sync', 'Limited reporting output'],
+    pros: ['Full offline operation', 'GPS-tagged sightings with peer-to-peer mesh sync', 'Species-specific decision support and biocontrol prompts', 'Open-source codebase — community owns the tool'],
+    cons: ['Greatest upfront design and development effort', 'Requires ranger onboarding'],
   },
 ]
 
 const IMPL_PHASES = [
-  { phase: 'Phase 1', title: 'Pilot', detail: 'Deploy to 2–3 Rangers on one patrol route. In-person onboarding (~2 hours, no internet needed; demo mode with pre-seeded data). Collect usability feedback on sighting logging, treatment entry, and patrol checklist. Validate Supabase sync over base station Wi-Fi.' },
-  { phase: 'Phase 2', title: 'Full Rollout', detail: 'Deploy to all active Rangers. YAC coordinator uses Dashboard and Shift Handover exports for weekly reporting. Cloud sync runs automatically when Rangers return to base. S3 backup validates nightly.' },
-  { phase: 'Phase 3', title: 'Iteration & Handover', detail: 'Address pilot feedback. Source code and documentation handed to YAC for long-term ownership. Distribution via AirDrop (iOS) or APK sideload (Android) — no App Store required. All data on-device; Supabase export on demand.' },
+  { phase: '8.1', title: 'Installation and Community Training', detail: 'The iOS application is distributed via Apple TestFlight — no App Store approval required. An Android APK is distributed directly to Android devices. A two-day in-person training workshop during the 2026 dry season (May–July) covers the core logging workflow, map navigation, Bluetooth mesh sync, and safety features. In-person, hands-on training is the most effective model for technology adoption in remote community contexts (Centre for Appropriate Technology, n.d.). Rangers with greater technical confidence act as peer trainers for future onboarding of new team members.' },
+  { phase: '8.2', title: 'Rollout and Ongoing Use', detail: 'Following training, rangers use the application across active patrol seasons. Bug reports and feedback are collected via the ranger office Starlink. The shift handover card — which generates a plain-text summary of patrol activity from live CoreData records — provides a daily data quality check. The Hub dashboard gives ranger coordinators a team-wide view of sighting trends and coverage gaps.' },
+  { phase: '8.3', title: 'Evaluation', detail: 'Success is measured across three dimensions: adoption rate (proportion of patrols with digital records logged), data completeness (proportion of sightings with GPS, photo, species, and treatment fields complete), and sync reliability (proportion of field records successfully shared between devices via Bluetooth mesh). Adoption and completeness are reviewed monthly by the ranger coordinator; sync reliability is assessed via the Hub dashboard. A six-month review with both the development team and ranger leadership is recommended to assess aggregate metrics and identify workflow friction. Any metric consistently below 80% over two consecutive months triggers a structured design review.' },
+  { phase: '8.4', title: 'Community Ownership', detail: 'The GitHub repository is available for transfer to YAC ownership on request. All data remains on ranger-owned devices unless rangers explicitly sync to cloud. The open-source codebase means YAC or any future technical partner can modify, extend, or audit the application without requiring engagement with the original development team. No external party holds access to ranger data.' },
+  { phase: '8.5', title: 'Repair and Failure Pathways', detail: 'The application is software-only — hardware failure defaults to the ranger\'s existing device repair pathways. Application bugs are addressed through TestFlight updates delivered via Starlink. If the Starlink terminal is offline for an extended period, all core app functions continue to operate, and mesh sync between ranger devices remains available. Cloud data is a backup, not a dependency.' },
 ]
 
 const COST_ITEMS = [
-  { item: 'App development (volunteer/student labour)', cost: '$0 to YAC' },
-  { item: 'iOS devices, refurbished iPhone SE (if needed)', cost: '~$200–350 per device' },
-  { item: 'Android devices (if needed)', cost: '~$150–300 per device' },
-  { item: 'Apple Developer Program (if App Store needed)', cost: '~$150/year' },
-  { item: 'Supabase (free tier — up to 500 MB DB, 1 GB storage)', cost: '$0' },
-  { item: 'Supabase Pro (if data exceeds free tier)', cost: '~$40 AUD/month' },
-  { item: 'S3 backup storage (cold)', cost: '~$3–8 AUD/month' },
-  { item: 'Ongoing server infrastructure', cost: '$0 (V2 fully offline)' },
+  { item: 'Apple Developer Account (TestFlight)', qty: '1', unit: '$149/yr', total: '$149', source: 'Apple (2026)' },
+  { item: 'Supabase free tier (500MB DB, 1GB storage)', qty: '1', unit: '$0', total: '$0', source: 'Supabase (2026)' },
+  { item: 'AWS S3 storage — est. 50GB/yr (photo records)', qty: '50 GB', unit: '$0.028/GB/mo', total: '~$17', source: 'AWS (2026)' },
+  { item: 'Android APK distribution (direct install)', qty: '—', unit: '$0', total: '$0', source: '—' },
 ]
 
 const CONSIDERATIONS = [
-  { title: 'Data Sovereignty', body: 'All data stored locally on Ranger devices. Supabase and S3 sync only on demand. No telemetry, no third-party analytics, no cloud dependency in the field. YAC retains full ownership of all land data.' },
-  { title: 'Traditional Management', body: 'Fire management is included as a treatment method alongside foliar spray, cut stump, and mechanical options. The Bloom Calendar draws on Cape York seasonal ecological knowledge. Garv\'s research (Q4) maps the intersection of traditional burning practices with Integrated Weed Management.' },
-  { title: 'Cultural Appropriateness', body: 'App scope built around Rangers\' actual patrol workflows and the species present at Port Stewart. EWB conducted yarns, workshops, and one-on-one interviews with YAC. Interface in English (working language of Rangers), with architecture supporting future localisation.' },
-  { title: 'Workflow Alignment', body: 'The app augments — not replaces — existing patrol practice. Sighting logging takes under 30 seconds. The pre-departure checklist mirrors current manual practice. Rangers do not need to change how they patrol; the app fits into the same sequence.' },
-  { title: 'Long-term Maintenance', body: 'No external infrastructure dependency in V2. App updates delivered by developer via AirDrop (iOS) or APK sideload (Android). Source code and documentation handed to YAC for long-term ownership. No App Store account required for internal distribution.' },
-  { title: 'Recommendations', body: 'Conduct a co-design session with Rangers before finalising UI ahead of Phase 1 deployment. Validate Supabase sync cadence against base station connectivity patterns. Explore Android companion app for Rangers using non-iOS devices under the Working on Country programme.' },
+  { title: 'Biosecurity obligations', body: 'Lama Lama Rangers operating under priority weed action plans are required under the Biosecurity Act 2014 (Qld) to take reasonable steps to prevent the spread of restricted invasive plants (Biosecurity Queensland, 2026). The app\'s timestamped, GPS-referenced treatment records provide an auditable log of management actions at each site, directly supporting compliance.' },
+  { title: 'Biocontrol integration', body: 'The Lantana Biocontrol Prompt warns rangers not to apply foliar spray if Aconophora compressa biocontrol agents are present — an error that would undermine long-term management at the site (Walton, 2025). No existing general-purpose tool provides this check. It is embedded in the treatment entry flow so the decision is made before spraying, not as a retrospective check.' },
+  { title: 'Cultural protocols', body: 'Voice memo support allows rangers to record observations in language and in their own words, capturing ecological knowledge that structured data fields cannot hold (State of the Environment, 2021). Any future extension — drone data import, community-facing dashboards, integration with external databases — must be subject to YAC and ranger community consultation before development proceeds.' },
+  { title: 'Infrastructure resilience', body: 'The Bluetooth mesh architecture means team data sharing does not depend on the Starlink terminal remaining operational. Following events like Cyclone Narelle, which caused significant infrastructure damage across Cape York, a monitoring system dependent on a single connectivity point risks extended outage precisely when coordinated land management is most needed (EWB Challenge, 2026). Mesh-first sync is a direct response to that risk.' },
 ]
 
 const RECS = [
-  { num: '01', title: 'Co-design session before Phase 1 deployment', body: 'Conduct a structured co-design session with active Rangers before finalising the user interface. Specific elements to validate include the pre-departure checklist items, infestation size descriptors, and patrol area boundaries defined in PortStewartZones. The app was designed around EWB context data and should be adjusted to match actual Ranger practice before live use.' },
-  { num: '02', title: 'Integrate Shift Handover into the weekly reporting cycle', body: 'The structured text export from Hub → Handover maps directly to the species-and-area summaries required for Working on Country Programme progress reports. YAC coordinators should build this export into their weekly workflow from the first day of deployment — establishing the reporting habit before the data volume grows.' },
-  { num: '03', title: 'Plan the Android companion in parallel with the iOS pilot', body: 'Several Rangers may be using Android devices under their existing programme device allocation. The Android companion (Jetpack Compose, Room, Google Nearby Connections) implements the same architecture and mesh sync protocol as the iOS build and can be distributed via APK sideload without an app store account. Development should begin during Phase 1, not after.' },
-  { num: '04', title: 'Review Supabase storage allocation at three months', body: 'The free tier provides 500 MB database and 1 GB storage. A typical deployment with six Rangers logging two sightings with photos per patrol day will consume approximately 120–160 MB per month. The free tier is sufficient for six to eight months of full operation, after which the Pro tier (~$40 AUD/month) becomes necessary. Budget for this from the outset.' },
+  { num: '01', title: 'Formal usability review before full deployment', body: 'Conduct a formal usability review with Lama Lama Rangers during the 2026 dry season, before full deployment, to identify workflow issues specific to field conditions not captured during development. This review should cover the sighting logging flow, treatment entry, and Bluetooth mesh sync between multiple devices.' },
+  { num: '02', title: 'Bring Android to full feature parity', body: 'Bring the Android app to full feature parity with the iOS version so all ranger devices are supported regardless of platform. The Android companion (Jetpack Compose, Room, Google Nearby Connections) implements the same architecture and mesh sync protocol as the iOS build and can be distributed via APK sideload without an app store account.' },
+  { num: '03', title: 'Investigate integration with Queensland weed mapping databases', body: 'Investigate integration with Queensland weed mapping databases, subject to explicit YAC consent on data sharing scope, to allow ranger records to contribute to regional monitoring programs. Data sovereignty must be preserved: any integration that transmits records outside YAC control requires formal community authorisation.' },
+  { num: '04', title: 'Annual species scope review with YAC', body: 'Establish an annual review with YAC to assess whether the six-species scope remains current and whether the priority weed action plan has identified additional species for inclusion. The app architecture supports adding species to the data model without structural changes.' },
+  { num: '05', title: 'Explore grant funding for training and development', body: 'Explore grant funding through the Indigenous Rangers Program (NIAA, n.d.) and Queensland Protected Area Strategy 2020–2030 (Queensland Government, 2020) to support training costs and any future development work. The ~$166 annual software cost is a strong case for small-grant inclusion.' },
 ]
 
 const REFERENCES = [
-  'Broughton, S. (2000). Review of the biology and host range of Aconophora compressa (Walker). Biological Control of Lantana in Australia. CSIRO Entomology.',
-  'Csurhes, S., & Edwards, R. (1998). Potential environmental weeds in Australia: Candidate species for preventative control. Environment Australia.',
-  'Flanagan, G. J., & Zalucki, M. P. (2003). Lantana: Current management status and future prospects. Australian Centre for International Agricultural Research.',
-  'Queensland Department of Primary Industries. (n.d.). Lantana biological control. QLD DPI. [VERIFY: publication date]',
-  'Yintjingga Aboriginal Corporation. (n.d.). Lama Lama Country. lamalama.org. [Retrieved from EWB/Partner/Canvas]',
-  'Engineers Without Borders Australia. (2026). EWB Challenge 2026 Design Brief — Design Area 5.5: Invasive Plant Management. EWB Australia.',
-  '[Insert individual Task 1b sources, EWB Design Brief citation, and any additional sources used in the written document.]',
+  'Aboriginal Cultural Landscape Management – Literature Review. (2025). Transport for NSW. https://www.transport.nsw.gov.au/system/files/media/documents/2025/Aboriginal-Cultural-Landscape-Management-Literature-Review.pdf',
+  'Amazon Web Services. (2026). Amazon S3 pricing. https://aws.amazon.com/s3/pricing/',
+  'Anshumali, A., & Gupta, S. (2025). Lantana camara: A review on ecology, invasion and management. International Journal of Agronomy, 8(2), 864–871. https://www.agronomyjournals.com/archives/2025/vol8issue2/PartC/8-2-24-864.pdf',
+  'Apple. (2026). Apple Developer Program. https://developer.apple.com/programs/',
+  'Batavia National Park (Cape York Peninsula Aboriginal Land) Management Statement 2014 — extended 2025. (2025). Queensland Parks and Wildlife Service. https://parks.qld.gov.au/__data/assets/pdf_file/0023/166415/batavia-np-extended-2025.pdf',
+  'Biosecurity Queensland. (2026). Lantana. Business Queensland. https://www.business.qld.gov.au/industries/farms-fishing-forestry/agriculture/biosecurity/plants/invasive/restricted/lantana',
+  'Centre for Appropriate Technology. (n.d.). Community planning with the Lama Lama people. https://www.cfat.org.au/community-planning-with-the-lama-lama-people',
+  'CyberTracker. (n.d.). Indigenous knowledge. https://cybertracker.org/uses/indigenous-knowledge/',
+  'Department of Environment, Science and Innovation (DESI). (n.d.). Cape York Peninsula: Extent of endangered, of concern and no concern at present regional ecosystems. State of the Environment Queensland. https://www.stateoftheenvironment.detsi.qld.gov.au/biodiversity/terrestrial-ecosystems/extent-of-endangered-of-concern-and-no-concern-at-present-regional-ecosystems/cape-york-peninsula',
+  'EWB Challenge. (2026). Port Stewart, Lama Lama. Engineers Without Borders Australia. https://ewbchallenge.org/challenge/port-stewart-lama-lama/',
+  'Grains Research and Development Corporation (GRDC). (2025). The economics of precision weed management. https://grdc.com.au/resources-and-publications/all-publications/publications/2025/the-economics-of-precision-weed-management',
+  'Jayawardena, S. (2024). Green Savers: Mobile application solution for environmental conservation and community engagement [Thesis, Centria University of Applied Sciences]. Theseus. https://www.theseus.fi/bitstream/handle/10024/893477/Jayawardena_Shajan.pdf',
+  'Lam, I. (2026). ewbrangerapp [Source code repository]. GitHub. https://github.com/immanuel-lam/ewbrangerapp',
+  'Lama Lama Land and Sea Rangers. (n.d.). Welcome to Lama Lama Country. https://www.lamalama.org.au/',
+  'Mousumi, S., & Jahan, N. (2025). Lantana camara L.: Biology, ecology and control. Plant Science Today, 12(2), 95–104. https://horizonepublishing.com/index.php/PST/article/view/9506',
+  'National Indigenous Australians Agency (NIAA). (n.d.). Indigenous Rangers Program (IRP). https://www.niaa.gov.au/our-work/environment-and-land/indigenous-rangers-program-irp',
+  'Office of the Registrar of Indigenous Corporations (ORIC). (n.d.). Taking care of country. https://www.oric.gov.au/corporations-and-registers/corporation-stories/taking-care-country',
+  'Queensland Government. (2020). Queensland\'s Protected Area Strategy 2020–2030. https://parks.des.qld.gov.au/__data/assets/pdf_file/0016/212524/qld-protected-area-strategy-2020-30.pdf',
+  'Sahu, N., & Chandola, V. (2025). Offline-first Android architecture for waste management in low connectivity areas. International Journal of Engineering Technology and Computer Science, 10(1). https://ijetcsit.org/index.php/ijetcsit/article/download/657/596',
+  'Sinden, J., Jones, R., Hester, S., Odom, D., Kalisch, C., James, R., & Cacho, O. (2004). The economic impact of weeds in Australia. Agecon Search. https://ageconsearch.umn.edu/record/12278/',
+  'State of the Environment. (2021). Indigenous knowledge and land and sea management. Australian Government. https://soe.dcceew.gov.au/biodiversity/management/indigenous-knowledge-and-land-and-sea-management',
+  'Supabase. (2026). Pricing. https://supabase.com/pricing',
+  'Taylor, D. B. (2017). Threats to Cape York rivers: Q-catchments risk assessment and threat prioritisation. ResearchGate. https://www.researchgate.net/publication/316494929',
+  'Walton, C. (2025). Lantana: Current management status and future prospects. DPI eResearch Archive. https://era.dpi.qld.gov.au/id/eprint/5260/1/mn102lantana_current_management_status_and_future_76357.pdf',
+  'Woinarski, J. (2025). The natural attributes for World Heritage nomination of Cape York Peninsula. DCCEEW. https://www.dcceew.gov.au/sites/default/files/env/resources/5ab50983-6bb4-4d87-8298-f1bcf1ab652a/files/sciencepanelreport.pdf',
 ]
 
 const GROUP_DECLARATION_DATA = [
-  { name: 'Immanuel', area: 'Q1 — Economic Constraints', contributions: 'App design and development (Swift, SwiftUI, CoreData, MultipeerConnectivity, Supabase); design solution documentation; cost model and implementation plan; AT3 website; team coordination' },
-  { name: 'Essy', area: 'Q2 — Habitats', contributions: 'Vegetation community types and priority habitat zones across Lama Lama Country; species–habitat mapping; contributed to Background and Design Criteria sections' },
-  { name: 'Marisa', area: 'Q3 — Species', contributions: 'Biology, phenology, and spread vectors for all 6 target species; chemical and mechanical control efficacy; informed species content and bloom calendar rationale' },
-  { name: 'Garv', area: 'Q4 — Traditional Management', contributions: 'Traditional fire stewardship and IWM intersection with YAC land management; informed cultural appropriateness design criterion and data sovereignty framing' },
-  { name: 'Jai', area: 'Q5 — Environmental Threats', contributions: 'Climate-driven invasive spread projections and cumulative habitat pressure on Cape York; contributed to environmental context and design rationale sections' },
-  { name: 'Caleb', area: 'Q6 — Ecosystem Protection', contributions: 'Long-term biodiversity recovery metrics and Working on Country reporting frameworks; informed the data utility design criterion and export requirements' },
+  { name: 'Immanuel Lam', area: 'Economic constraints (Q1)', contributions: 'iOS/Android application development (V1–V3); prototyping section; cost model and implementation plan; AT3 website' },
+  { name: 'Francesca (Essy) Silva Paniagua', area: 'Habitats (Q2)', contributions: 'Project details; background research; problem description' },
+  { name: 'Marisa [surname]', area: 'Species (Q3)', contributions: 'Design solution options; option research and evaluation' },
+  { name: 'Garv Mitter', area: 'Traditional management (Q4)', contributions: 'Design criteria; detailed design specification' },
+  { name: 'Jai Sloper', area: 'Environmental threats (Q5)', contributions: 'Implementation plan; rollout and cost analysis' },
+  { name: 'Caleb [surname]', area: 'Ecosystem protection (Q6)', contributions: 'Other considerations and recommendations' },
 ]
 
 // ─── Animated widgets ─────────────────────────────────────────────────────────
@@ -663,33 +707,33 @@ function PatrolMeshViz() {
       <div className="pmv-panel">
         <div className="pmv-label">GPS patrol track</div>
         <svg className="pmv-svg" viewBox="0 0 280 200">
-          <ellipse cx="140" cy="100" rx="110" ry="70" fill="none" stroke="#96C4A8" strokeWidth="0.8" opacity="0.3" />
+          <ellipse cx="140" cy="100" rx="110" ry="70" fill="none" stroke="#00B4D8" strokeWidth="0.8" opacity="0.3" />
           {visible && (
             <path d="M80,60 Q120,40 160,55 Q200,70 210,100 Q220,130 180,150 Q140,165 100,150 Q60,135 70,100 Q72,85 80,60"
-              fill="none" stroke="#96C4A8" strokeWidth="2" strokeDasharray="80" strokeDashoffset="80"
+              fill="none" stroke="#00B4D8" strokeWidth="2" strokeDasharray="80" strokeDashoffset="80"
               style={{ animation: 'drawPath 2s var(--ease-out) forwards' }} />
           )}
           <circle cx="80" cy="60" r="5" fill="#C4692A" opacity={visible ? 1 : 0} style={{ transition: 'opacity .4s .5s' }} />
-          <circle cx="160" cy="55" r="4" fill="#96C4A8" opacity={visible ? 1 : 0} style={{ transition: 'opacity .4s .9s' }} />
-          <circle cx="210" cy="100" r="4" fill="#96C4A8" opacity={visible ? 1 : 0} style={{ transition: 'opacity .4s 1.3s' }} />
+          <circle cx="160" cy="55" r="4" fill="#00B4D8" opacity={visible ? 1 : 0} style={{ transition: 'opacity .4s .9s' }} />
+          <circle cx="210" cy="100" r="4" fill="#00B4D8" opacity={visible ? 1 : 0} style={{ transition: 'opacity .4s 1.3s' }} />
         </svg>
         {visible && <div className="pmv-trail-done">patrol complete ✓</div>}
       </div>
       <div className="pmv-panel">
         <div className="pmv-label">Mesh peers</div>
         <svg className="pmv-svg" viewBox="0 0 280 200">
-          <circle cx="140" cy="60" r="14" fill="#2A5C3F" opacity="0.8" />
-          <text x="140" y="65" textAnchor="middle" fontSize="10" fill="#96C4A8">A</text>
-          <circle cx="70" cy="150" r="14" fill="#2A5C3F" opacity="0.8" />
-          <text x="70" y="155" textAnchor="middle" fontSize="10" fill="#96C4A8">B</text>
-          <circle cx="210" cy="150" r="14" fill="#2A5C3F" opacity="0.8" />
-          <text x="210" y="155" textAnchor="middle" fontSize="10" fill="#96C4A8">C</text>
+          <circle cx="140" cy="60" r="14" fill="#0077B6" opacity="0.8" />
+          <text x="140" y="65" textAnchor="middle" fontSize="10" fill="#00B4D8">A</text>
+          <circle cx="70" cy="150" r="14" fill="#0077B6" opacity="0.8" />
+          <text x="70" y="155" textAnchor="middle" fontSize="10" fill="#00B4D8">B</text>
+          <circle cx="210" cy="150" r="14" fill="#0077B6" opacity="0.8" />
+          <text x="210" y="155" textAnchor="middle" fontSize="10" fill="#00B4D8">C</text>
           {visible && <>
-            <line x1="140" y1="74" x2="70" y2="136" stroke="#96C4A8" strokeWidth="1.5" strokeDasharray="100"
+            <line x1="140" y1="74" x2="70" y2="136" stroke="#00B4D8" strokeWidth="1.5" strokeDasharray="100"
               style={{ animation: 'meshLineIn .8s var(--ease-out) .3s forwards', opacity: 0 }} />
-            <line x1="140" y1="74" x2="210" y2="136" stroke="#96C4A8" strokeWidth="1.5" strokeDasharray="100"
+            <line x1="140" y1="74" x2="210" y2="136" stroke="#00B4D8" strokeWidth="1.5" strokeDasharray="100"
               style={{ animation: 'meshLineIn .8s var(--ease-out) .6s forwards', opacity: 0 }} />
-            <line x1="84" y1="150" x2="196" y2="150" stroke="#96C4A8" strokeWidth="1.5" strokeDasharray="100"
+            <line x1="84" y1="150" x2="196" y2="150" stroke="#00B4D8" strokeWidth="1.5" strokeDasharray="100"
               style={{ animation: 'meshLineIn .8s var(--ease-out) .9s forwards', opacity: 0 }} />
           </>}
         </svg>
@@ -752,7 +796,7 @@ function Hero() {
           </p>
           <div className="hero-cta">
             <a href="#features" className="btn btn-amber">Read the report</a>
-            <a href="https://github.com/immanuel-lam/ewbrangerapp/tree/demov2"
+            <a href="https://github.com/immanuel-lam/ewbrangerapp/tree/demov3"
               className="btn btn-outline" target="_blank" rel="noreferrer">
               View on GitHub
             </a>
@@ -760,7 +804,7 @@ function Hero() {
           <div className="hero-meta">
             <span>31265 Communications for IT Professionals · UTS Autumn 2026</span>
             <span className="hero-meta-divider" />
-            <span>EWB Challenge · Design Area 5.5</span>
+            <span>EWB Challenge · Design Area 5 · Project Opportunity 5.5</span>
           </div>
         </div>
         <div className="hero-phones">
@@ -792,28 +836,28 @@ function ExecSummary() {
           <Reveal>
             <SectionTag>Executive Summary</SectionTag>
             <div className="exec-meta-row">
-              <span className="exec-meta-item"><span className="exec-meta-label">Design Area</span> 5.5 — Technology for Communities</span>
+              <span className="exec-meta-item"><span className="exec-meta-label">Design Area</span> 5 — Climate Resilience and Adaptation</span>
               <span className="exec-meta-divider" />
-              <span className="exec-meta-item"><span className="exec-meta-label">Keywords</span> invasive plant management · offline-first mobile application · field data collection · Indigenous land stewardship · Cape York Peninsula · peer-to-peer sync</span>
+              <span className="exec-meta-item"><span className="exec-meta-label">Keywords</span> invasive species · offline-first · data sovereignty · Indigenous rangers · weed management · peer-to-peer sync</span>
             </div>
-            <h2 className="section-headline">A digital system built around how Rangers already work</h2>
+            <h2 className="section-headline">A field tool built around how Rangers already work</h2>
             <p className="exec-body">
-              The Lama Lama Rangers of Yintjingga Aboriginal Corporation (YAC) patrol invasive plant infestations across Lama Lama Country on Cape York Peninsula, Queensland. Six species — <em>Lantana camara</em>, Rubber Vine, Prickly Acacia, Sicklepod, Giant Rat's Tail Grass, and Pond Apple — are actively managed on foot, without reliable mobile coverage.
+              Invasive plants — particularly <em>Lantana camara</em> and five further species — are spreading across Lama Lama Country faster than current documentation systems can track them. The Lama Lama Rangers App is an offline-first mobile application for iOS and Android that gives rangers a single tool to log sightings via GPS, record treatment actions, share data with the team over Bluetooth mesh, and consult a species guide — all without internet access.
             </p>
             <p className="exec-body">
-              This report presents an offline-first iOS app built to the EWB Challenge 2026 brief. The app runs on CoreData with peer-to-peer mesh sync via MultipeerConnectivity and optional Supabase + S3 cloud backup. It addresses all six design criteria and was selected over paper-based forms and SMS reporting by a weighted decision matrix scoring 93%.
+              The design was developed iteratively across three versions in response to the specific constraints of Port Stewart: no sealed roads, no mobile network, and Starlink access restricted to the ranger office. It was selected over paper-based forms and CyberTracker by a weighted decision matrix scoring 4.90/5.
             </p>
             <div className="hmw-block" style={{ marginTop: 32 }}>
               <div className="hmw-label">How Might We</div>
               <blockquote className="hmw-quote">
-                "How might we support the Lama Lama Rangers in systematically monitoring and managing invasive plant species across Lama Lama Country, in a way that works fully offline, respects data sovereignty, and fits their existing patrol workflow?"
+                "How might we support Lama Lama Rangers in detecting and managing invasive plant species across their Country without dependence on internet connectivity, in a way that complements Indigenous ecological knowledge and maintains community ownership of data?"
               </blockquote>
             </div>
           </Reveal>
           <div className="exec-stats">
             <CountUpStat target={6} label="invasive species targeted" duration={900} />
             <CountUpStat target={0} label="bars of signal needed in field" duration={600} />
-            <CountUpStat target={93} suffix="%" label="weighted decision matrix score" duration={1000} />
+            <CountUpStat target={166} suffix=" AUD" label="estimated annual software cost (yr 1)" duration={1000} />
           </div>
         </div>
       </div>
@@ -830,19 +874,19 @@ function Background() {
             <SectionTag>Background</SectionTag>
             <h2 className="section-headline">Port Stewart, Cape York Peninsula</h2>
             <p className="context-para">
-              Port Stewart sits at −14.7019°, 143.7075° on Cape York Peninsula — one of Australia's most ecologically significant landscapes, managed by the Lama Lama people for generations. Today, six invasive species are spreading across open woodland, creek margins, and wetland systems.
+              Port Stewart sits on Lama Lama Country in Cape York Peninsula, Queensland. The territory spans approximately 400,000 to 500,000 hectares of coastal wetland, river systems, savannah woodland, and rainforest managed by the Lama Lama Land and Sea Rangers across four ranger camps (Lama Lama Land and Sea Rangers, n.d.). Access requires a flight to Cairns, an eight-hour drive to Coen, and a further hour on unpaved track. The only broadband connection is a Starlink terminal at the ranger office, unavailable in the field.
             </p>
             <p className="context-para">
-              <em>Lantana camara</em> is a Class 3 declared weed under Queensland legislation and listed under the <em>Environment Protection and Biodiversity Conservation Act 1999</em>. <em>Aconophora compressa</em> (the Lantana bug) is established in parts of Port Stewart, but carries documented non-target species risks — a nuance the app explicitly captures at point of logging.
-            </p>
-            <p className="context-para" style={{ marginTop: 16 }}>
-              Lama Lama Country encompasses a range of vegetation communities — coastal lowland rainforest, open savanna woodland, melaleuca wetlands, and riparian corridors. Each community hosts a different invasive species profile. Lantana dominates disturbed woodland edges; Rubber Vine targets the riparian corridor; Pond Apple invades wetland margins.
+              Cape York Peninsula hosts some of the most intact tropical biodiversity in Australia but is under measurable ecological pressure. Invasive plants are a primary driver. <em>Lantana camara</em> alone is listed as a restricted invasive plant under Queensland biosecurity legislation, forming dense thickets that suppress native vegetation and become progressively harder to treat as infestations grow (Biosecurity Queensland, 2026; Walton, 2025). Nationally, weeds impose an estimated $4 billion in agricultural losses annually (Sinden et al., 2004).
             </p>
             <p className="context-para">
-              Existing management relies on paper-based field sheets completed during or after patrol, verbal handovers between shift changes, and periodic reports to Queensland DAFF under Working on Country Programme obligations. These approaches produce records that are not GPS-tagged, not species-attributed at site level, and not accessible to the whole Ranger team in real time.
+              The Lama Lama Rangers are both the primary stakeholders and the primary users. Ranger-led land and sea management integrates Indigenous ecological knowledge with scientific monitoring in ways the State of the Environment (2021) identifies as fundamental to effective biodiversity management. Data sovereignty — who owns the records of Country — is a direct concern for Yintjingga Aboriginal Corporation (YAC) and the broader Lama Lama community (ORIC, n.d.).
             </p>
             <p className="context-para">
-              The result is a data gap: Rangers cannot reliably track whether a treated site has re-infested, identify which species are spreading fastest across which vegetation community, or produce the structured evidence required for grant reporting and programme evaluation. Effective management requires species-specific treatment matched to vegetation type — a level of precision that paper-based recording cannot support. The app closes this gap by producing GPS-tagged, species-attributed records at the infestation site, linked to treatment outcome and follow-up scheduling.
+              Several tools are used across ranger programs in Australia for environmental monitoring. CyberTracker supports GPS-referenced field data collection but does not support peer-to-peer synchronisation without internet (CyberTracker, n.d.). ArcGIS Field Maps licensing is substantial and unsustainable for programs on grant funding cycles (GRDC, 2025). None of the existing platforms cover the full monitoring workflow in a single tool that operates completely offline.
+            </p>
+            <p className="context-para">
+              The result is a data gap: rangers work with GPS units, cameras, paper treatment records, and a centralised database accessed only at the office. Team-wide visibility of infestation patterns is only achievable through manual post-patrol data consolidation — after the window for early intervention may have passed (Walton, 2025). This project aims to close that gap.
             </p>
           </Reveal>
           <Reveal delay={0.15} className="species-sidebar">
@@ -902,7 +946,7 @@ function OptionsSection() {
           <SectionTag>Solution Options</SectionTag>
           <h2 className="section-headline">Three options evaluated.</h2>
           <p className="section-body" style={{ marginBottom: 48 }}>
-            Paper-based forms, offline-first mobile app, and SMS/USSD reporting were assessed against the six criteria.
+            An enhanced paper-based system, adaptation of CyberTracker, and a purpose-built offline-first app were assessed against the six criteria.
           </p>
         </Reveal>
         <div className="options-grid">
@@ -938,24 +982,17 @@ function OptionsSection() {
 }
 
 function SelectionSection() {
-  const totals = { paper: 0, app: 0, sms: 0 }
-  MATRIX_ROWS.forEach(r => {
-    totals.paper += r.paper * r.weight / 100
-    totals.app   += r.app   * r.weight / 100
-    totals.sms   += r.sms   * r.weight / 100
-  })
-
   return (
     <section className="selection-section">
       <div className="container">
         <div className="selection-intro-grid">
           <Reveal className="selection-intro-left">
             <SectionTag>Decision Matrix</SectionTag>
-            <h2 className="section-headline">The offline-first mobile app scored 93%.</h2>
+            <h2 className="section-headline">The purpose-built app scored 4.90/5.</h2>
           </Reveal>
           <Reveal delay={0.1} className="selection-intro-right">
             <p className="section-body" style={{ marginBottom: 0 }}>
-              The offline-first mobile app was selected on the basis of its 93% weighted decision matrix score and its demonstrated superiority on the two highest-weighted criteria: connectivity independence and field usability — both requirements that cannot be met by any solution requiring mobile signal, which is unavailable at Port Stewart.
+              Options were scored on a scale of 1–5 against each criterion. Weights reflect the relative importance of each criterion to the Port Stewart context, with offline functionality weighted most heavily given the non-negotiable connectivity constraint. Option 3 scores 5 across five of six criteria and was selected.
             </p>
           </Reveal>
         </div>
@@ -967,26 +1004,26 @@ function SelectionSection() {
                   <th className="matrix-th matrix-th--criterion">Criterion</th>
                   <th className="matrix-th matrix-th--weight">Weight</th>
                   <th className="matrix-th">Paper</th>
-                  <th className="matrix-th matrix-th--selected">Mobile App ✓</th>
-                  <th className="matrix-th">SMS</th>
+                  <th className="matrix-th">CyberTracker</th>
+                  <th className="matrix-th matrix-th--selected">Purpose-Built App ✓</th>
                 </tr>
               </thead>
               <tbody>
-                {MATRIX_ROWS.map((row, i) => (
+                {MATRIX_ROWS.map((row) => (
                   <tr key={row.criterion} className="matrix-row">
                     <td className="matrix-td matrix-td--criterion">{row.criterion}</td>
                     <td className="matrix-td matrix-td--weight">{row.weight}%</td>
-                    <td className="matrix-td"><span className="matrix-score">{row.paper}/10</span></td>
-                    <td className="matrix-td matrix-td--selected"><span className="matrix-score matrix-score--selected">{row.app}/10</span></td>
-                    <td className="matrix-td"><span className="matrix-score">{row.sms}/10</span></td>
+                    <td className="matrix-td"><span className="matrix-score">{row.paper}/5</span></td>
+                    <td className="matrix-td"><span className="matrix-score">{row.cyber}/5</span></td>
+                    <td className="matrix-td matrix-td--selected"><span className="matrix-score matrix-score--selected">{row.app}/5</span></td>
                   </tr>
                 ))}
                 <tr className="matrix-total-row">
                   <td className="matrix-td matrix-td--criterion" style={{ fontWeight: 700 }}>Weighted Total</td>
                   <td className="matrix-td matrix-td--weight">100%</td>
-                  <td className="matrix-td"><span className="matrix-score matrix-score--total">{(totals.paper).toFixed(1)}</span></td>
-                  <td className="matrix-td matrix-td--selected"><span className="matrix-score matrix-score--selected matrix-score--total">{(totals.app).toFixed(1)}</span></td>
-                  <td className="matrix-td"><span className="matrix-score matrix-score--total">{(totals.sms).toFixed(1)}</span></td>
+                  <td className="matrix-td"><span className="matrix-score matrix-score--total">{MATRIX_TOTALS.paper.toFixed(2)}</span></td>
+                  <td className="matrix-td"><span className="matrix-score matrix-score--total">{MATRIX_TOTALS.cyber.toFixed(2)}</span></td>
+                  <td className="matrix-td matrix-td--selected"><span className="matrix-score matrix-score--selected matrix-score--total">{MATRIX_TOTALS.app.toFixed(2)}</span></td>
                 </tr>
               </tbody>
             </table>
@@ -1211,42 +1248,56 @@ function TechSection() {
 }
 
 function ProtoSection() {
-  const findings = [
-    { feat: 'GPS capture', text: 'All testers successfully captured a GPS coordinate without instruction. 8-second timeout to Port Stewart fallback was universally unnoticed.' },
-    { feat: 'Lantana Biocontrol Prompt', text: 'Correctly surfaces Aconophora compressa risk at point of logging.' },
-    { feat: 'Zone Conflict Resolver', text: 'Keep / Merge interface resolved test conflicts without data loss in all 3 test runs.' },
-    { feat: 'Treatment prioritisation', text: 'Bloom Calendar enabled correct treatment prioritisation by Cape York context.' },
-    { feat: 'Supabase Cloud Sync', text: 'Automatic sync confirmed over base station Wi-Fi; S3 snapshot validated.' },
-  ]
   const specs = [
-    { label: 'Platform', value: 'iOS 26.2+ (Swift 5, SwiftUI)' },
+    { label: 'Platform', value: 'iOS (Swift/SwiftUI) + Android (Jetpack Compose)' },
     { label: 'Build target', value: 'iPhone 17 Pro Simulator' },
     { label: 'Demo PIN', value: '1234 — Alice, Bob, Carol' },
     { label: 'Demo data', value: '28 sightings, 6 zones, 10 patrols' },
-    { label: 'GPS spoof', value: 'Settings → Developer → Spoof Location' },
+    { label: 'Repo', value: 'github.com/immanuel-lam/ewbrangerapp' },
   ]
 
   return (
     <section className="proto-section">
       <div className="container">
         <Reveal>
-          <SectionTag>Prototype</SectionTag>
-          <h2 className="section-headline">Xcode build. Simulator ready.</h2>
+          <SectionTag>Prototyping</SectionTag>
+          <h2 className="section-headline">Three versions. Full end-to-end field workflow.</h2>
         </Reveal>
+
+        <Reveal delay={0.05}>
+          <h3 className="section-label" style={{ marginTop: 40, marginBottom: 8 }}>7.1 What Was Prototyped and Why</h3>
+          <p className="context-para">
+            The prototype focused on the full end-to-end field workflow: from launching the app on a ranger device through GPS sighting capture, treatment logging, and Bluetooth mesh synchronisation to a second device. This workflow was prioritised because it is the highest-risk interaction — if rangers cannot complete a sighting record quickly in the field, they will not use the tool. Visual design and navigation were also validated through three progressive versions.
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.05}>
+          <h3 className="section-label" style={{ marginTop: 32, marginBottom: 8 }}>7.2 Construction Process</h3>
+          <p className="context-para">
+            Three versions were developed using Swift/SwiftUI for iOS and Jetpack Compose for Android, with CoreData for local persistence and Apple MultipeerConnectivity for Bluetooth mesh sync. Each version was built on the previous codebase, with new features developed on isolated branches and merged after testing. The full codebase and version history are publicly available at github.com/immanuel-lam/ewbrangerapp (Lam, 2026).
+          </p>
+        </Reveal>
+
         <div className="proto-inner">
           <div>
-            <BuildDash />
+            <h3 className="section-label" style={{ marginBottom: 8 }}>7.3 Version Progression</h3>
             <div className="proto-findings">
-              <div className="proto-findings-label">Validated behaviours</div>
-              {findings.map(f => (
+              {[
+                { feat: 'Version 1 — Proof of Concept', text: 'Scoped to Lantana camara only. Validated the core data model: a sighting tied to a GPS location, species, and treatment record. V1 confirmed the data model was appropriate but exposed two critical gaps: single-species scope did not reflect reality, and the absence of peer-to-peer sync meant rangers had no way to share records in the field.' },
+                { feat: 'Version 2 — Full Redesign', text: 'Extended to six invasive species. Key additions: Bloom Calendar, satellite map views with infestation zone polygons, Lantana Biocontrol Prompt, patrol checklist with stamina metric, Bluetooth mesh sync via MultipeerConnectivity, Shift Handover Card, Zone Conflict Resolver.' },
+                { feat: 'Version 3 — Current', text: 'Twelve features added: dedicated Ranger Safety tab (check-in timer, hazard logger, emergency SOS, night vision mode), voice memo support, Herbicide Compatibility Checker, Treatment Effectiveness Tracker, Equipment Maintenance Log, Ranger Status Broadcast, and cloud sync via Supabase and AWS S3. All V3 features function without internet.' },
+              ].map(f => (
                 <div key={f.feat} className="proto-finding">
                   <div className="proto-finding-feat">{f.feat}</div>
                   <div className="proto-finding-text">{f.text}</div>
                 </div>
               ))}
             </div>
+            <FigurePlaceholder num={3} caption="Design progression from V1 to V3 — architecture, feature set, and UI evolution across three versions." src={`${import.meta.env.BASE_URL}design-progression.jpg`} />
+            <FigurePlaceholder num={4} caption="App screenshots — Map view, Activity Logging, Plant Guide, and Ranger Safety tab." />
           </div>
           <Reveal delay={0.1}>
+            <h3 className="section-label" style={{ marginBottom: 8 }}>Build specs</h3>
             <div className="proto-specs">
               {specs.map(s => (
                 <div key={s.label} className="spec-block">
@@ -1255,8 +1306,22 @@ function ProtoSection() {
                 </div>
               ))}
             </div>
+            <div style={{ marginTop: 24 }}>
+              <BuildDash />
+            </div>
           </Reveal>
         </div>
+
+        <Reveal delay={0.1}>
+          <h3 className="section-label" style={{ marginTop: 40, marginBottom: 8 }}>7.4 Testing</h3>
+          <p className="context-para">
+            The prototype was tested on physical iOS devices across the core logging workflow, Bluetooth mesh synchronisation between two devices, and offline map loading without network access. The Zone Conflict Resolver was tested by seeding conflicting zone edits from two devices and validating the merge interface.
+          </p>
+          <h3 className="section-label" style={{ marginTop: 24, marginBottom: 8 }}>7.5 Results and Modifications</h3>
+          <p className="context-para">
+            Bluetooth mesh sync was confirmed reliable between two iOS devices without internet. Offline map loading from CoreData was validated. The V2 patrol stamina metric was flagged as a lower priority feature and retained as optional. The Herbicide Compatibility Checker was moved from a standalone screen in V2 to the treatment entry flow in V3 after testing showed rangers were unlikely to access it separately before spraying.
+          </p>
+        </Reveal>
       </div>
     </section>
   )
@@ -1268,18 +1333,17 @@ function ImplSection() {
       <div className="container">
         <Reveal>
           <SectionTag>Implementation Plan</SectionTag>
-          <h2 className="section-headline">Three phases to full deployment.</h2>
+          <h2 className="section-headline">Five-part implementation plan.</h2>
           <p className="section-body" style={{ marginBottom: 48 }}>
-            Staged rollout minimises risk and builds the reporting habit before data volume grows.
+            Training, rollout, evaluation, community ownership, and failure pathways — each addressed before deployment.
           </p>
         </Reveal>
         <Reveal delay={0.1}>
           <div className="impl-phases">
-            {IMPL_PHASES.map((p, i) => (
+            {IMPL_PHASES.map((p) => (
               <div key={p.phase} className="impl-phase">
-                <div className="impl-phase-num">{String(i + 1).padStart(2, '0')}</div>
+                <div className="impl-phase-num">{p.phase}</div>
                 <div>
-                  <div className="impl-phase-label">{p.phase}</div>
                   <div className="impl-phase-title">{p.title}</div>
                   <div className="impl-phase-detail">{p.detail}</div>
                 </div>
@@ -1287,10 +1351,10 @@ function ImplSection() {
             ))}
           </div>
           <div className="impl-note">
-            <strong>No App Store required.</strong> Distribution via AirDrop (iOS) or APK sideload (Android). YAC retains full source code and documentation at handover.
+            <strong>No App Store required.</strong> Distribution via Apple TestFlight (iOS) or APK sideload (Android). YAC retains full source code and documentation at handover.
           </div>
           <div className="impl-note impl-note--airdrop" style={{ marginTop: 12 }}>
-            The demo build can be installed on any iPhone by opening the <code>.ipa</code> via AirDrop — no developer account, no TestFlight, no internet required at the point of installation.
+            If the Starlink terminal is offline for an extended period, all core app functions continue to operate, and mesh sync between ranger devices remains available. Cloud data is a backup, not a dependency.
           </div>
         </Reveal>
       </div>
@@ -1303,10 +1367,10 @@ function CostSection() {
     <section className="cost-section">
       <div className="container">
         <Reveal>
-          <SectionTag>Cost Estimate</SectionTag>
-          <h2 className="section-headline">Viable on a Rangers Programme budget.</h2>
+          <SectionTag>Cost Analysis</SectionTag>
+          <h2 className="section-headline">~$166 AUD annually. Viable on a Rangers Programme budget.</h2>
           <p className="section-body" style={{ marginBottom: 48 }}>
-            If devices are funded under existing Working on Country or Rangers Programme budgets, YAC's deployment cost is effectively $0. Cloud infrastructure costs are minimal — Supabase free tier handles typical Ranger data volumes for 6–8 months.
+            The ~$166 annual cost is fundable through existing ranger program operational budgets without requiring a separate grant. All development iteration costs are absorbed through open-source contribution — there are no vendor fees.
           </p>
         </Reveal>
         <Reveal delay={0.1}>
@@ -1315,27 +1379,49 @@ function CostSection() {
               <thead>
                 <tr>
                   <th>Item</th>
-                  <th>Estimated Cost</th>
+                  <th>Qty</th>
+                  <th>Unit Cost (AUD/yr)</th>
+                  <th>Total (AUD/yr)</th>
+                  <th>Source</th>
                 </tr>
               </thead>
               <tbody>
                 {COST_ITEMS.map(item => (
                   <tr key={item.item}>
                     <td>{item.item}</td>
-                    <td className="cost-value">{item.cost}</td>
+                    <td>{item.qty}</td>
+                    <td>{item.unit}</td>
+                    <td className="cost-value">{item.total}</td>
+                    <td style={{ fontSize: '.8rem', color: 'var(--ink-muted)' }}>{item.source}</td>
                   </tr>
                 ))}
+                <tr>
+                  <td colSpan={3} style={{ fontWeight: 700, color: 'var(--ink)' }}>Total Year 1</td>
+                  <td className="cost-value">~$166</td>
+                  <td></td>
+                </tr>
               </tbody>
             </table>
           </div>
+          <p className="cost-funding" style={{ marginBottom: 12 }}>
+            <strong>Maintenance:</strong> If data volume grows beyond Supabase free tier in subsequent years, Supabase Pro at ~$300/yr remains significantly below licensed GIS alternatives at $500–$2,000 per seat (GRDC, 2025).
+          </p>
           <p className="cost-funding">
-            <strong>Funding pathways:</strong> Government Working on Country / Rangers Programme · Queensland Land Restoration Fund · DAFF National Landcare Programme · Natural Heritage Trust (NHT)
+            <strong>Funding pathways:</strong> Indigenous Rangers Program (NIAA) · Queensland Protected Area Strategy 2020–2030 · Working on Country Programme · DAFF National Landcare Programme
           </p>
         </Reveal>
       </div>
     </section>
   )
 }
+
+const COMMUNITY_JOURNEY = [
+  { stage: 'Pre-deployment', experience: 'Rangers are consulted on workflow requirements during the design process. Existing patrol habits and paper forms inform app structure.' },
+  { stage: 'Dry season training', experience: 'Two-day in-person workshop on Country. Rangers learn the logging workflow by completing real test sightings. Senior rangers identified as peer trainers.' },
+  { stage: 'First patrol season', experience: 'Rangers use the app alongside existing methods. Feedback collected at end-of-shift handover. Bugs reported via ranger office Starlink.' },
+  { stage: 'Six-month review', experience: 'Development team and rangers review adoption data and workflow issues. Updates released via TestFlight.' },
+  { stage: 'Long-term', experience: 'YAC optionally takes repository ownership. Rangers train new team members independently. App extended based on community-identified priorities.' },
+]
 
 function ConsiderationsSection() {
   return (
@@ -1345,9 +1431,9 @@ function ConsiderationsSection() {
           <SectionTag>Other Considerations</SectionTag>
           <h2 className="section-headline">Designed with, not for.</h2>
         </Reveal>
-        <div className="considerations-grid">
+        <div className="considerations-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
           {CONSIDERATIONS.map((c, i) => (
-            <Reveal key={c.title} delay={0.07 * (i % 3)}>
+            <Reveal key={c.title} delay={0.07 * (i % 2)}>
               <div className="consideration-card">
                 <div className="consideration-title">{c.title}</div>
                 <div className="consideration-body">{c.body}</div>
@@ -1355,6 +1441,27 @@ function ConsiderationsSection() {
             </Reveal>
           ))}
         </div>
+        <Reveal delay={0.15}>
+          <h3 className="section-label" style={{ marginTop: 48, marginBottom: 16, fontSize: '.78rem' }}>Community Journey Map</h3>
+          <div className="cost-table-wrap">
+            <table className="cost-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '20%' }}>Stage</th>
+                  <th>Ranger Experience</th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMMUNITY_JOURNEY.map(row => (
+                  <tr key={row.stage}>
+                    <td style={{ fontWeight: 600, color: 'var(--ink)', whiteSpace: 'nowrap' }}>{row.stage}</td>
+                    <td>{row.experience}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Reveal>
       </div>
     </section>
   )
@@ -1366,9 +1473,9 @@ function RecsSection() {
       <div className="container">
         <Reveal>
           <SectionTag>Recommendations</SectionTag>
-          <h2 className="section-headline">Four actions ahead of deployment.</h2>
+          <h2 className="section-headline">Five recommendations.</h2>
           <p className="section-body" style={{ marginBottom: 56 }}>
-            The following recommendations are directed to YAC leadership and Rangers Programme management. Each addresses a specific risk or dependency identified during prototyping that must be resolved before Phase 1.
+            Directed to YAC leadership and Rangers Programme management. Each addresses a specific risk, dependency, or opportunity identified during development.
           </p>
         </Reveal>
         <div className="recs-list">
@@ -1402,7 +1509,7 @@ function ReferencesSection() {
             ))}
           </ol>
           <p className="references-note">
-            [Note: some references require publication date verification. All sources retrieved from EWB partner materials, Canvas, or public domain unless otherwise indicated.]
+            APA 7th edition. All URLs verified at time of citation. Sources retrieved from EWB partner materials, peer-reviewed journals, government publications, and public repositories.
           </p>
         </Reveal>
       </div>
@@ -1419,11 +1526,11 @@ function ProjectDetails() {
           <div className="project-meta-grid">
             <div className="project-meta-item">
               <div className="project-meta-label">Design Area</div>
-              <div className="project-meta-value">5.5 — Technology for Communities</div>
+              <div className="project-meta-value">5 — Climate Resilience and Adaptation</div>
             </div>
             <div className="project-meta-item">
               <div className="project-meta-label">Project Opportunity</div>
-              <div className="project-meta-value">Invasive Plant Management — Yintjingga Aboriginal Corporation, Cape York Peninsula</div>
+              <div className="project-meta-value">5.5 — Biodiversity and Habitat Protection Tools</div>
             </div>
             <div className="project-meta-item">
               <div className="project-meta-label">Subject</div>
@@ -1440,15 +1547,15 @@ function ProjectDetails() {
           </div>
           <h2 className="section-headline" style={{ marginTop: 48 }}>Why this matters</h2>
           <p className="section-body">
-            The Lama Lama Rangers of Yintjingga Aboriginal Corporation (YAC) manage six declared invasive plant species across Lama Lama Country on Cape York Peninsula — without reliable mobile coverage, with limited resources, and in extreme tropical field conditions. Systematic, GPS-attributed tracking is critical: untreated infestations spread rapidly across ecologically significant habitat and directly undermine the Rangers' custodianship work.
+            This project addresses Design Area 5.5 — Biodiversity and Habitat Protection Tools — from the 2026 EWB Challenge Design Brief. The Lama Lama Land and Sea Rangers conduct invasive plant management across a vast and remote territory in Cape York Peninsula, Queensland, but the tools currently available to them were not designed for an environment without internet connectivity or sealed road access.
           </p>
           <p className="section-body" style={{ marginTop: 16 }}>
-            No existing commercial solution addresses the combination of full offline operation, cultural data sovereignty under YAC control, and the specific six-species management profile of Lama Lama Country. This project responds to that gap.
+            The group selected this project opportunity because the gap between the rangers' operational knowledge and the technology available to support it is both concrete and addressable. No existing commercial solution covers the full monitoring workflow in a single tool that operates offline, supports peer-to-peer data sharing in the field, and maintains community ownership of land data.
           </p>
           <div className="hmw-block" style={{ marginTop: 32, background: 'var(--green-50)', border: '1px solid var(--green-200)' }}>
             <div className="hmw-label" style={{ color: 'var(--green-700)' }}>Needs Statement</div>
             <blockquote className="hmw-quote" style={{ color: 'var(--ink)' }}>
-              How might we support the Lama Lama Rangers in systematically monitoring and managing invasive plant species across Lama Lama Country, in a way that works fully offline, respects data sovereignty, and fits their existing patrol workflow?
+              Lama Lama Rangers need a single, offline-capable tool that integrates GPS logging, photo documentation, treatment recording, and peer-to-peer data sharing into their existing patrol workflow — without dependence on connectivity infrastructure that is not reliably available on Country.
             </blockquote>
           </div>
         </Reveal>
@@ -1464,10 +1571,10 @@ function AcknowledgementSection() {
         <div className="acknowledgement-inner">
           <div className="acknowledgement-label">Acknowledgement of Country</div>
           <blockquote className="acknowledgement-quote">
-            We acknowledge the Lama Lama people as the Traditional Owners and custodians of Lama Lama Country, including the lands and waters around Port Stewart, Cape York Peninsula. We pay our respects to Elders past, present, and emerging, and recognise their continuing connection to land, sea, and community. This design work was undertaken in partnership with Yintjingga Aboriginal Corporation under the principle of designing with, not for.
+            We acknowledge the Lama Lama people as the Traditional Custodians of the land and sea Country on which this project is centred. We pay our respects to Lama Lama Elders past, present, and emerging, and recognise their enduring connection to Country — a connection expressed through thousands of years of careful land and sea management.
           </blockquote>
           <p className="acknowledgement-body">
-            The Lama Lama Rangers exercise custodianship of their Country through ongoing patrol, treatment, and monitoring of invasive species. This project supports — and must never substitute — that sovereign stewardship.
+            This project was developed in the context of the Engineers Without Borders Challenge, which was produced in partnership with Yintjingga Aboriginal Corporation (YAC). We acknowledge that any technology solution proposed for Lama Lama Country must be developed with, not for, the community, and that sovereignty over land, knowledge, and data belongs to the Lama Lama people. We are grateful for the access to community knowledge and insights provided through the EWB Challenge framework.
           </p>
         </div>
       </div>
@@ -1548,7 +1655,7 @@ function Footer() {
             <a href="https://immanuel-lam.github.io/ewbrangerapp/" className="footer-link"
               target="_blank" rel="noreferrer">Live Site →</a>
             <div className="footer-credit">
-              EWB Challenge 2026 · Design Area 5.5<br />
+              EWB Challenge 2026 · Design Area 5 · Project Opportunity 5.5<br />
               31265 Communications for IT Professionals · UTS<br />
               <span style={{ fontSize: '.72rem', color: '#f7f3ec33' }}>
                 Built with Swift · SwiftUI · CoreData · MapKit · MultipeerConnectivity · Supabase · Amazon S3
