@@ -706,6 +706,53 @@ p.lead {
 .con:last-child { border-bottom: none; }
 .con h4 { margin-top: 0; }
 
+/* ── Meeting minutes ─────────────────────────────────────────────────────── */
+
+.minutes-card {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.minutes-meta {
+  background: var(--ink);
+  padding: 0;
+}
+
+.minutes-meta-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1rem;
+  padding: 0.55rem 1rem;
+  border-bottom: 1px solid #353028;
+}
+
+.minutes-meta-row:last-child { border-bottom: none; }
+
+.minutes-meta-row span:first-child {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7A7268;
+}
+
+.minutes-meta-row span:last-child {
+  font-size: 0.875rem;
+  color: #C4BEB6;
+}
+
+.minutes-section {
+  padding: 1.25rem 1.25rem 0.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.minutes-section:last-child { border-bottom: none; }
+
+.minutes-section h3 { margin-top: 0; }
+.minutes-section h4 { color: var(--ink); }
+
 /* ── Group charter ───────────────────────────────────────────────────────── */
 
 .charter-meta { margin-bottom: 0.5rem; }

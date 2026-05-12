@@ -1250,6 +1250,88 @@ const CHARTER_QA = [
 
 const CHARTER_MEMBERS = ['Immanuel', 'Essy (Francesca Silva Paniagua)', 'Marisa', 'Garv Mitter', 'Jai Sloper', 'Caleb']
 
+function MeetingMinutesSection() {
+  return (
+    <section className="section section-alt" id="meeting-minutes">
+      <div className="container">
+        <Reveal>
+          <div className="sec-hd">
+            <span className="sec-n">A2</span>
+            <h2>Appendix: Meeting Minutes</h2>
+          </div>
+
+          <div className="minutes-card">
+            <div className="minutes-meta">
+              <div className="minutes-meta-row"><span>Date</span><span>26 March 2026</span></div>
+              <div className="minutes-meta-row"><span>Location</span><span>In-person / hybrid</span></div>
+              <div className="minutes-meta-row"><span>Present</span><span>Marisa, Essy, Immanuel (in-person); Garv, Jai (virtual)</span></div>
+              <div className="minutes-meta-row"><span>Absent</span><span>Caleb (notified of outcomes)</span></div>
+            </div>
+
+            <div className="minutes-section">
+              <h3>Agenda</h3>
+              <ol className="recs">
+                <li>App development roadmap and feature iteration</li>
+                <li>Task 2a presentation preparation and slide delegation</li>
+                <li>General project status update</li>
+              </ol>
+            </div>
+
+            <div className="minutes-section">
+              <h3>Discussion</h3>
+              <h4>App Development Roadmap</h4>
+              <p>
+                Immanuel provided an update on the current state of the ranger field app. The team
+                discussed priorities for the next development iteration, including expanding the
+                app's feature set beyond the initial proof-of-concept. Key considerations raised
+                included ensuring the app remained offline-first given Port Stewart's limited
+                connectivity, and that any new features remained practical for rangers working in
+                remote field conditions. The team agreed that continued development should stay
+                focused on the Lama Lama Rangers' real operational needs rather than adding
+                features for their own sake.
+              </p>
+              <h4>Task 2a Presentation Preparation</h4>
+              <p>
+                With the Task 2a in-class presentation due on 30 March, the team used a
+                significant portion of the meeting to divide slide responsibilities. Each member
+                was assigned sections aligned with their individual research and project
+                contributions. The team discussed the overall narrative flow of the presentation,
+                ensuring it would clearly communicate the design process from empathise through
+                to the proposed solution. The group emphasised the importance of smooth transitions
+                between speakers and keeping content concise and visually clear.
+              </p>
+              <p>
+                Caleb, who was absent from the meeting, was to be updated on his assigned slides
+                and responsibilities asynchronously following the meeting.
+              </p>
+            </div>
+
+            <div className="minutes-section">
+              <h3>Action Items</h3>
+              <Tbl
+                cols={['Person', 'Task', 'Due']}
+                rows={[
+                  ['Immanuel', 'Continue app development; build out next feature iteration', 'Ongoing'],
+                  ['Marisa',   'Complete assigned presentation slides', 'Before 30 Mar'],
+                  ['Essy',     'Complete assigned presentation slides', 'Before 30 Mar'],
+                  ['Garv',     'Complete assigned presentation slides', 'Before 30 Mar'],
+                  ['Jai',      'Complete assigned presentation slides', 'Before 30 Mar'],
+                  ['Caleb',    'Complete assigned presentation slides; to be briefed on meeting outcomes asynchronously', 'Before 30 Mar'],
+                ]}
+              />
+            </div>
+
+            <div className="minutes-section">
+              <h3>Next Meeting</h3>
+              <p>TBC</p>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 function GroupCharterSection() {
   return (
     <section className="section" id="group-charter">
@@ -1303,7 +1385,7 @@ function PromptLogSection() {
       <div className="container">
         <Reveal>
           <div className="sec-hd">
-            <span className="sec-n">A2</span>
+            <span className="sec-n">A3</span>
             <h2>Appendix: AI Prompt Log</h2>
           </div>
           <p>Generative AI was used at two stages: content drafting and website implementation. All AI-generated content was reviewed, verified against cited sources, and modified by the team before submission.</p>
@@ -1370,6 +1452,7 @@ export default function App() {
         <RecsSection />
         <RefsSection />
         <GroupCharterSection />
+        <MeetingMinutesSection />
         <PromptLogSection />
       </main>
       <Footer />
