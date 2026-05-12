@@ -192,6 +192,23 @@ const JOURNEY = [
   ['Long-term',           'YAC optionally takes repository ownership. Rangers train new team members independently. App extended based on community-identified priorities.'],
 ]
 
+const PROMPT_LOG = [
+  {
+    n: '01',
+    tool: 'Claude Sonnet 4.6 · claude.ai',
+    prompt: 'Planning doc + individual research references provided; requested full website report draft following the AT3 assessment template structure.',
+    response: 'Full ~4,000-word draft across all 11 required sections with APA 7th in-text citations, decision matrix, implementation plan, cost analysis, community journey map, and group declaration table.',
+    used: 'Reviewed by all team members. Port Stewart-specific context verified against EWB Challenge brief and individual research. Statistics cross-checked against cited sources. Team names, contributions, and HMW statement updated to reflect group work.',
+  },
+  {
+    n: '02',
+    tool: 'Claude Code (Sonnet 4.6) · claude.ai/code',
+    prompt: `i'm looking to build a professional portfolio site using react and vite. i want a clean, single-page layout that feels like a high-end report, think "academic but modern." can you generate the code for the skeleton of this site? I have content written already, but I just need placeholder text and the UI structure so I can fill it in later. Keep it simple, put React components in App.jsx and styling in App.css, don't use any third party libraries, just css and standard reactjs hooks. i'm thinking lora(serif) and inter(sans serif) from google fonts as my typeface. use a warm white for the main background #f2ebe0 and a deep ocean blue #112233 for the hero and footer. sections need padding and the main content should be centered with a max width of 800px. every other section should have a slightly darker background to separate them. i need a nav bar that's transparent at the top and turns solid blue as i scroll. mobile hamburger menu is needed for mobile. hero should be a big dark opening with a parallax background image. i need a meta-grid box with a blur to show high level project details. on desktop, i need a vertical line of dashes on the right side that highlights as you scroll through different sections. i need screenshots to render inside phone shells, iphone borders and dynamic island. i need clean, bordered tables and a vertical dot and line timeline for version history. i need sections to gently fade and slide up into places as the user scrolls down. my sections are as follows:\n1. Hero & Acknowledgement (Dark blue)\n2. Project Background (With a banner image and stats)\n3. Problem & Design Criteria\n4. Options & Selection (Including a decision matrix table)\n5. Detailed Design (With the phone grids)\n6. Prototyping & Implementation (Timeline and cost tables)\n7. Final Thoughts & References (Dark blue footer)\nmake no mistakes and build.`,
+    response: '[Output truncated — Claude Code produces large multi-file outputs. Full implementation history available at github.com/immanuel-lam/ewbrangerapp, branch: showcase.]',
+    used: 'React/Vite single-page site built from this specification. Sections reorganised to match AT3 rubric requirements. All report content from Prompt 01 integrated. Colour palette, typography, banner images, phone grids, stat callouts, scrollspy TOC, and mobile hamburger menu implemented as specified.',
+  },
+]
+
 const REFS = [
   'Aboriginal Cultural Landscape Management – Literature Review. (2025). Transport for NSW. https://www.transport.nsw.gov.au/system/files/media/documents/2025/Aboriginal-Cultural-Landscape-Management-Literature-Review.pdf',
   'Amazon Web Services. (2026). Amazon S3 pricing. https://aws.amazon.com/s3/pricing/',
@@ -1210,15 +1227,29 @@ function PromptLogSection() {
             <span className="sec-n">A4</span>
             <h2>Appendix: AI Prompt Log</h2>
           </div>
-          <p>Generated using Claude Sonnet 4.6 (claude.ai) for content drafting and structure.</p>
-          <Tbl
-            cols={['Prompt', 'AI Response Summary', 'How It Was Used / Modified']}
-            rows={[[
-              'Planning doc + references provided; requested full website draft following assessment template',
-              'Full 4000-word draft across all 11 sections with APA7 inline citations, decision matrix, implementation plan, and cost analysis',
-              'Reviewed by all team members; Port Stewart-specific context verified against EWB brief and individual research; statistics verified against cited sources; team names and contributions updated',
-            ]]}
-          />
+          <p>Generative AI was used at two stages: content drafting and website implementation. All AI-generated content was reviewed, verified against cited sources, and modified by the team before submission.</p>
+          <div className="log-entries">
+            {PROMPT_LOG.map(entry => (
+              <div key={entry.n} className="log-entry">
+                <div className="log-header">
+                  <span className="log-n">{entry.n}</span>
+                  <span className="log-tool">{entry.tool}</span>
+                </div>
+                <div className="log-field">
+                  <span className="log-label">Prompt</span>
+                  <pre className="log-prompt">{entry.prompt}</pre>
+                </div>
+                <div className="log-field">
+                  <span className="log-label">AI Response Summary</span>
+                  <p className="log-value">{entry.response}</p>
+                </div>
+                <div className="log-field">
+                  <span className="log-label">How It Was Used / Modified</span>
+                  <p className="log-value">{entry.used}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </Reveal>
       </div>
     </section>

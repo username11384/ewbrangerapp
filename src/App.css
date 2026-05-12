@@ -706,6 +706,76 @@ p.lead {
 .con:last-child { border-bottom: none; }
 .con h4 { margin-top: 0; }
 
+/* ── Prompt log ──────────────────────────────────────────────────────────── */
+
+.log-entries { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.75rem; }
+
+.log-entry {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: var(--ink);
+}
+
+.log-n {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: #8A857C;
+}
+
+.log-tool {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: #C4BEB6;
+  letter-spacing: 0.02em;
+}
+
+.log-field {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.log-field:last-child { border-bottom: none; }
+
+.log-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  margin-bottom: 0.45rem;
+}
+
+.log-prompt {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.65;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(0,0,0,0.03);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.75rem 0.9rem;
+  margin: 0;
+}
+
+.log-value {
+  font-size: 0.875rem;
+  color: var(--ink);
+  line-height: 1.65;
+  margin: 0;
+}
+
 /* ── Recommendations ─────────────────────────────────────────────────────── */
 
 .recs { padding-left: 1.2rem; margin: 0.5rem 0; }
