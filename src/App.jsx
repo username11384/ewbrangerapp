@@ -1218,13 +1218,92 @@ function RefsSection() {
   )
 }
 
+const CHARTER_QA = [
+  {
+    group: 'Ground Rules',
+    items: [
+      { q: 'Other than in class, when will we meet?', a: 'We meet on demand — find a place at UTS or communicate online through FaceTime/group messaging.' },
+      { q: 'On average, how long should our meetings be?', a: 'Keep them brief — roughly 30 minutes to one hour.' },
+      { q: 'Where will our meetings take place?', a: 'At UTS or at someone\'s house.' },
+      { q: 'How do we inform each other when we can\'t be there or are running late?', a: 'Message promptly on the group chat so every member knows.' },
+      { q: 'What does "on time" mean?', a: 'We should settle in 5 minutes before the meeting time before starting.' },
+      { q: 'How will we deal with lateness to meetings?', a: 'We will either wait if the late member can make it, otherwise we will take minutes and send them in.' },
+      { q: 'How do we deal with members who don\'t participate enough, participate too much, or distract the group from its task?', a: 'A member can privately message the member to avoid them feeling singled out.' },
+      { q: 'What will we do if a group member\'s work doesn\'t meet our standards?', a: 'Everyone will review the work and give pointers.' },
+      { q: 'How are we going to make decisions?', a: 'We decide as a group — have a vision, talk it out.' },
+    ],
+  },
+  {
+    group: 'Our Goals',
+    items: [
+      { q: 'What is our group trying to accomplish?', a: 'Trying to achieve the highest standard of work and complete the EWB Challenge with work we can be proud of.' },
+    ],
+  },
+  {
+    group: 'Leadership',
+    items: [
+      { q: 'Will we appoint a leader?', a: 'No — everyone is responsible for their own work. Some members may step up naturally.' },
+      { q: 'What are their responsibilities?', a: 'Responsibilities may include nudging the group in the right direction.' },
+    ],
+  },
+]
+
+const CHARTER_MEMBERS = ['Immanuel', 'Essy (Francesca Silva Paniagua)', 'Marisa', 'Garv Mitter', 'Jai Sloper', 'Caleb']
+
+function GroupCharterSection() {
+  return (
+    <section className="section" id="group-charter">
+      <div className="container">
+        <Reveal>
+          <div className="sec-hd">
+            <span className="sec-n">A1</span>
+            <h2>Appendix: Group Charter</h2>
+          </div>
+          <div className="charter-meta">
+            <span className="log-label">Group Name</span>
+            <p className="charter-name">Garv Fan Club</p>
+          </div>
+
+          {CHARTER_QA.map(section => (
+            <div key={section.group} className="charter-group">
+              <h3>{section.group}</h3>
+              {section.items.map((item, i) => (
+                <div key={i} className="charter-qa">
+                  <p className="charter-q">{item.q}</p>
+                  <p className="charter-a">{item.a}</p>
+                </div>
+              ))}
+            </div>
+          ))}
+
+          <div className="charter-commit">
+            <h3>Our Commitment to the Charter</h3>
+            <p>
+              We, the group named above, agree with the answers in our charter and will
+              try our best to uphold them.
+            </p>
+            <div className="charter-sigs">
+              {CHARTER_MEMBERS.map(name => (
+                <div key={name} className="charter-sig">
+                  <span className="sig-name">{name}</span>
+                  <span className="sig-line" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 function PromptLogSection() {
   return (
     <section className="section section-alt" id="prompt-log">
       <div className="container">
         <Reveal>
           <div className="sec-hd">
-            <span className="sec-n">A4</span>
+            <span className="sec-n">A2</span>
             <h2>Appendix: AI Prompt Log</h2>
           </div>
           <p>Generative AI was used at two stages: content drafting and website implementation. All AI-generated content was reviewed, verified against cited sources, and modified by the team before submission.</p>
@@ -1290,6 +1369,7 @@ export default function App() {
         <ConsiderationsSection />
         <RecsSection />
         <RefsSection />
+        <GroupCharterSection />
         <PromptLogSection />
       </main>
       <Footer />

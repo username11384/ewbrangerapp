@@ -706,6 +706,82 @@ p.lead {
 .con:last-child { border-bottom: none; }
 .con h4 { margin-top: 0; }
 
+/* ── Group charter ───────────────────────────────────────────────────────── */
+
+.charter-meta { margin-bottom: 0.5rem; }
+
+.charter-name {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 0.25rem;
+}
+
+.charter-group { margin-bottom: 0.5rem; }
+
+.charter-group h3 { margin-top: 2rem; }
+
+.charter-qa {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.charter-qa:last-child { border-bottom: none; }
+
+.charter-q {
+  font-size: 0.875rem;
+  color: var(--ink-mid);
+  font-style: italic;
+  margin: 0;
+}
+
+.charter-a {
+  font-size: 0.875rem;
+  color: var(--ink);
+  margin: 0;
+}
+
+.charter-commit {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+.charter-sigs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem 2rem;
+  margin-top: 1.75rem;
+}
+
+.charter-sig {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sig-name {
+  font-size: 0.8rem;
+  color: var(--ink-mid);
+  font-family: var(--mono);
+}
+
+.sig-line {
+  display: block;
+  height: 1px;
+  background: var(--ink);
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .charter-qa { grid-template-columns: 1fr; gap: 0.3rem; }
+  .charter-sigs { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* ── Prompt log ──────────────────────────────────────────────────────────── */
 
 .log-entries { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.75rem; }
