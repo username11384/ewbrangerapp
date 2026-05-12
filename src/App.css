@@ -1006,4 +1006,8 @@ p.lead {
   .meta-cell.full { grid-column: 1; }
 
   .phones { grid-template-columns: repeat(2, 1fr); }
+
+  .stat-row { grid-template-columns: 1fr; }
+  .stat { border-right: none; border-bottom: 1px solid var(--rule); }
+  .stat:last-child { border-bottom: none; }
 }
