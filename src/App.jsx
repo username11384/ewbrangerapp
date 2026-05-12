@@ -614,7 +614,7 @@ function DetailedSection() {
           <StatRow stats={[
             { n: '6',  label: 'invasive species covered in the offline plant guide' },
             { n: '5',  label: 'primary application sections' },
-            { n: '0G', label: 'connectivity required — full functionality offline' },
+            { n: '0 bars', label: 'connectivity required — full functionality offline' },
           ]} />
 
           <p>The application has six primary sections:</p>
