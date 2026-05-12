@@ -460,10 +460,15 @@ function Hero() {
 
 function ExecSummarySection() {
   return (
-    <section className="section exec-summary">
+    <section className="section section-alt" id="exec-summary">
       <div className="container">
         <Reveal>
-          <h2 className="exec-h">Proposal Summary</h2>
+          <div className="sec-hd">
+            <span className="sec-n">ES</span>
+            <h2>Executive Summary</h2>
+          </div>
+
+          <h3>Proposal Summary</h3>
           <p>
             The project aims to address the gap between the Lama Lama Rangers' operational
             knowledge and the technology available to support invasive plant management across
@@ -474,7 +479,7 @@ function ExecSummarySection() {
             dependence on internet connectivity that is not reliably available on Country.
           </p>
 
-          <h2 className="exec-h">Overview of Design</h2>
+          <h3>Overview of Design</h3>
           <p>
             The Lama Lama Rangers App is a native mobile application for iOS (Swift/SwiftUI) and
             Android (Jetpack Compose), storing all records locally using CoreData and Room
@@ -488,8 +493,8 @@ function ExecSummarySection() {
             contains 32 features validated across two physical iOS devices in the field.
           </p>
 
-          <h2 className="exec-h">Key Considerations</h2>
-          <ul className="exec-list">
+          <h3>Key Considerations</h3>
+          <ul className="recs">
             <li>Community consultation with YAC is a prerequisite for any future feature additions or AI integration — not optional.</li>
             <li>In-person training at the ranger station is the most effective adoption pathway; remote onboarding is not appropriate for this context.</li>
             <li>All ranger records are stored locally on ranger-owned devices; no data is transmitted without explicit ranger action.</li>
@@ -498,7 +503,7 @@ function ExecSummarySection() {
             <li>Repair pathways depend on maintaining a relationship with the development team or building in-community technical capacity — addressed in the implementation plan.</li>
           </ul>
 
-          <h2 className="exec-h">Proposed Materials and Cost Summary</h2>
+          <h3>Proposed Materials and Cost Summary</h3>
           <p>
             The design requires no physical materials or construction. Estimated annual running
             costs are approximately AUD $166 in Year 1, comprising the Apple Developer Program
@@ -507,8 +512,8 @@ function ExecSummarySection() {
             required for current data volumes is free. There are no per-seat licensing fees; the
             open-source application can be installed on additional ranger devices at no extra cost.
             Potential funding sources include the National Indigenous Australians Agency Indigenous
-            Rangers Program (NIAA, n.d.), which funds operational costs for ranger programs, and
-            the Queensland Government's Protected Area Strategy grant rounds (Queensland Government, 2020).
+            Rangers Program (NIAA, n.d.) and the Queensland Government's Protected Area Strategy
+            grant rounds (Queensland Government, 2020).
           </p>
         </Reveal>
       </div>

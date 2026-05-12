@@ -386,25 +386,6 @@ tfoot td {
 
 /* ── Executive Summary ───────────────────────────────────────────────────── */
 
-.exec-summary { background: var(--bg); }
-
-.exec-h {
-  font-family: var(--serif);
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--ink);
-  margin: 2.25rem 0 0.75rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--rule);
-}
-.exec-h:first-child { margin-top: 0; }
-
-.exec-list {
-  padding-left: 1.4rem;
-  line-height: 1.75;
-  margin: 0 0 1rem;
-}
-.exec-list li { margin-bottom: 0.35rem; }
 
 /* ── Scrollspy ───────────────────────────────────────────────────────────── */
 
