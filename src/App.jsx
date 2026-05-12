@@ -236,7 +236,6 @@ const REFS = [
   'State of the Environment. (2021). Indigenous knowledge and land and sea management. Australian Government.',
   'Supabase. (2026). Pricing. https://supabase.com/pricing',
   'Taylor, D. B. (2017). Threats to Cape York rivers: Q-catchments risk assessment and threat prioritisation. ResearchGate.',
-  'Walton, C. (2025). Lantana: Current management status and future prospects. DPI eResearch Archive.',
   'Woinarski, J. (2025). The natural attributes for World Heritage nomination of Cape York Peninsula. DCCEEW.',
   'Cape York Tours. (2023, July 16). What will I do in Cape York? [Photograph]. https://capeyorktours.com.au/what-will-i-do-in-cape-york/',
   'Invasive Species Blog. (2022, October 12). Research reveals invasive Lantana camara reduced growth of maize by 29% in East Usambara, Tanzania [Photograph]. https://blog.invasive-species.org/2022/10/12/research-reveals-invasive-lantana-camara-reduced-growth-of-maize-by-29-in-east-usambara-tanzania/',
@@ -429,7 +428,7 @@ function Hero() {
           </div>
           <div className="meta-cell">
             <span className="meta-key">Tutorial Number and Zone</span>
-            <span className="meta-val">Activity 02</span>
+            <span className="meta-val">Activity 02 — Dhanesh</span>
           </div>
           <div className="meta-cell">
             <span className="meta-key">Group Name</span>
@@ -626,7 +625,7 @@ function BackgroundSection() {
             listed as a restricted invasive plant under Queensland biosecurity legislation, forming
             dense thickets that suppress native vegetation, reduce native fauna habitat quality, and
             become progressively harder to treat as infestations grow (Biosecurity Queensland, 2026;
-            Walton, 2025). Nationally, weeds impose an estimated $4 billion in agricultural losses
+            Anshumali &amp; Gupta, 2025). Nationally, weeds impose an estimated $4 billion in agricultural losses
             annually, and their ecological cost in sensitive landscapes like Cape York is harder to
             quantify but no less real (Sinden et al., 2004).
           </p>
@@ -665,7 +664,7 @@ function BackgroundSection() {
             Drone-based aerial survey has been adopted for mapping infestation extent in some Cape
             York programs (DESI, n.d.). Chemical, biological, and mechanical weed control methods —
             including the <em>Aconophora compressa</em> biocontrol agent for <em>Lantana camara</em> —
-            are documented within Queensland biosecurity practice (Walton, 2025).
+            are documented within Queensland biosecurity practice (Biosecurity Queensland, 2026).
           </p>
 
           <h3 id="sub-2-4">2.4 Why Existing Solutions Are Insufficient</h3>
@@ -682,7 +681,7 @@ function BackgroundSection() {
             Jahan, 2025). The fragmentation across GPS devices, cameras, paper treatment records,
             and a centralised database means that team-wide visibility of infestation patterns is
             only achievable through manual post-patrol data consolidation — after the window for
-            early intervention may have passed (Walton, 2025).
+            early intervention may have passed.
           </p>
 
           <h3 id="sub-2-5">2.5 What This Project Aims to Achieve</h3>
@@ -722,7 +721,7 @@ function ProblemSection() {
             fact, creating gaps in coverage and delays in identifying where infestations are
             concentrated. Early detection is critical — research confirms that small infestations of
             <em> Lantana camara</em> are significantly cheaper and faster to treat than established
-            stands (Walton, 2025). In a landscape without roads, where patrols cover large distances
+            stands (Anshumali &amp; Gupta, 2025). In a landscape without roads, where patrols cover large distances
             by foot and boat, a ranger who must choose between completing a patrol and stopping to
             document properly will choose the patrol. The tool has to fit the workflow, not the other
             way around.
@@ -889,7 +888,7 @@ function DetailedSection() {
                 estimates infestation area, records treatment method, and adds a voice memo. The
                 Herbicide Compatibility Checker confirms the correct product and warns against applying
                 foliar spray when <em>Aconophora compressa</em> biocontrol agents are present —
-                spraying in this context undermines long-term management (Walton, 2025). The Treatment
+                spraying in this context undermines long-term management (Biosecurity Queensland, 2026). The Treatment
                 Effectiveness Tracker logs follow-up observations at the same site across patrols.
               </p>
             </div>
