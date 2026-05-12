@@ -70,6 +70,19 @@ function Tbl({ cols, rows, foot }) {
   )
 }
 
+function StatRow({ stats }) {
+  return (
+    <div className="stat-row">
+      {stats.map((s, i) => (
+        <div key={i} className="stat">
+          <span className="stat-n">{s.n}</span>
+          <span className="stat-lbl">{s.label}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function Phone({ src, caption }) {
   return (
     <figure className="phone">
@@ -341,7 +354,7 @@ function BackgroundSection() {
           <SH n={2} title="Background" />
 
           <h3>2.1 Context of the Problem</h3>
-          <p>
+          <p className="lead">
             Port Stewart sits on Lama Lama Country in Cape York Peninsula, Queensland. The territory
             spans approximately 400,000 to 500,000 hectares of coastal wetland, river systems, savannah
             woodland, and rainforest managed by the Lama Lama Land and Sea Rangers across four ranger
@@ -364,6 +377,12 @@ function BackgroundSection() {
             annually, and their ecological cost in sensitive landscapes like Cape York is harder to
             quantify but no less real (Sinden et al., 2004).
           </p>
+
+          <StatRow stats={[
+            { n: '400–500k ha', label: 'managed across Lama Lama Country — four ranger camps' },
+            { n: '$4B',         label: 'estimated annual weed cost to Australian agriculture' },
+            { n: '8 hrs',       label: 'drive from Cairns to site — no sealed roads on Country' },
+          ]} />
 
           <h3>2.2 Significance to Stakeholders</h3>
           <p>
@@ -443,7 +462,7 @@ function ProblemSection() {
             </p>
           </div>
 
-          <p>
+          <p className="lead">
             Invasive plant monitoring at Port Stewart is currently split across disconnected tools:
             GPS units, cameras, paper forms, and a centralised database that rangers access only at
             the office. Each patrol generates records that must be manually consolidated after the
@@ -577,7 +596,7 @@ function DetailedSection() {
       <div className="container">
         <Reveal>
           <SH n={6} title="Detailed Design" />
-          <p>
+          <p className="lead">
             The Lama Lama Rangers App is an offline-first mobile application for iOS (Swift/SwiftUI)
             and Android (Jetpack Compose). Every core function operates without internet connectivity.
             Data is stored locally using CoreData (iOS) and Room (Android). Peer-to-peer sync between
@@ -586,6 +605,12 @@ function DetailedSection() {
             and AWS S3.
           </p>
           <p className="fig">Figure 1: Application architecture — offline-first data flow from device storage to Bluetooth mesh sync to cloud sync when connectivity is available.</p>
+
+          <StatRow stats={[
+            { n: '6',  label: 'invasive species covered in the offline plant guide' },
+            { n: '5',  label: 'primary application sections' },
+            { n: '0G', label: 'connectivity required — full functionality offline' },
+          ]} />
 
           <p>The application has six primary sections:</p>
           <div>
@@ -660,7 +685,7 @@ function ProtoSection() {
           <SH n={7} title="Prototyping" />
 
           <h3>7.1 What Was Prototyped and Why</h3>
-          <p>
+          <p className="lead">
             The prototype focused on the full end-to-end field workflow: from launching the app on
             a ranger device through GPS sighting capture, treatment logging, and Bluetooth mesh
             synchronisation to a second device. This workflow was prioritised because it is the
@@ -681,6 +706,12 @@ function ProtoSection() {
             </a>{' '}
             (Lam, 2026).
           </p>
+
+          <StatRow stats={[
+            { n: '3',  label: 'prototype versions — V1 proof of concept through V3 current' },
+            { n: '32', label: 'features in the V3 release' },
+            { n: '2',  label: 'physical iOS devices used for mesh sync testing' },
+          ]} />
 
           <h3>7.3 Version Progression</h3>
           <div className="versions">
@@ -767,7 +798,7 @@ function ImplSection() {
           <SH n={8} title="Implementation Plan" />
 
           <h3>8.1 Installation and Community Training</h3>
-          <p>
+          <p className="lead">
             The iOS application is distributed via Apple TestFlight — no App Store approval required,
             no new hardware needed. An Android APK is distributed directly to Android devices in the
             ranger fleet. Installation is completed with development team support via the ranger
@@ -837,6 +868,12 @@ function CostSection() {
             rows={COST_ROWS}
             foot={['Total Year 1', '', '', '~$166', '']}
           />
+          <StatRow stats={[
+            { n: '~$166',      label: 'total Year 1 software cost' },
+            { n: '$0',         label: 'ongoing licensing — no vendor lock-in' },
+            { n: '$500–2,000', label: 'per-seat cost of commercial GIS alternatives (GRDC, 2025)' },
+          ]} />
+
           <h3>Maintenance and Ongoing Costs</h3>
           <p>
             If data volume grows beyond Supabase free tier thresholds in subsequent years, a Supabase

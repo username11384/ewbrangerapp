@@ -299,6 +299,52 @@ tfoot td {
   border-top: 1.5px solid var(--rule);
 }
 
+/* ── Lead paragraph ──────────────────────────────────────────────────────── */
+
+p.lead {
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  color: var(--ink);
+  line-height: 1.82;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Stat row ────────────────────────────────────────────────────────────── */
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+
+.stat {
+  padding: 1.25rem 1.5rem;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat:last-child { border-right: none; }
+
+.stat-n {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ocean-mid);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat-lbl {
+  font-size: 0.75rem;
+  color: var(--ink-mid);
+  line-height: 1.4;
+}
+
 /* ── Fig caption ─────────────────────────────────────────────────────────── */
 
 .fig {
