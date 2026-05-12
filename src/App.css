@@ -382,9 +382,19 @@ tfoot td {
   z-index: 50;
   display: flex;
   flex-direction: column;
-  gap: 7px;
   align-items: flex-end;
+  gap: 0;
 }
+
+.spy-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  padding-bottom: 6px;
+}
+
+.spy-group:last-child { padding-bottom: 0; }
 
 .spy-dot {
   display: block;
@@ -420,6 +430,42 @@ tfoot td {
 .spy-active {
   width: 26px;
   background: var(--ocean-mid) !important;
+}
+
+.spy-sub {
+  display: block;
+  width: 9px;
+  height: 1.5px;
+  background: rgba(37, 40, 32, 0.18);
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease;
+  position: relative;
+}
+
+.spy-sub::before {
+  content: attr(data-label);
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--ink-mid);
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+
+.spy-sub:hover { background: rgba(37, 40, 32, 0.4); }
+.spy-sub:hover::before { opacity: 1; }
+
+.spy-sub-active {
+  width: 14px;
+  background: var(--ocean-lt) !important;
 }
 
 @media (max-width: 1100px) {

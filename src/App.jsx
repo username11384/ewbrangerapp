@@ -227,32 +227,61 @@ const REFS = [
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 
 const SPY_SECTIONS = [
-  { id: 'top',             label: 'Overview' },
-  { id: 'background',      label: 'Background' },
-  { id: 'problem',         label: 'Problem' },
-  { id: 'options',         label: 'Options' },
-  { id: 'design',          label: 'Selection' },
-  { id: 'detailed',        label: 'Detailed Design' },
-  { id: 'prototype',       label: 'Prototype' },
-  { id: 'implementation',  label: 'Implementation' },
-  { id: 'cost',            label: 'Cost' },
-  { id: 'considerations',  label: 'Considerations' },
-  { id: 'recommendations', label: 'Recommendations' },
-  { id: 'references',      label: 'References' },
+  { id: 'top',             label: 'Overview',        subs: [] },
+  { id: 'background',      label: 'Background',      subs: [
+    { id: 'sub-2-1', label: '2.1 Context' },
+    { id: 'sub-2-2', label: '2.2 Stakeholders' },
+    { id: 'sub-2-3', label: '2.3 Existing Solutions' },
+    { id: 'sub-2-4', label: '2.4 Why Insufficient' },
+    { id: 'sub-2-5', label: '2.5 Project Aims' },
+  ]},
+  { id: 'problem',         label: 'Problem',         subs: [
+    { id: 'sub-3-1', label: '3.1 Design Criteria' },
+  ]},
+  { id: 'options',         label: 'Options',         subs: [] },
+  { id: 'design',          label: 'Selection',       subs: [] },
+  { id: 'detailed',        label: 'Detailed Design', subs: [] },
+  { id: 'prototype',       label: 'Prototype',       subs: [
+    { id: 'sub-7-1', label: '7.1 What Was Prototyped' },
+    { id: 'sub-7-2', label: '7.2 Construction' },
+    { id: 'sub-7-3', label: '7.3 Version Progression' },
+    { id: 'sub-7-4', label: '7.4 Testing' },
+    { id: 'sub-7-5', label: '7.5 Results' },
+  ]},
+  { id: 'implementation',  label: 'Implementation',  subs: [
+    { id: 'sub-8-1', label: '8.1 Installation' },
+    { id: 'sub-8-2', label: '8.2 Rollout' },
+    { id: 'sub-8-3', label: '8.3 Evaluation' },
+    { id: 'sub-8-4', label: '8.4 Community Ownership' },
+    { id: 'sub-8-5', label: '8.5 Repair' },
+  ]},
+  { id: 'cost',            label: 'Cost',            subs: [] },
+  { id: 'considerations',  label: 'Considerations',  subs: [] },
+  { id: 'recommendations', label: 'Recommendations', subs: [] },
+  { id: 'references',      label: 'References',      subs: [] },
 ]
 
 function useScrollSpy() {
-  const [active, setActive] = useState('top')
+  const [active, setActive] = useState({ section: 'top', sub: null })
   useEffect(() => {
-    const ids = SPY_SECTIONS.map(s => s.id)
     const onScroll = () => {
       const y = window.scrollY + 140
-      let current = ids[0]
-      for (const id of ids) {
-        const el = document.getElementById(id)
-        if (el && el.offsetTop <= y) current = id
+      let section = SPY_SECTIONS[0].id
+      let sub = null
+      for (const sec of SPY_SECTIONS) {
+        const el = document.getElementById(sec.id)
+        if (el && el.offsetTop <= y) {
+          section = sec.id
+          sub = null
+          for (const s of sec.subs) {
+            const se = document.getElementById(s.id)
+            if (se && se.offsetTop <= y) sub = s.id
+          }
+        }
       }
-      setActive(current)
+      setActive(prev =>
+        prev.section === section && prev.sub === sub ? prev : { section, sub }
+      )
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
@@ -262,17 +291,16 @@ function useScrollSpy() {
 }
 
 function ScrollSpy() {
-  const active = useScrollSpy()
+  const { section: activeSection, sub: activeSub } = useScrollSpy()
   return (
     <nav className="scrollspy" aria-label="Page sections">
-      {SPY_SECTIONS.map(({ id, label }) => (
-        <a
-          key={id}
-          href={`#${id}`}
-          className={`spy-dot${active === id ? ' spy-active' : ''}`}
-          data-label={label}
-          aria-label={label}
-        />
+      {SPY_SECTIONS.map(({ id, label, subs }) => (
+        <div key={id} className="spy-group">
+          <a href={`#${id}`} className={`spy-dot${activeSection === id ? ' spy-active' : ''}`} data-label={label} aria-label={label} />
+          {activeSection === id && subs.map(s => (
+            <a key={s.id} href={`#${s.id}`} className={`spy-sub${activeSub === s.id ? ' spy-sub-active' : ''}`} data-label={s.label} aria-label={s.label} />
+          ))}
+        </div>
       ))}
     </nav>
   )
@@ -461,7 +489,7 @@ function BackgroundSection() {
             credit="Invasive Species Blog. (2022, October 12). Research reveals invasive Lantana camara reduced growth of maize by 29% in East Usambara, Tanzania. https://blog.invasive-species.org/2022/10/12/research-reveals-invasive-lantana-camara-reduced-growth-of-maize-by-29-in-east-usambara-tanzania/"
           />
 
-          <h3>2.1 Context of the Problem</h3>
+          <h3 id="sub-2-1">2.1 Context of the Problem</h3>
           <p className="lead">
             Port Stewart sits on Lama Lama Country in Cape York Peninsula, Queensland. The territory
             spans approximately 400,000 to 500,000 hectares of coastal wetland, river systems, savannah
@@ -492,7 +520,7 @@ function BackgroundSection() {
             { n: '8 hrs',       label: 'drive from Cairns to site — no sealed roads on Country' },
           ]} />
 
-          <h3>2.2 Significance to Stakeholders</h3>
+          <h3 id="sub-2-2">2.2 Significance to Stakeholders</h3>
           <p>
             The Lama Lama Rangers are both the primary stakeholders and the primary users. Ranger-led
             land and sea management integrates Indigenous ecological knowledge with scientific monitoring
@@ -511,7 +539,7 @@ function BackgroundSection() {
             national value (Woinarski, 2025).
           </p>
 
-          <h3>2.3 Existing Solutions</h3>
+          <h3 id="sub-2-3">2.3 Existing Solutions</h3>
           <p>
             Several tools are currently used across ranger programs in Australia for environmental
             monitoring. CyberTracker is an established platform used in Indigenous ecological
@@ -523,7 +551,7 @@ function BackgroundSection() {
             are documented within Queensland biosecurity practice (Walton, 2025).
           </p>
 
-          <h3>2.4 Why Existing Solutions Are Insufficient</h3>
+          <h3 id="sub-2-4">2.4 Why Existing Solutions Are Insufficient</h3>
           <p>
             None of the existing platforms cover the full monitoring workflow in a single tool.
             CyberTracker does not support peer-to-peer data synchronisation between ranger devices
@@ -540,7 +568,7 @@ function BackgroundSection() {
             early intervention may have passed (Walton, 2025).
           </p>
 
-          <h3>2.5 What This Project Aims to Achieve</h3>
+          <h3 id="sub-2-5">2.5 What This Project Aims to Achieve</h3>
           <p>
             This project aims to provide Lama Lama Rangers with a single, offline-capable field
             tool that integrates sighting logging, treatment recording, team data sharing, and
@@ -583,7 +611,7 @@ function ProblemSection() {
             way around.
           </p>
 
-          <h3>3.1 Design Criteria</h3>
+          <h3 id="sub-3-1">3.1 Design Criteria</h3>
           <div>
             {CRITERIA.map((c, i) => (
               <Reveal key={i} delay={i * 0.04}>
@@ -805,7 +833,7 @@ function ProtoSection() {
         <Reveal>
           <SH n={7} title="Prototyping" />
 
-          <h3>7.1 What Was Prototyped and Why</h3>
+          <h3 id="sub-7-1">7.1 What Was Prototyped and Why</h3>
           <p className="lead">
             The prototype focused on the full end-to-end field workflow: from launching the app on
             a ranger device through GPS sighting capture, treatment logging, and Bluetooth mesh
@@ -815,7 +843,7 @@ function ProtoSection() {
             through three progressive versions.
           </p>
 
-          <h3>7.2 Construction Process</h3>
+          <h3 id="sub-7-2">7.2 Construction Process</h3>
           <p>
             Three versions were developed using Swift/SwiftUI for iOS and Jetpack Compose for Android,
             with CoreData for local persistence and Apple MultipeerConnectivity for Bluetooth mesh sync.
@@ -834,7 +862,7 @@ function ProtoSection() {
             { n: '2',  label: 'physical iOS devices used for mesh sync testing' },
           ]} />
 
-          <h3>7.3 Version Progression</h3>
+          <h3 id="sub-7-3">7.3 Version Progression</h3>
           <div className="versions">
             <div className="ver">
               <span className="ver-tag">V1</span>
@@ -893,7 +921,7 @@ function ProtoSection() {
           </div>
           <p className="fig">Figure 5: Treatment entry with Herbicide Compatibility Checker, Biocontrol Prompt, Bloom Calendar, and Patrol Checklist.</p>
 
-          <h3>7.4 Testing</h3>
+          <h3 id="sub-7-4">7.4 Testing</h3>
           <p>
             The prototype was tested on physical iOS devices across the core logging workflow,
             Bluetooth mesh synchronisation between two devices, and offline map loading without
@@ -901,7 +929,7 @@ function ProtoSection() {
             edits from two devices and validating the merge interface.
           </p>
 
-          <h3>7.5 Results and Modifications</h3>
+          <h3 id="sub-7-5">7.5 Results and Modifications</h3>
           <p>
             Bluetooth mesh sync was confirmed reliable between two iOS devices without internet.
             Offline map loading from CoreData was validated. The V2 patrol stamina metric was
@@ -923,7 +951,7 @@ function ImplSection() {
         <Reveal>
           <SH n={8} title="Implementation Plan" />
 
-          <h3>8.1 Installation and Community Training</h3>
+          <h3 id="sub-8-1">8.1 Installation and Community Training</h3>
           <p className="lead">
             The iOS application is distributed via Apple TestFlight — no App Store approval required,
             no new hardware needed. An Android APK is distributed directly to Android devices in the
@@ -940,7 +968,7 @@ function ImplSection() {
             knowledge within the community rather than maintaining external dependency.
           </p>
 
-          <h3>8.2 Rollout and Ongoing Use</h3>
+          <h3 id="sub-8-2">8.2 Rollout and Ongoing Use</h3>
           <p>
             Following training, rangers use the application across active patrol seasons. Bug reports
             and feedback are collected via the ranger office Starlink connection. The shift handover
@@ -957,7 +985,7 @@ function ImplSection() {
           </div>
           <p className="fig">Figure 6: Shift handover card (auto-generated from CoreData), day sync, and patrol log.</p>
 
-          <h3>8.3 Evaluation</h3>
+          <h3 id="sub-8-3">8.3 Evaluation</h3>
           <p>
             Success is measured across three dimensions: adoption rate (proportion of patrols with
             digital records logged), data completeness (proportion of sightings with GPS, photo,
@@ -966,7 +994,7 @@ function ImplSection() {
             deployment is recommended to assess these metrics and identify workflow improvements.
           </p>
 
-          <h3>8.4 Community Ownership</h3>
+          <h3 id="sub-8-4">8.4 Community Ownership</h3>
           <p>
             The GitHub repository is available for transfer to YAC ownership on request. All data
             remains on ranger-owned devices unless rangers explicitly sync to cloud. The open-source
@@ -975,7 +1003,7 @@ function ImplSection() {
             party holds access to ranger data.
           </p>
 
-          <h3>8.5 Repair and Failure Pathways</h3>
+          <h3 id="sub-8-5">8.5 Repair and Failure Pathways</h3>
           <p>
             The application is software-only — hardware failure defaults to the ranger's existing
             device repair pathways. Application bugs are addressed through TestFlight updates
