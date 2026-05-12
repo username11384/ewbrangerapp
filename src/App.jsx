@@ -352,6 +352,15 @@ function ScrollSpy() {
   )
 }
 
+function CulturalNotice({ onDismiss }) {
+  return (
+    <div className="cultural-notice" role="alert">
+      <p>Aboriginal and Torres Strait Islander peoples should be aware that this website may contain images of deceased persons.</p>
+      <button onClick={onDismiss} aria-label="Dismiss notice" className="cultural-notice-close">✕</button>
+    </div>
+  )
+}
+
 const NAV_LINKS = [
   ['#background',    'Background'],
   ['#options',       'Options'],
@@ -1504,9 +1513,21 @@ function Footer() {
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
 export default function App() {
+  const [notice, setNotice] = useState(() =>
+    localStorage.getItem('cultural-notice-dismissed') !== '1'
+  )
+
+  const dismissNotice = () => {
+    setNotice(false)
+    localStorage.setItem('cultural-notice-dismissed', '1')
+  }
+
   return (
     <>
-      <Nav />
+      <header className="site-header">
+        {notice && <CulturalNotice onDismiss={dismissNotice} />}
+        <Nav />
+      </header>
       <ScrollSpy />
       <main>
         <Hero />
