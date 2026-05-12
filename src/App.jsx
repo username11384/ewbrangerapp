@@ -1423,6 +1423,7 @@ function Footer() {
       <div className="container">
         <p>Lama Lama Rangers App · EWB Challenge 2026 · 31265 Communication for IT Professionals, UTS</p>
         <p>Design Area 5.5 — Biodiversity and Habitat Protection Tools · Yintjingga Aboriginal Corporation</p>
+        <p>Designed responsibly on Gadigal land of the Eora Nation.</p>
       </div>
     </footer>
   )
