@@ -3,5 +3,6 @@ node_modules/
 src/.DS_Store
 src/assets/.DS_Store
 CLAUDE.md
+AGENTS.md
 ui-*.png
 ui-review-shots/
