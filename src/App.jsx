@@ -1248,7 +1248,7 @@ const CHARTER_QA = [
   },
 ]
 
-const CHARTER_MEMBERS = ['Immanuel', 'Essy (Francesca Silva Paniagua)', 'Marisa', 'Garv Mitter', 'Jai Sloper', 'Caleb']
+const CHARTER_MEMBERS = ['Immanuel', 'Essy', 'Marisa', 'Garv', 'Jai', 'Caleb']
 
 function MeetingMinutesSection() {
   return (
@@ -1364,14 +1364,7 @@ function GroupCharterSection() {
               We, the group named above, agree with the answers in our charter and will
               try our best to uphold them.
             </p>
-            <div className="charter-sigs">
-              {CHARTER_MEMBERS.map(name => (
-                <div key={name} className="charter-sig">
-                  <span className="sig-name">{name}</span>
-                  <span className="sig-line" />
-                </div>
-              ))}
-            </div>
+            <p className="charter-signed">Signed: {CHARTER_MEMBERS.join(', ')}</p>
           </div>
         </Reveal>
       </div>

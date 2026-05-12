@@ -798,35 +798,14 @@ p.lead {
   border-top: 1px solid var(--rule);
 }
 
-.charter-sigs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem 2rem;
-  margin-top: 1.75rem;
-}
-
-.charter-sig {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.sig-name {
-  font-size: 0.8rem;
+.charter-signed {
+  margin-top: 1rem;
+  font-size: 0.875rem;
   color: var(--ink-mid);
-  font-family: var(--mono);
-}
-
-.sig-line {
-  display: block;
-  height: 1px;
-  background: var(--ink);
-  width: 100%;
 }
 
 @media (max-width: 600px) {
   .charter-qa { grid-template-columns: 1fr; gap: 0.3rem; }
-  .charter-sigs { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ── Prompt log ──────────────────────────────────────────────────────────── */
