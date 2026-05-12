@@ -978,7 +978,7 @@ function ProtoSection() {
             flagged as a lower priority feature in the context of the broader workflow and retained
             as optional. The Herbicide Compatibility Checker was moved from a standalone screen in
             V2 to the treatment entry flow in V3 after testing showed rangers were unlikely to
-            access it separately before spraying. Full test logs are provided in Appendix 2 for reference.
+            access it separately before spraying.
           </p>
         </Reveal>
       </div>
