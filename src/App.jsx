@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
-import imgMap       from './assets/screenshots/map.png'
-import imgLog       from './assets/screenshots/log-sighting.png'
-import imgSpecies   from './assets/screenshots/species-guide.png'
-import imgHub       from './assets/screenshots/hub.png'
-import imgTreatment from './assets/screenshots/treatment.png'
-import imgBicontrol from './assets/screenshots/bicontrol.png'
-import imgBloom     from './assets/screenshots/bloom.png'
-import imgChecklist from './assets/screenshots/checklist.png'
-import imgConflict  from './assets/screenshots/conflict.png'
-import imgDaySync   from './assets/screenshots/day-sync.png'
-import imgPatrol    from './assets/screenshots/patrol.png'
+import imgMap         from './assets/screenshots/map.png'
+import imgLog         from './assets/screenshots/log-sighting.png'
+import imgSpecies     from './assets/screenshots/species-guide.png'
+import imgHub         from './assets/screenshots/hub.png'
+import imgTreatment   from './assets/screenshots/treatment.png'
+import imgBicontrol   from './assets/screenshots/bicontrol.png'
+import imgBloom       from './assets/screenshots/bloom.png'
+import imgChecklist   from './assets/screenshots/checklist.png'
+import imgConflict    from './assets/screenshots/conflict.png'
+import imgDaySync     from './assets/screenshots/day-sync.png'
+import imgPatrol      from './assets/screenshots/patrol.png'
+import imgSafetyTimer from './assets/screenshots/safetytimer.png'
+import imgRedLight    from './assets/screenshots/redlight.png'
+import imgVoiceNote   from './assets/screenshots/voicenote.png'
+import imgHandover    from './assets/screenshots/handovercard.png'
+import imgV1Log       from './assets/screenshots/v1-logscreen.png'
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
@@ -669,6 +674,14 @@ function DetailedSection() {
           </div>
           <p className="fig">Figure 2: Map, Activity Logging, Plant Guide, and Hub screens.</p>
 
+          <div className="phones">
+            <Phone src={imgSafetyTimer} caption="Safety check-in timer" />
+            <Phone src={imgRedLight}    caption="Night vision mode" />
+            <Phone src={imgVoiceNote}   caption="Voice memo recording" />
+            <Phone src={imgConflict}    caption="Zone conflict resolver" />
+          </div>
+          <p className="fig">Figure 3: Ranger Safety tab and team coordination screens.</p>
+
           <h3>Community Concerns and Mitigations</h3>
           <Tbl cols={['Concern', 'How the Design Addresses It']} rows={CONCERNS} />
         </Reveal>
@@ -727,6 +740,11 @@ function ProtoSection() {
                   exposed two critical gaps: single-species scope did not reflect reality, and the
                   absence of peer-to-peer sync meant rangers had no way to share records in the field.
                 </p>
+                <div className="phones phones-sm" style={{ gridTemplateColumns: 'repeat(2, 1fr)', maxWidth: 320 }}>
+                  <Phone src={imgV1Log} caption="V1 log screen" />
+                  <Phone src={imgLog}   caption="V3 log screen" />
+                </div>
+                <p className="fig" style={{ textAlign: 'left' }}>Figure 4: V1 → V3 log screen progression.</p>
               </div>
             </div>
             <div className="ver">
@@ -765,7 +783,7 @@ function ProtoSection() {
             <Phone src={imgBloom}     caption="Bloom calendar" />
             <Phone src={imgChecklist} caption="Patrol checklist" />
           </div>
-          <p className="fig">Figure 3: Treatment entry with Herbicide Compatibility Checker, Biocontrol Prompt, Bloom Calendar, and Patrol Checklist.</p>
+          <p className="fig">Figure 5: Treatment entry with Herbicide Compatibility Checker, Biocontrol Prompt, Bloom Calendar, and Patrol Checklist.</p>
 
           <h3>7.4 Testing</h3>
           <p>
@@ -823,6 +841,13 @@ function ImplSection() {
             systems. The Hub dashboard gives ranger coordinators a team-wide view of sighting trends
             and coverage gaps.
           </p>
+
+          <div className="phones phones-sm">
+            <Phone src={imgHandover} caption="Shift handover card" />
+            <Phone src={imgDaySync}  caption="Day sync view" />
+            <Phone src={imgPatrol}   caption="Patrol log" />
+          </div>
+          <p className="fig">Figure 6: Shift handover card (auto-generated from CoreData), day sync, and patrol log.</p>
 
           <h3>8.3 Evaluation</h3>
           <p>
