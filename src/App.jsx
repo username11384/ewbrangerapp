@@ -528,6 +528,7 @@ function AckSection() {
       <div className="container">
         <Reveal>
           <p className="ack-label">Acknowledgement of Country</p>
+          <div className="ack-rule" />
           <blockquote>
             We acknowledge the Lama Lama people as the Traditional Custodians of the land and sea
             on which this project is centred. We pay our respects to Lama Lama Elders past,

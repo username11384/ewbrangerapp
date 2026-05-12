@@ -288,28 +288,37 @@ a:hover { opacity: 0.7; }
 /* ── Acknowledgement ─────────────────────────────────────────────────────── */
 
 .ack {
-  background: var(--ocean-mid);
-  padding: 4.5rem 0;
+  background: var(--ocean);
+  padding: 6rem 0;
+  text-align: center;
 }
 
 .ack-label {
   font-family: var(--mono);
   font-size: 0.62rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #6AA8C8;
-  margin-bottom: 1.1rem;
+  color: #4A7AAC;
+  margin-bottom: 2rem;
+}
+
+.ack-rule {
+  width: 2.5rem;
+  height: 1px;
+  background: #4A7AAC;
+  margin: 0 auto 2rem;
 }
 
 .ack blockquote {
   font-family: var(--serif);
-  font-size: 1.05rem;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
   font-style: italic;
-  line-height: 1.85;
+  line-height: 2;
   color: #C0D8EC;
-  border-left: 2px solid var(--ocean-lt);
-  padding-left: 1.5rem;
-  max-width: 680px;
+  border-left: none;
+  padding-left: 0;
+  max-width: 660px;
+  margin: 0 auto;
 }
 
 /* ── Sections ────────────────────────────────────────────────────────────── */
