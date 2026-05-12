@@ -218,6 +218,10 @@ const REFS = [
   'Taylor, D. B. (2017). Threats to Cape York rivers: Q-catchments risk assessment and threat prioritisation. ResearchGate.',
   'Walton, C. (2025). Lantana: Current management status and future prospects. DPI eResearch Archive.',
   'Woinarski, J. (2025). The natural attributes for World Heritage nomination of Cape York Peninsula. DCCEEW.',
+  'Cape York Tours. (2023, July 16). What will I do in Cape York? [Photograph]. https://capeyorktours.com.au/what-will-i-do-in-cape-york/',
+  'Invasive Species Blog. (2022, October 12). Research reveals invasive Lantana camara reduced growth of maize by 29% in East Usambara, Tanzania [Photograph]. https://blog.invasive-species.org/2022/10/12/research-reveals-invasive-lantana-camara-reduced-growth-of-maize-by-29-in-east-usambara-tanzania/',
+  'Lama Lama Land and Sea Rangers. (n.d.). Rangers on Country [Photograph]. Yintjingga Aboriginal Corporation. https://www.lamalama.org.au/about-us/',
+  'NRM Regions Australia. (n.d.). Cape York wetlands and native vegetation resilience [Photograph]. https://nrmregionsaustralia.com.au/project/cape-york-wetlands-and-native-vegetation-resilience/',
 ]
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
@@ -251,8 +255,18 @@ function Nav() {
 // ─── Sections ─────────────────────────────────────────────────────────────────
 
 function Hero() {
+  const ref = useRef(null)
+  useEffect(() => {
+    const onScroll = () => {
+      if (ref.current) {
+        ref.current.style.backgroundPositionY = `calc(40% + ${window.scrollY * 0.35}px)`
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
   return (
-    <section className="hero" id="top" style={{ backgroundImage: `url(${imgBannerHero})` }}>
+    <section className="hero" id="top" ref={ref} style={{ backgroundImage: `url(${imgBannerHero})` }}>
       <div className="container">
         <p className="eyebrow">EWB Challenge 2026 · Design Area 5 · Project Opportunity 5.5</p>
         <h1>Lama Lama Rangers App</h1>

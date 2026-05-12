@@ -146,10 +146,10 @@ a:hover { opacity: 0.7; }
 
 .hero-credit {
   font-family: var(--mono);
-  font-size: 0.58rem;
-  color: #2E4060;
+  font-size: 0.6rem;
+  color: #4A6480;
   position: absolute;
-  bottom: 0.6rem;
+  bottom: 0.75rem;
   right: 1.5rem;
   z-index: 1;
 }
@@ -190,9 +190,11 @@ a:hover { opacity: 0.7; }
 .meta-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border: 1px solid #252E20;
+  border: 1px solid #1A2E44;
   border-radius: 3px;
   overflow: hidden;
+  background: rgba(8, 16, 28, 0.72);
+  backdrop-filter: blur(6px);
 }
 
 .meta-cell {
@@ -200,8 +202,8 @@ a:hover { opacity: 0.7; }
   flex-direction: column;
   gap: 0.3rem;
   padding: 0.9rem 1.15rem;
-  border-bottom: 1px solid #252E20;
-  border-right: 1px solid #252E20;
+  border-bottom: 1px solid #1A2E44;
+  border-right: 1px solid #1A2E44;
 }
 
 .meta-cell:nth-child(2n) { border-right: none; }
@@ -218,7 +220,7 @@ a:hover { opacity: 0.7; }
 
 .meta-val {
   font-size: 0.875rem;
-  color: #C4BEB6;
+  color: #E0DAD2;
   line-height: 1.55;
 }
 
