@@ -16,7 +16,7 @@
   --ocean-lt: #4A7AAC;
 
   --serif: 'Lora', Georgia, serif;
-  --sans:  'Inter', system-ui, sans-serif;
+  --sans:  Helvetica, 'Helvetica Neue', Arial, Inter, system-ui, sans-serif;
   --mono:  'SF Mono', 'Fira Mono', Menlo, monospace;
 
   --w:      800px;
@@ -359,7 +359,7 @@ a:hover { opacity: 0.7; }
   border-radius: 2px;
 }
 
-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+table { width: 100%; border-collapse: collapse; font-size: 1rem; }
 
 thead th {
   background: var(--ink);
@@ -696,7 +696,7 @@ p.lead {
 
 .criterion-why {
   color: var(--ink-mid);
-  font-size: 0.875rem;
+  font-size: 1rem;
   margin-top: 0.35rem;
 }
 
@@ -763,7 +763,7 @@ p.lead {
 }
 
 .minutes-meta-row span:last-child {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #C4BEB6;
 }
 
@@ -804,14 +804,14 @@ p.lead {
 .charter-qa:last-child { border-bottom: none; }
 
 .charter-q {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--ink-mid);
   font-style: italic;
   margin: 0;
 }
 
 .charter-a {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--ink);
   margin: 0;
 }
@@ -824,7 +824,7 @@ p.lead {
 
 .charter-signed {
   margin-top: 1rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--ink-mid);
 }
 
@@ -896,7 +896,7 @@ p.lead {
 }
 
 .log-value {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--ink);
   line-height: 1.65;
   margin: 0;
@@ -923,7 +923,7 @@ p.lead {
 .refs { list-style: none; padding: 0; }
 
 .refs li {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #8A857C;
   padding: 0.55rem 0;
   padding-left: 1.5rem;
