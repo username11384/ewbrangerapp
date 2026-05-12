@@ -16,7 +16,7 @@
   --ocean-lt: #4A7AAC;
 
   --serif: 'Lora', Georgia, serif;
-  --sans:  Helvetica, 'Helvetica Neue', Arial, Inter, system-ui, sans-serif;
+  --sans:  'Inter', system-ui, sans-serif;
   --mono:  'SF Mono', 'Fira Mono', Menlo, monospace;
 
   --w:      800px;
