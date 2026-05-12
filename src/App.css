@@ -144,15 +144,6 @@ a:hover { opacity: 0.7; }
   z-index: 1;
 }
 
-.hero-credit {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: #4A6480;
-  position: absolute;
-  bottom: 0.75rem;
-  right: 1.5rem;
-  z-index: 1;
-}
 
 .eyebrow {
   font-family: var(--mono);
