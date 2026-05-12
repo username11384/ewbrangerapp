@@ -455,7 +455,7 @@ function AckSection() {
           <p className="ack-label">Acknowledgement of Country</p>
           <blockquote>
             We acknowledge the Lama Lama people as the Traditional Custodians of the land and sea
-            Country on which this project is centred. We pay our respects to Lama Lama Elders past,
+            on which this project is centred. We pay our respects to Lama Lama Elders past,
             present, and emerging, and recognise their enduring connection to Country — a connection
             expressed through thousands of years of careful land and sea management. This project was
             developed in the context of the Engineers Without Borders Challenge, which was produced in
