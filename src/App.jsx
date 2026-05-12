@@ -293,16 +293,41 @@ function useScrollSpy() {
 function ScrollSpy() {
   const { section: activeSection, sub: activeSub } = useScrollSpy()
   return (
-    <nav className="scrollspy" aria-label="Page sections">
-      {SPY_SECTIONS.map(({ id, label, subs }) => (
-        <div key={id} className="spy-group">
-          <a href={`#${id}`} className={`spy-dot${activeSection === id ? ' spy-active' : ''}`} data-label={label} aria-label={label} />
-          {activeSection === id && subs.map(s => (
-            <a key={s.id} href={`#${s.id}`} className={`spy-sub${activeSub === s.id ? ' spy-sub-active' : ''}`} data-label={s.label} aria-label={s.label} />
-          ))}
-        </div>
-      ))}
-    </nav>
+    <div className="scrollspy">
+      {/* Hover panel */}
+      <nav className="spy-panel" aria-label="Table of contents">
+        {SPY_SECTIONS.map(({ id, label, subs }) => (
+          <div key={id}>
+            <a
+              href={`#${id}`}
+              className={`spy-panel-item${activeSection === id ? ' spy-panel-active' : ''}`}
+            >
+              {label}
+            </a>
+            {subs.map(s => (
+              <a
+                key={s.id}
+                href={`#${s.id}`}
+                className={`spy-panel-sub${activeSub === s.id ? ' spy-panel-sub-active' : ''}`}
+              >
+                {s.label}
+              </a>
+            ))}
+          </div>
+        ))}
+      </nav>
+      {/* Dash markers */}
+      <div className="spy-dots">
+        {SPY_SECTIONS.map(({ id, label }) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            className={`spy-dot${activeSection === id ? ' spy-active' : ''}`}
+            aria-label={label}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 
