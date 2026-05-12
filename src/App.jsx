@@ -572,21 +572,20 @@ function ProjectSection() {
         <Reveal>
           <SH n={1} title="Project Details" />
           <p>
-            This project addresses Design Area 5.5 — Biodiversity and Habitat Protection Tools —
-            from the 2026 EWB Challenge Design Brief. The Lama Lama Land and Sea Rangers conduct
-            invasive plant management across a vast and remote territory in Cape York Peninsula,
-            Queensland, but the tools currently available to them were not designed for an environment
-            without internet connectivity or sealed road access. The group selected this project
-            opportunity because the gap between the rangers' operational knowledge and the technology
-            available to support it is both concrete and addressable through a purpose-built software
-            solution.
+            This project addresses <strong>Design Area 5.5 — Biodiversity and Habitat Protection
+            Tools</strong> from the 2026 EWB Challenge Design Brief, in partnership with Yintjingga
+            Aboriginal Corporation (YAC) and the Lama Lama Land and Sea Rangers of Port Stewart,
+            Cape York Peninsula.
           </p>
-          <p>
-            <strong>Needs statement.</strong> Lama Lama Rangers need a single, offline-capable tool
-            that integrates GPS logging, photo documentation, treatment recording, and peer-to-peer
-            data sharing into their existing patrol workflow — without dependence on connectivity
-            infrastructure that is not reliably available on Country.
-          </p>
+          <div className="needs">
+            <p className="needs-lbl">Needs statement</p>
+            <p>
+              Lama Lama Rangers need a single, offline-capable tool that integrates GPS logging,
+              photo documentation, treatment recording, and peer-to-peer data sharing into their
+              existing patrol workflow — without dependence on connectivity infrastructure that is
+              not reliably available on Country.
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>
