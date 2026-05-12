@@ -68,7 +68,7 @@ function SH({ n, title }) {
   )
 }
 
-function Tbl({ cols, rows, foot }) {
+function Tbl({ cols, rows, foot, caption }) {
   return (
     <div className="tbl">
       <table>
@@ -76,6 +76,7 @@ function Tbl({ cols, rows, foot }) {
         <tbody>{rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
         {foot && <tfoot><tr>{foot.map((c, i) => <td key={i}>{c}</td>)}</tr></tfoot>}
       </table>
+      {caption && <p className="tbl-caption">{caption}</p>}
     </div>
   )
 }
@@ -114,12 +115,12 @@ function Banner({ src, alt, credit }) {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const GROUP = [
-  ['Immanuel', 'iOS/Android application development (V1–V3); prototyping section; economic constraints research'],
-  ['Essy', 'Project details; background research; problem description'],
-  ['Marisa', 'Design solution options; option research and evaluation'],
-  ['Garv', 'Design criteria; detailed design specification'],
-  ['Jai', 'Implementation plan; rollout and cost analysis'],
-  ['Caleb', 'Other considerations and recommendations'],
+  ['Immanuel', 'iOS/Android application development (V1–V3); prototyping section; economic constraints research', 'Agreed'],
+  ['Essy', 'Project details; background research; problem description', 'Agreed'],
+  ['Marisa', 'Design solution options; option research and evaluation', 'Agreed'],
+  ['Garv', 'Design criteria; detailed design specification', 'Agreed'],
+  ['Jai', 'Implementation plan; rollout and cost analysis', 'Agreed'],
+  ['Caleb', 'Other considerations and recommendations', 'Agreed'],
 ]
 
 const CRITERIA = [
@@ -482,8 +483,9 @@ function GroupSection() {
             member's primary responsibilities across the assessment.
           </p>
           <Tbl
-            cols={['Group Member', 'Project Contributions']}
+            cols={['Group Member', 'Project Contributions', 'Team Acknowledgement']}
             rows={GROUP}
+            caption="Table 1: Team member contributions to Assessment Task 3 Website"
           />
         </Reveal>
       </div>
@@ -750,6 +752,7 @@ function SelectionSection() {
             cols={['Criterion', 'Weight', 'Option 1: Paper', 'Option 2: CyberTracker', 'Option 3: Purpose-Built App']}
             rows={MATRIX_ROWS}
             foot={['Weighted Total', '100%', '2.65', '2.35', '4.90']}
+            caption="Table 2: Design option scoring matrix (1 = does not meet criterion, 5 = fully meets criterion)"
           />
           <p>
             <strong>Justification.</strong> Option 1 scores well on offline functionality and ease
@@ -861,7 +864,7 @@ function DetailedSection() {
           <p className="fig">Figure 3: Ranger Safety tab and team coordination screens.</p>
 
           <h3>Community Concerns and Mitigations</h3>
-          <Tbl cols={['Concern', 'How the Design Addresses It']} rows={CONCERNS} />
+          <Tbl cols={['Concern', 'How the Design Addresses It']} rows={CONCERNS} caption="Table 3: Community concerns and design mitigations" />
         </Reveal>
       </div>
     </section>
@@ -1070,6 +1073,7 @@ function CostSection() {
             cols={['Item', 'Quantity', 'Unit Cost (AUD/year)', 'Total (AUD/year)', 'Source']}
             rows={COST_ROWS}
             foot={['Total Year 1', '', '', '~$166', '']}
+            caption="Table 4: Estimated annual software running costs (AUD)"
           />
           <StatRow stats={[
             { n: '~$166',      label: 'total Year 1 software cost' },
