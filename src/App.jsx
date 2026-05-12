@@ -226,6 +226,58 @@ const REFS = [
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 
+const SPY_SECTIONS = [
+  { id: 'top',             label: 'Overview' },
+  { id: 'background',      label: 'Background' },
+  { id: 'problem',         label: 'Problem' },
+  { id: 'options',         label: 'Options' },
+  { id: 'design',          label: 'Selection' },
+  { id: 'detailed',        label: 'Detailed Design' },
+  { id: 'prototype',       label: 'Prototype' },
+  { id: 'implementation',  label: 'Implementation' },
+  { id: 'cost',            label: 'Cost' },
+  { id: 'considerations',  label: 'Considerations' },
+  { id: 'recommendations', label: 'Recommendations' },
+  { id: 'references',      label: 'References' },
+]
+
+function useScrollSpy() {
+  const [active, setActive] = useState('top')
+  useEffect(() => {
+    const ids = SPY_SECTIONS.map(s => s.id)
+    const onScroll = () => {
+      const y = window.scrollY + 140
+      let current = ids[0]
+      for (const id of ids) {
+        const el = document.getElementById(id)
+        if (el && el.offsetTop <= y) current = id
+      }
+      setActive(current)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return active
+}
+
+function ScrollSpy() {
+  const active = useScrollSpy()
+  return (
+    <nav className="scrollspy" aria-label="Page sections">
+      {SPY_SECTIONS.map(({ id, label }) => (
+        <a
+          key={id}
+          href={`#${id}`}
+          className={`spy-dot${active === id ? ' spy-active' : ''}`}
+          data-label={label}
+          aria-label={label}
+        />
+      ))}
+    </nav>
+  )
+}
+
 const NAV_LINKS = [
   ['#background',    'Background'],
   ['#options',       'Options'],
@@ -1137,6 +1189,7 @@ export default function App() {
   return (
     <>
       <Nav />
+      <ScrollSpy />
       <main>
         <Hero />
         <AckSection />
