@@ -117,7 +117,7 @@ function Banner({ src, alt, credit }) {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const GROUP = [
-  ['Immanuel', 'iOS/Android application development (V1–V3); prototyping section; economic constraints research', 'Agreed'],
+  ['Immanuel', 'iOS/Android application development (V1–V3); prototyping section; economic constraints research; full reactJS website', 'Agreed'],
   ['Essy', 'Project details; background research; problem description', 'Agreed'],
   ['Marisa', 'Design solution options; option research and evaluation', 'Agreed'],
   ['Garv', 'Design criteria; detailed design specification', 'Agreed'],
